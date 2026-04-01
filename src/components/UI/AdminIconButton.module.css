@@ -1,0 +1,23 @@
+.iconBtn {
+    border: none;
+    background: #F4F7FE;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconBtn:hover {
+    background: #E0E5F2;
+    transform: translateY(-2px);
+}
+
+/* Estos nombres deben ser iguales a los que pasas en la prop 'type' */
+.edit { color: #FFA500; }
+.reset { color: #4318FF; }
+.detail { color: #01B9FF; }
+.delete { color: #EE5D50; }
+.default { color: #A3AED0; }

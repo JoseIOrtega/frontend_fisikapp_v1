@@ -1,0 +1,64 @@
+.form-wrapper {
+    width: 100%;
+    max-width: 450px;
+    margin: 20px auto;
+}
+
+.formTitle {
+    color: #ffffff; /* O el color que prefieras para el título fuera de la caja */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.formulario-base {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+    /* Aura base suave */
+    box-shadow: 0 0 20px rgba(15, 44, 46, 0.4); 
+    transition: box-shadow 0.3s ease; /* Para que el cambio sea suave */
+    border: 1px solid rgba(125, 57, 215, 0.219);
+}
+
+/* --- MAGIA DINÁMICA --- */
+/* Cuando un input adentro de este formulario tenga el 'focus' (esté seleccionado) */
+.formulario-base:focus-within {
+    box-shadow: 0 0 50px rgba(57, 173, 215, 0.6); /* Aura más brillante */
+}
+
+
+@media (max-width: 768px) {
+    .formColumn {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;    /* Centra horizontalmente el formulario */
+        justify-content: center; /* Centra verticalmente si hay espacio */
+        padding: 20px 0;        /* Espacio arriba y abajo, nada a los lados */
+        margin: 0;              /* Eliminamos cualquier margen que lo empuje */
+    }
+}
+
+@media (max-width: 480px) {
+
+    .formulario-base {
+        width: 90%;             /* Que use el 90% del ancho del celular */
+        max-width: 350px;       /* Un ancho cómodo para móviles */
+        margin-left: auto;      /* Magia: margen automático a la izquierda */
+        margin-right: auto;     /* Magia: margen automático a la derecha */
+        
+        /* Reset de posición por si acaso */
+        position: relative;
+        left: 0;
+        right: 0;
+    }
+
+    .pageWrapper {
+        padding-top: 0;         /* Quitamos espacios extra arriba */
+    }
+}

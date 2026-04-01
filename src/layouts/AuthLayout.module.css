@@ -1,0 +1,262 @@
+.layout {
+    background-color: var(--color-principal);
+    display: flex;
+    /* CAMBIO: De column a row para tener dos columnas */
+    flex-direction: row; 
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Columna Izquierda: Logo y Branding */
+.imagen-logo {
+    flex: 1; /* Ocupa la mitad */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    position: relative;
+    padding: 40px;
+}
+
+.logo {
+    width: 100%;
+    max-width: 350px;
+}
+
+p{
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.brandTagline {
+    /* ... tus otros estilos (color, font-size) ... */
+    text-align: center;      /* Fuerza a que las palabras nazcan del centro */
+    max-width: 80%;          /* Evita que el texto toque los bordes laterales */
+    margin: 0 auto;          /* Centra el bloque de texto horizontalmente */
+    line-height: 1.4;        /* Da un poco de aire entre líneas si el texto salta */
+}
+
+/* --- COLUMNA IZQUIERDA (Logo) --- */
+.brandColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Esto lo mantiene centrado verticalmente */
+    align-items: center;
+    background-color: #142050;
+    padding: 40px;
+    height: 100vh; /* Ocupa todo el alto */
+}
+
+/* --- COLUMNA DERECHA (Formulario) --- */
+.formColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* Centra el formulario horizontalmente */
+    justify-content: flex-start; /* IMPORTANTE: Que empiece desde arriba */
+    padding: 60px 20px;      /* Damos un margen generoso arriba y abajo */
+    height: 100vh;
+    overflow-y: auto;        /* Habilita el scroll si el formulario es largo */
+    background-color: #e9ebeb; /* El mismo fondo para que no se note corte */
+}
+
+/* Opcional: Haz que el scroll sea invisible o muy delgado */
+.formColumn::-webkit-scrollbar {
+    width: 5px;
+}
+.formColumn::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+
+/* CAPA 1: Átomos pequeños y rápidos (Fondo) */
+.layout::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background-image: 
+        radial-gradient(1.5px 1.5px at 25% 25%, #ffffff, transparent),
+        radial-gradient(2px 2px at 75% 75%, #39add7, transparent),
+        radial-gradient(1px 1px at 50% 10%, #ffffff, transparent);
+    background-size: 250px 250px;
+    opacity: 0.7;
+    animation: movimientoAtomico 60s linear infinite;
+    pointer-events: none; 
+    z-index: 1;
+}
+
+/* CAPA 2: Átomos grandes y lentos (Primer plano) */
+.layout::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background-image: 
+        radial-gradient(2.5px 2.5px at 30% 70%, #39add7, transparent),
+        radial-gradient(2px 2px at 80% 20%, #ffffff, transparent);
+    background-size: 400px 400px;
+    opacity: 0.7;
+    animation: movimientoAtomicoInv 90s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Animación: Movimiento de traslación suave */
+@keyframes movimientoAtomico {
+    from { transform: rotate(0deg) translate(0, 0); }
+    to { transform: rotate(5deg) translate(-10%, -10%); }
+}
+
+@keyframes movimientoAtomicoInv {
+    from { transform: rotate(0deg) translate(0, 0); }
+    to { transform: rotate(-5deg) translate(10%, 10%); }
+}
+
+/* Tu clase base se queda igual, pero quitamos el animation de aquí */
+.meteorito {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1);
+    opacity: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.meteorito::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 150px;
+    height: 1px;
+    background: linear-gradient(90deg, #fff, transparent);
+}
+
+/* --- VARIACIONES ALEATORIAS --- */
+
+/* Meteorito 1: El clásico (Diagonal 45° de esquina a esquina) */
+.m1 {
+    top: 50px;
+    right: 10%;
+    animation: meteoritoAnim1 12s linear infinite;
+    animation-delay: 1s;
+}
+
+/* Meteorito 2: Nace a la izquierda y cruza horizontal */
+.m2 {
+    top: 25%;         /* Altura en la pantalla */
+    left: -50px;      /* Empieza fuera a la izquierda */
+    animation: meteoritoAnim2 10s linear infinite;
+    animation-delay: 5s;
+}
+
+/* Meteorito 3: Nace a la izquierda y cae en diagonal */
+.m3 {
+    top: 10%;         /* Un poco más arriba */
+    left: -50px;      /* Empieza fuera a la izquierda */
+    animation: meteoritoAnim3 15s linear infinite;
+    animation-delay: 10s;
+    transform: scale(0.6); /* Se ve más pequeño/lejano */
+}
+
+.m2::before, .m3::before {
+    left: auto;          /* Quitamos el pegado a la izquierda */
+    right: 50%;         /* La cola nace desde el centro hacia la izquierda */
+    width: 150px;       /* Largo de la estela */
+    background: linear-gradient(-90deg, #fff, transparent); /* Gradiente invertido */
+}
+
+/* --- ANIMACIONES INDIVIDUALES (Para cambiar los ángulos) --- */
+
+@keyframes meteoritoAnim1 {
+    0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    40% { transform: rotate(-45deg) translateX(-130vw) scale(0.2); opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes meteoritoAnim2 {
+    0% { 
+        /* Ángulo pequeño (15deg) para que cruce horizontalmente */
+        transform: rotate(15deg) translateX(-100px); 
+        opacity: 0; 
+    }
+    10% { 
+        opacity: 1; 
+    }
+    45% { 
+        /* Valor POSITIVO en X para que avance a la derecha */
+        transform: rotate(15deg) translateX(120vw) scale(0.5); 
+        opacity: 0; 
+    }
+    100% { opacity: 0; }
+}
+
+@keyframes meteoritoAnim3 {
+    0% { 
+        /* Ángulo más inclinado (35deg) para que caiga en diagonal */
+        transform: rotate(35deg) translateX(-100px); 
+        opacity: 0; 
+    }
+    10% { 
+        opacity: 1; 
+    }
+    40% { 
+        transform: rotate(35deg) translateX(120vw) scale(0.3); 
+        opacity: 0; 
+    }
+    100% { opacity: 0; }
+}
+
+/* --- DISEÑO RESPONSIVE (Móviles y Tablets) --- */
+@media (max-width: 768px) {
+    .layout {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Asegura que el layout ocupe toda la pantalla */
+    }
+
+    .brandColumn {
+        flex: none;             /* Ya no ocupa el 50% */
+        width: 100%;
+        padding: 20px;
+        height: auto;           /* Se ajusta al contenido */
+        min-height: 40vh;       /* Le damos un espacio razonable al logo */
+    }
+
+    .logo {
+        max-width: 250px;       /* Reducimos el logo a la mitad en móvil */
+    }
+
+    .brandName {
+        font-size: 2rem;        /* Letra más pequeña */
+    }
+
+    /* Esta es la columna gris del formulario */
+    .formColumn {
+        flex: 1;             /* <--- MAGIA: Esto hace que se estire hasta el fondo */
+        width: 100%;
+        background-color: #f0f2f5; /* Asegúrate de que el color gris esté aquí */
+        padding-bottom: 50px;      /* Un margen extra para que no pegue al borde */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+
+

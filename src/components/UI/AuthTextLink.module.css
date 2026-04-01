@@ -1,0 +1,24 @@
+.link {
+    display: block;
+    text-align: center;
+    color: var(--gris-texto); 
+    text-decoration: none;
+    font-size: var(--fuente-base); 
+    font-weight: var(--peso-normal); 
+    margin-top: var(--espacio-sm); 
+    transition: color 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.link:hover {
+    color: var(--color-principal); 
+    text-decoration: underline;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .link {
+        font-size: var(--fuente-pequena); 
+        font-weight: var(--peso-normal);
+    }
+}

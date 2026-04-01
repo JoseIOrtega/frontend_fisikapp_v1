@@ -1,0 +1,39 @@
+:root {
+    /* Colores de Marca */
+    --color-principal: #142050;    /* Azul profundo fondo */
+    --color-acento: #39add7;       /* Azul claro (átomos y botones) */
+    --color-secundario: #0fa169;   /* Verde para aciertos en física */
+    
+    /* Colores de Interfaz */
+    --blanco-puro: #ffffff;
+    --gris-suave: #f8fafc;         /* Para fondos de inputs */
+    --gris-texto: #142050;         /* Para el TextLink */
+    --color-error: #ef4444;        /* Para mensajes de "Contraseña incorrecta" */
+
+    /* Tamaños de Fuente */
+    --fuente-titulo: 24px;
+    --fuente-subtitulo: 18px;
+    --fuente-base: 15px;          
+    --fuente-mediana:14px;
+    --fuente-pequena: 13px;       
+
+    /* Grosores */
+    --peso-normal: 400;
+    --peso-semi: 600;              /* Para botones */
+    --peso-bold: 700;              /* Para títulos */
+
+    /* Bordes */
+    --radio-boton: 10px;           
+    --radio-input: 8px;
+    --radio-card: 16px;            /* Para el cuadro blanco del registro */
+
+    /* Sombras (Shadows) */
+    --sombra-suave: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --sombra-pro: 0 10px 15px -3px rgba(20, 32, 80, 0.3); 
+
+    --espacio-xs: 4px;
+    --espacio-sm: 8px;
+    --espacio-md: 16px;
+    --espacio-lg: 24px;
+    --espacio-xl: 40px;        
+}

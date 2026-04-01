@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Inter', sans-serif;
+}
+
+/* 1. RESET: Limpiamos los estilos por defecto del navegador */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Para que los paddings no ensanchen los elementos */
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+/* 2. BASE: Aplicamos tus variables a nivel global */
+body {
+    /* Usamos la fuente Inter que ya definimos */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    
+    /* El fondo principal azul oscuro por defecto */
+    background-color: var(--color-principal);
+    
+    /* Color de texto base (blanco para que resalte en el oscuro) */
+    color: var(--blanco-puro);
+    
+    /* Suavizado de fuente para que se vea más premium */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita scrolls horizontales accidentales */
+}
+
+/* 3. TIPOGRAFÍA: Para que los chicos no tengan que diseñar títulos */
+h1, h2, h3 {
+    color: var(--blanco-puro);
+    font-weight: var(--peso-bold);
+    margin-bottom: var(--espacio-sm);
+}
+
+p {
+    font-size: var(--fuente-base);
+    color: var(--gris-texto);
+}
+
+/* 4. ENLACES: Quitamos el estilo azul feo de los links */
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+/* 5. SCROLLBAR ESPACIAL: Un detalle pro para que combine con los átomos */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-principal);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-acento); /* El azul claro de tus átomos */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2d89aa; /* Un tono un poco más oscuro al pasar el mouse */
+}
+

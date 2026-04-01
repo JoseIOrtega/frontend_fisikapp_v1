@@ -1,0 +1,76 @@
+.navbar {
+    /* --- AJUSTE DE ANCHO --- */
+    width: 100%; /* Obliga a que use todo el ancho del contenedor padre */
+    box-sizing: border-box; /* Asegura que el padding no "infle" el ancho */
+
+    /* Posicionamiento flotante */
+    position: sticky;
+    top: 15px;
+    margin-bottom: 20px;
+    z-index: 100;
+
+    /* Diseño visual (Glassmorphism) */
+    background: #ffffff;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 15px 25px;
+    
+    /* Sombra suave */
+    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* SECCIÓN IZQUIERDA */
+.breadcrumb {
+    font-size: 14px;
+    color: #707EAE; /* Gris azulado de la imagen */
+    margin: 0;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1B2559; /* Azul marino profundo */
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    border-radius: 30px;
+    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+    gap: 15px;
+}
+
+@media (max-width: 1028px) {
+    .navbar{
+        margin-top: 60px;
+    }
+}
+
+@media (max-width: 634px) {
+    .navbar {
+        flex-direction: column; /* Apila el título y el buscador si el celular es muy flaco */
+        gap: 5px;
+        padding-left: 20px; /* Deja espacio para el botón de menú arriba a la izquierda */
+        align-items: flex-start;
+    }
+
+    .rightSection {
+        width: 100%; /* El buscador ocupa todo el ancho abajo del título */
+        justify-content: space-between;
+    }
+
+    .searchInput {
+        width: 100%; /* El input se estira */
+    }
+}

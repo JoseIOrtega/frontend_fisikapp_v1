@@ -1,0 +1,45 @@
+.boton {
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: var(--radio-boton); 
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: var(--fuente-base);
+    font-weight: var(--peso-semi);
+    cursor: pointer;
+    margin-top: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Necesario para que el z-index funcione */
+    z-index: 10;        /* Un valor más alto que el de los meteoritos (que es 5) */
+    background-color: var(--color-principal);
+}
+
+.primary {
+    background-color: var(--color-principal);
+    color: #ffffff;
+    
+}
+
+.primary:hover {
+    background-color: #1e2d6e; 
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -5px rgba(20, 32, 80, 0.4);
+}
+
+.primary:active {
+    transform: scale(0.98);
+}
+
+.outline:hover {
+    background: rgba(57, 173, 215, 0.1);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .boton {
+        padding: 8px;
+        font-size: var(--fuente-base);
+    }
+}
