@@ -32,6 +32,29 @@
     transform: scale(0.98);
 }
 
+/* Variante Azul (Secondary) */
+.secondary {
+    background-color: #4318FF;
+    color: white;
+}
+
+.secondary:hover {
+    background-color: #4825e0bd; 
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -5px rgba(20, 32, 80, 0.4);
+}
+
+.secondary:active {
+    transform: scale(0.98);
+}
+
+/* Variante Esquema (Solo borde) */
+.outline {
+    background-color: transparent;
+    border: 2px solid #05CD99;
+    color: #05CD99;
+}
+
 .outline:hover {
     background: rgba(57, 173, 215, 0.1);
 }

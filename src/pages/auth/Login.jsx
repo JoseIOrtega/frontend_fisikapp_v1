@@ -1,22 +1,32 @@
-import AuthForm from "../../components/UI/AuthForm";
 import AuthLayout from "../../layouts/AuthLayout";
-import AuthInput from "../../components/UI/AuthInput"
+import AuthForm from "../../components/UI/AuthForm";
+import AuthInput from "../../components/UI/AuthInput";
 import AuthTextLink from "../../components/UI/AuthTextLink";
 import AuthButton from "../../components/UI/AuthButton";
 import style from './Login.module.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+
+    const navigate = useNavigate();
+
+    const handleRegisterClick = () => {
+        navigate('/registrar-usuario'); 
+    };
+
+
     return (
         <AuthLayout>
             <div className={style.ubicacion}>
                 <AuthForm>
                     <AuthInput label="Correo electrónico" type="email" placeholder="correo@ejemplo.com" required></AuthInput>
-                    <AuthInput label="Contraseña" type="password" placeholder="*****" required></AuthInput>
-                    <AuthTextLink to="registrar-usuario">¿No eres usuario? Registrate</AuthTextLink>
+                    <AuthInput label="Contraseña" type="password" placeholder="***********" required></AuthInput>
+                    
+                    <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
-                    <div className={style.buttonContainer}>
-                        <AuthButton type="submit">Inicia sesión</AuthButton>
-                    </div>
+                    <AuthButton type="submit">Inicia sesión</AuthButton>
+                    <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Registrate</AuthButton>
+
                 </AuthForm>
             </div>
 

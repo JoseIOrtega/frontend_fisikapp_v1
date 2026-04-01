@@ -44,9 +44,9 @@ function GestionAdmin() {
               <td>{admin.ultimoIngreso}</td>
               <td className={style.actionsCell}>
                 <AdminIconButton icon={Edit} type="edit" title="Editar" />
-                {/* <AdminIconButton icon={Key} type="reset" title="Clave" /> */}
+                <AdminIconButton icon={Key} type="reset" title="Clave" />
                 <AdminIconButton icon={Eye} type="detail" title="Ver" />
-                {/* <AdminIconButton icon={admin.estado === "Activo" ? UserX : UserCheck} type="delete" /> */}
+                <AdminIconButton icon={admin.estado === "Activo" ? UserX : UserCheck} type="delete" />
               </td>
             </tr>
           )}
