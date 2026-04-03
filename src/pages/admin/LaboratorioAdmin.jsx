@@ -16,12 +16,18 @@ function LaboratorioAdmin() {
   ];
 
   const laboratorios = [
-    { id: 1, nombre_de_laboratorio: "caida libre", categoria: "fisica", creador: "jorge guevara", estado: "Activo", ultimoingreso: "ayer" },
-    { id: 2, nombre_de_laboratorio: "la iliada", categoria: "español", creador: "tilin tilin", estado: "Inactivo", ultimoingreso: "hoy" },
-    { id: 3, nombre_de_laboratorio: "GABO", categoria: "literatura", creador: "adalberto martinez", estado: "Inactivo", ultimoingreso: "hace 2 dias" },
-    { id: 4, nombre_de_laboratorio: "la libertad", categoria: "ADSO", creador: "juan diego murcia", estado: "Inactivo", ultimoingreso: "hace 3 dias" },
-    { id: 5, nombre_de_laboratorio: "presente-simple", categoria: "ingles", creador: "pedro solarte", estado: "Activo", ultimoingreso: "hace 15 dias" }
+    { id: 1, nombre_de_laboratorio: "Lab. Caída Libre", categoria: "Cinemática", creador: "Jorge Guevara", estado: "Activo", ultimoingreso: "ayer" },
+    { id: 2, nombre_de_laboratorio: "Lab. Mov. Rect. Uniforme", categoria: "Cinemática", creador: "Laura Pérez", estado: "Activo", ultimoingreso: "hoy" },
+    { id: 3, nombre_de_laboratorio: "Lab. Tiro Parabólico", categoria: "Cinemática", creador: "Jorge Guevara", estado: "Inactivo", ultimoingreso: "hace 2 días" },
+    { id: 4, nombre_de_laboratorio: "Lab. Leyes de Newton", categoria: "Mecánica", creador: "Andrés López", estado: "Activo", ultimoingreso: "hace 3 días" },
+    { id: 5, nombre_de_laboratorio: "Lab. Energía Cinética y Potencial", categoria: "Mecánica", creador: "Sofía Ramírez", estado: "Activo", ultimoingreso: "hace 5 días" },
+    { id: 6, nombre_de_laboratorio: "Lab. Ley de Ohm", categoria: "Circuitos", creador: "Carlos Méndez", estado: "Inactivo", ultimoingreso: "hace 1 semana" },
+    { id: 7, nombre_de_laboratorio: "Lab. Circuitos en Serie", categoria: "Circuitos", creador: "Daniela Rojas", estado: "Activo", ultimoingreso: "hace 4 días" },
+    { id: 8, nombre_de_laboratorio: "Lab. Campo Eléctrico", categoria: "Electromagnetismo", creador: "Felipe Gómez", estado: "Activo", ultimoingreso: "hace 2 días" },
+    { id: 9, nombre_de_laboratorio: "Lab. Inducción Electromagnética", categoria: "Electromagnetismo", creador: "Camila Herrera", estado: "Activo", ultimoingreso: "hace 6 días" },
+    { id: 10, nombre_de_laboratorio: "Lab. Ondas Mecánicas", categoria: "Ondas", creador: "Laura Pérez", estado: "Activo", ultimoingreso: "hace 3 días" }
   ];
+  
   return (
     <AdminLayout>
         <div className={style["layout"]}>
@@ -49,9 +55,9 @@ function LaboratorioAdmin() {
                   </td>
                   <td>{laboratorio.ultimoingreso}</td>
                   <td className={style.actionsDetails}>
-                    <AdminIconButton icon={Edit} title="editar"  />
-                    <AdminIconButton icon={Eye} title="ver" />
-                    <AdminIconButton icon={laboratorio.estado === "Activo" ? UserX : UserCheck} />
+                    <AdminIconButton icon={Edit} title="editar" type="edit" />
+                    <AdminIconButton icon={Eye} title="ver" type="detail"/>
+                    <AdminIconButton icon={laboratorio.estado === "Activo" ? UserX : UserCheck} type="delete"/>
                   </td>
                 </tr>
               )}
