@@ -8,7 +8,7 @@ import style from './LaboratorioAdmin.module.css'
 function LaboratorioAdmin() {
   const columnas = [
     { label: "Nombre de Laboratorio" },
-    { label: "Categoria" },
+    { label: "Categoría" },
     { label: "Creador" },
     { label: "Estado" },
     { label: "Último ingreso" },
