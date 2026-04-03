@@ -1,0 +1,17 @@
+.layout {
+    padding: 20px;
+}
+
+.seccion_del_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.titulo_header_laboratorio {
+    color: #1B2559;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
