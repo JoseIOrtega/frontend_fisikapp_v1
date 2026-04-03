@@ -16,11 +16,11 @@ function UsuariosAdmin() {
   ];
 
   const usuarios = [
-    { id: 1, nombre: "Juan Muñoz", correo: "juan@gmail.com", rol: "Admin", estado: "Activo", ultimoIngreso: "27/03/2026" },
-    { id: 2, nombre: "Ana García", correo: "ana@fisikapp.com", rol: "SuperAdmin", estado: "Inactivo", ultimoIngreso: "15/02/2026" },
-    { id: 3, nombre: "Carlos Rodríguez", correo: "carlos.fisica@gmail.com", rol: "Admin", estado: "Activo", ultimoIngreso: "30/03/2026" },
-    { id: 4, nombre: "Elena Beltrán", correo: "elena@fisikapp.com", rol: "Admin", estado: "Inactivo", ultimoIngreso: "01/01/2026" },
-    { id: 5, nombre: "Super Admin", correo: "root@fisikapp.com", rol: "SuperAdmin", estado: "Activo", ultimoIngreso: "Hoy" }
+    { id: 1, nombre: "Juan Muñoz", correo: "juan@gmail.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "27/03/2026" },
+    { id: 2, nombre: "Ana García", correo: "ana@fisikapp.com", rol: "Docente", estado: "Inactivo", ultimoIngreso: "15/02/2026" },
+    { id: 3, nombre: "Carlos Rodríguez", correo: "carlos.fisica@gmail.com", rol: "Docente", estado: "Activo", ultimoIngreso: "30/03/2026" },
+    { id: 4, nombre: "Elena Beltrán", correo: "elena@fisikapp.com", rol: "Estudiante", estado: "Inactivo", ultimoIngreso: "01/01/2026" },
+    { id: 5, nombre: "Super Admin", correo: "root@fisikapp.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "Hoy" }
   ];
 
   return (
@@ -52,6 +52,13 @@ function UsuariosAdmin() {
                       : style.statusInactive}>
                       {usuario.estado}
                     </span>
+                    <span className={
+                      usuario.rol === "Docente"
+                      ? style.rolDocente
+                      : style.rolEstudiante}>
+                        {usuario.rol}
+                    </span> 
+                    
                   </td>
                   <td>{usuario.ultimoIngreso}</td>
                   <td className={style.actionsCell}>
