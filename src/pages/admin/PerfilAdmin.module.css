@@ -1,0 +1,93 @@
+.card {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Labels más visibles */
+.card label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Inputs más modernos */
+.card input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  background-color: #f8fafc;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.card input:focus {
+  outline: none;
+  border-color: #6366f1;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Botón mejorado */
+.btn {
+  margin-top: 10px;
+  padding: 12px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+}
+.layout h2 {
+  color: #1e293b; /* gris oscuro elegante */
+  font-weight: 700;
+}
+.name {
+  color: #0f172a ;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card p {
+  color: #64748b; /* gris suave */
+  font-size: 14px;
+}
+.btnGuardar {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1); /* azul degradado */
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btnGuardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+}
+
+.btnGuardar:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
