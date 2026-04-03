@@ -16,11 +16,11 @@ function UsuariosAdmin() {
   ];
 
   const usuarios = [
-    { id: 1, nombre: "Juan Muñoz", correo: "juan@gmail.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "27/03/2026" },
-    { id: 2, nombre: "Ana García", correo: "ana@fisikapp.com", rol: "Docente", estado: "Inactivo", ultimoIngreso: "15/02/2026" },
-    { id: 3, nombre: "Carlos Rodríguez", correo: "carlos.fisica@gmail.com", rol: "Docente", estado: "Activo", ultimoIngreso: "30/03/2026" },
-    { id: 4, nombre: "Elena Beltrán", correo: "elena@fisikapp.com", rol: "Estudiante", estado: "Inactivo", ultimoIngreso: "01/01/2026" },
-    { id: 5, nombre: "Super Admin", correo: "root@fisikapp.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "Hoy" }
+    { id: 1, nombre: "Laura Pérez", correo: "laura.perez@hotmail.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "02/04/2026" },
+    { id: 2, nombre: "Miguel Torres", correo: "miguel.torres@fisikapp.com", rol: "Docente", estado: "Activo", ultimoIngreso: "28/03/2026" },
+    { id: 3, nombre: "Sofía Ramírez", correo: "sofia.ramirez@gmail.com", rol: "Estudiante", estado: "Inactivo", ultimoIngreso: "10/02/2026" },
+    { id: 4, nombre: "Andrés López", correo: "andres.lopez@fisikapp.com", rol: "Docente", estado: "Activo", ultimoIngreso: "31/03/2026" },
+    { id: 5, nombre: "Valentina Castro", correo: "valentina.castro@gmail.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: "Hoy" }
   ];
 
   return (
@@ -52,21 +52,13 @@ function UsuariosAdmin() {
                       : style.statusInactive}>
                       {usuario.estado}
                     </span>
-                    <span className={
-                      usuario.rol === "Docente"
-                      ? style.rolDocente
-                      : style.rolEstudiante}>
-                        {usuario.rol}
-                    </span> 
                     
                   </td>
                   <td>{usuario.ultimoIngreso}</td>
                   <td className={style.actionsCell}>
-                    <AdminIconButton icon={Edit} title="editar"  />
-                    <AdminIconButton icon={Eye} title="ver" />
-                    <AdminIconButton
-                    icon={usuario.estado === "Activo" ? UserX : UserCheck}
-                    />
+                    <AdminIconButton icon={Edit} type="edit" title="editar"  />
+                    <AdminIconButton icon={Eye} type="detail" title="ver" />
+                    <AdminIconButton icon={usuario.estado === "Activo" ? UserX : UserCheck} type="delete" />
                   </td>
                 </tr>
               )}
