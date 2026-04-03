@@ -4,8 +4,11 @@ import AdminIconButton from "../../components/UI/AdminIconButton";
 import AdminCreateButton from "../../components/UI/AdminCreateButton";
 import { UserPlus, Edit, Key, Eye, UserX, UserCheck } from 'lucide-react';
 import style from './GestionAdmin.module.css';
+import { useState } from 'react';
 
 function GestionAdmin() {
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const columns = [
     { label: "Nombre" },
@@ -24,8 +27,17 @@ function GestionAdmin() {
     { id: 5, nombre: "Super Admin", correo: "root@fisikapp.com", rol: "SuperAdmin", estado: "Activo", ultimoIngreso: "Hoy" }
   ];
 
+  // LÓGICA DE FILTRADO:
+  const filteredAdmins = admins.filter((admin) =>
+    admin.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.estado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.ultimoIngreso.toLowerCase().includes(searchTerm.toLowerCase()) 
+  );
+
   return (
-    <AdminLayout>
+    <AdminLayout onSearch={setSearchTerm}>
       <div className={style.layout}>
         <div className={style.headerSection}>
           <h2 className={style.title}>Administración</h2>
@@ -34,7 +46,7 @@ function GestionAdmin() {
 
         <AdminDataTable 
           columns={columns} 
-          data={admins} 
+          data={filteredAdmins} 
           renderRow={(admin) => (
             <tr key={admin.id}>
               <td className={style.nameText}>{admin.nombre}</td>

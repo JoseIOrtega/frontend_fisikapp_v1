@@ -61,7 +61,7 @@ p{
     padding: 60px 20px;      /* Damos un margen generoso arriba y abajo */
     height: 100vh;
     overflow-y: auto;        /* Habilita el scroll si el formulario es largo */
-    background-color: #e9ebeb; /* El mismo fondo para que no se note corte */
+    background-color: #142050; /* El mismo fondo para que no se note corte #e9ebeb*/
 }
 
 /* Opcional: Haz que el scroll sea invisible o muy delgado */
@@ -249,7 +249,7 @@ p{
     .formColumn {
         flex: 1;             /* <--- MAGIA: Esto hace que se estire hasta el fondo */
         width: 100%;
-        background-color: #f0f2f5; /* Asegúrate de que el color gris esté aquí */
+        background-color: #142050; /* Asegúrate de que el color gris esté aquí #f0f2f5*/
         padding-bottom: 50px;      /* Un margen extra para que no pegue al borde */
         display: flex;
         flex-direction: column;
