@@ -14,6 +14,9 @@ function Login() {
         navigate('/registrar-usuario'); 
     };
 
+    const handleInciarSesionClick=()=>{
+        navigate('/admin')
+    }
 
     return (
         <AuthLayout>
@@ -24,7 +27,7 @@ function Login() {
                     
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
-                    <AuthButton type="submit">Inicia sesión</AuthButton>
+                    <AuthButton type="submit" onClick={handleInciarSesionClick}>Inicia sesión</AuthButton>
                     <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Registrate</AuthButton>
 
                 </AuthForm>

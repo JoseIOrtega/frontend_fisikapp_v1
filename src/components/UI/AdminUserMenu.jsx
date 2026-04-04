@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react'; // Importamos los hooks necesarios
 import { UserCircle, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import style from './AdminUserMenu.module.css';
 
 function AdminUserMenu({ userName = "Usuario" }) {
   const [showMenu, setShowMenu] = useState(false);
+
+  const navigate = useNavigate();
+  const handleCerrarSesionClick=()=>{
+    navigate('/')
+  }
   
   // 1. Creamos la referencia (como un ancla) para el menú
   const menuRef = useRef(null);
@@ -43,7 +49,7 @@ function AdminUserMenu({ userName = "Usuario" }) {
           </div>
           <div className={style.divider} />
           <button className={style.menuItem}>Perfil-configuración</button>
-          <button className={`${style.menuItem} ${style.logout}`}>
+          <button className={`${style.menuItem} ${style.logout}`} onClick={handleCerrarSesionClick}>
             <LogOut size={16} /> Cerrar sesión
           </button>
         </div>
