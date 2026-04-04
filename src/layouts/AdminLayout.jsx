@@ -13,7 +13,7 @@ function AdminLayout({ children, onSearch }) {
   // Diccionario de rutas para Fisikapp
   const routeNames = {
     "/admin/dashboard": "Dashboard",
-    "/admin/laboratorio": "Laboratorios",
+    "/admin/laboratorio": "Gestión de Laboratorios",
     "/admin/usuarios": "Gestión de Usuarios",
     "/admin/perfil": "Mi Perfil",
     "/admin/gestionadmin": "Gestión de Admins",
