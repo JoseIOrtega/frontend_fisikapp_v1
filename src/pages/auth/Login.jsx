@@ -3,34 +3,39 @@ import AuthForm from "../../components/UI/AuthForm";
 import AuthInput from "../../components/UI/AuthInput";
 import AuthTextLink from "../../components/UI/AuthTextLink";
 import AuthButton from "../../components/UI/AuthButton";
-import style from './Login.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
+import { loginUser } from '../../services/auth/authService';
+import { useState } from 'react';
+import style from './Login.module.css';
 
 function Login() {
     const navigate = useNavigate();
-    const { showModal } = useModal(); // 2. Activamos el acceso al almacén de modales
 
     const handleRegisterClick = () => {
         navigate('/registrar-usuario'); 
     };
 
-    const handleInciarSesionClick = (e) => {
-        // Evitamos que el formulario se recargue solo si usas type="submit"
+    const { showModal } = useModal(); // 2. Activamos el acceso al almacén de modales
+    
+    const [correo, setCorreo] = useState('');
+    const [clave, setClave] = useState('');
+
+    const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
-
-        // SIMULACIÓN DE PRUEBA:
-        // Supongamos que validamos las credenciales aquí
-        const loginExitoso = true; // Cambia esto a true para probar el éxito
-
-        if (loginExitoso) {
-            navigate('/admin');
-        } else {
-            // 3. ¡Disparamos el modal global!
-            showModal(
-                'error', 
-                'Correo o contraseña incorrectos. Por favor, verifica tus datos e inténtalo de nuevo.'
-            );
+        try {
+            const res = await loginUser(correo, clave);
+            if (res.ok) {
+                const datos = await res.json();
+                localStorage.setItem('token', datos.access)
+                showModal('success', '¡Bienvenido a Fisikapp!');
+                navigate('/admin');
+            } else {
+                showModal('error', 'Correo o contraseña incorrectos. Por favor, verifica tus datos.');
+            }
+        } catch (error) {
+            console.error("Detalle técnico del error:", error);
+            showModal('warning', 'No logramos conectar con el servidor de Fisikapp.');
         }
     };
 
@@ -38,8 +43,8 @@ function Login() {
         <AuthLayout>
             <div className={style.ubicacion}>
                 <AuthForm>
-                    <AuthInput label="Correo electrónico" type="email" placeholder="correo@ejemplo.com" required />
-                    <AuthInput label="Contraseña" type="password" placeholder="***********" required />
+                    <AuthInput label="Correo electrónico" type="email" value={correo} onChange={(e) => setCorreo(e.target.value)}  placeholder="correo@ejemplo.com" required />
+                    <AuthInput label="Contraseña" type="password" value={clave} onChange={(e) => setClave(e.target.value)}   placeholder="***********" required />
                     
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             

@@ -22,13 +22,13 @@ const navigate = useNavigate();
             // 3. Mensaje de éxito antes de redirigir
             showModal(
                 'success', 
-                '¡Contraseña actualizada! Ya puedes iniciar sesión con tu nueva clave.'
+                '¡Contraseña actualizada! Ya puedes iniciar sesión con tu nueva contraseña.'
             );
             navigate('/'); // Lo enviamos al Login
         } else {
             showModal(
                 'error', 
-                'Las contraseñas no coinciden. Por favor, asegúrate de escribirlas igual.'
+                'Las contraseñas no coinciden.'
             );
         }
     };

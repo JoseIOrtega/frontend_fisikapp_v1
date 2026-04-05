@@ -9,7 +9,7 @@ function StatusModal({ type, message, isOpen, onClose }) {
   const config = {
     success: { 
         icon: <CheckCircle color="#05CD99" size={50} />, 
-        title: "¡Logrado!" 
+        title: "¡Ok!" 
     },
     error: { 
         icon: <XCircle color="#EE5D50" size={50} />, 

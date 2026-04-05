@@ -8,7 +8,7 @@ function AuthLayout({ children }){
         {/* LADO IZQUIERDO: Branding */}
         <div className={style.brandColumn}>
             <img src={logo} alt="Logo de Fisikapp" className={style.logo} />
-            <p className={style.brandTagline}>Descubre, experimenta y aprende física.</p>
+            <p className={style.brandTagline}>Gestión y generación de informes de laboratorio.</p>
         </div>
 
         {/* LADO DERECHO: El formulario dinámico */}

@@ -18,7 +18,7 @@ function RecuperarContrasena() {
         
         showModal(
             'success', 
-            'Si el correo ingresado coincide con una cuenta activa, recibirás un enlace de recuperación en pocos minutos. Revisa tu bandeja de entrada.'
+            'Si el correo está registrado y activo, se enviará un enlace de recuperación en los próximos minutos. Revise la bandeja de entrada o correo no deseado.'
         );
         
         // Opcional: Redirigir al inicio después de unos segundos
