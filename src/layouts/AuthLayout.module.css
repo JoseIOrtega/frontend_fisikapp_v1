@@ -142,49 +142,79 @@
 .m1 {
     top: 50px;
     right: 10%;
-    animation: meteoritoAnim1 12s linear infinite;
+    animation: meteoritoAnim1 8s linear infinite;
     animation-delay: 1s;
 }
 
 .m2 {
     top: 25%;
     left: -50px;
-    animation: meteoritoAnim2 10s linear infinite;
+    animation: meteoritoAnim2 12s linear infinite;
     animation-delay: 5s;
+    filter: blur(1px);
 }
 
 .m3 {
     top: 10%;
     left: -50px;
-    animation: meteoritoAnim3 15s linear infinite;
+    animation: meteoritoAnim3 18s linear infinite;
     animation-delay: 10s;
-    transform: scale(0.6);
+    filter: blur(2px);
+}
+
+.m4 {
+    top: 40%;
+    left: -100px;
+    animation: meteoritoCentro 10s linear infinite;
+    animation-delay: 2s;
+    filter: blur(0.5px);
+}
+.m4 {
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 0 30px rgba(255,255,255,1);
 }
 
 /* Ajuste cola */
 .m2::before,
-.m3::before {
+.m3::before,
+.m4::before {
     right: 50%;
     background: linear-gradient(-90deg, #fff, transparent);
 }
 
-/* Animaciones */
+
+.m1 { transform: scale(1); filter: blur(0px); }
+.m2 { transform: scale(0.7); filter: blur(1px); }
+.m3 { transform: scale(0.4); filter: blur(2px); }
+.m4 {transform: scale(0.4); filter: blur(0.5px);}
+.m1 { animation-delay: 0s; }
+.m2 { animation-delay: 2s; }
+.m3 { animation-delay: 4s; }
+.m4 { animation-delay: 6s; }
+
+
 @keyframes meteoritoAnim1 {
-    0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+    0% { transform: rotate(-25deg) translate(0, 0); opacity: 0; }
     10% { opacity: 1; }
-    40% { transform: rotate(-45deg) translateX(-130vw) scale(0.2); opacity: 0; }
+    40% { transform: rotate(-25deg) translate(-100vw) scale(0.2); opacity: 0; }
 }
 
 @keyframes meteoritoAnim2 {
-    0% { transform: rotate(15deg) translateX(-100px); opacity: 0; }
+    0% { transform: rotate(5deg) translateX(-100px); opacity: 0; }
     10% { opacity: 1; }
-    45% { transform: rotate(15deg) translateX(120vw) scale(0.5); opacity: 0; }
+    45% { transform: rotate(5deg) translateX(120vw) scale(0.6); opacity: 0; }
 }
 
 @keyframes meteoritoAnim3 {
-    0% { transform: rotate(35deg) translateX(-100px); opacity: 0; }
+    0% { transform: rotate(25deg) translateX(-100px) translateY(-30px); opacity: 0; }
     10% { opacity: 1; }
-    40% { transform: rotate(35deg) translateX(120vw) scale(0.3); opacity: 0; }
+    40% { transform: rotate(25deg) translateX(120vw) translateY(-30px) scale(0.3); opacity: 0; }
+}
+
+@keyframes meteoritoCentro {
+    0% {transform: rotate(25deg) translateX(0) translateY(0) scale(1);opacity: 0;}
+    10% {opacity: 1;}
+    60% {transform: rotate(25deg) translateX(70vw) translateY(-30px) scale(0.5);opacity: 0.7;}
+    100% {transform: rotate(25deg) translateX(100vw) translateY(-50px) scale(0.2);opacity: 0;}
 }
 
 /* ============================= */
