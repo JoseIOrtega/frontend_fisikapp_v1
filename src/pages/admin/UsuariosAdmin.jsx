@@ -5,8 +5,12 @@ import AdminCreateButton from "../../components/UI/AdminCreateButton";
 import { UserPlus, Edit, Eye, UserX, UserCheck } from "lucide-react";
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from "./UsuariosAdmin.module.css";
+import { useState } from "react";
+
 
 function UsuariosAdmin() {
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const columns = [
     { label: "Nombre" },
@@ -24,9 +28,19 @@ function UsuariosAdmin() {
     { id: 4, nombre: "Andrés López", correo: "andres.lopez@escuela.com", rol: "Docente", estado: "Activo", ultimoIngreso: "2026-03-31T11:00:00Z" },
     { id: 5, nombre: "Valentina Castro", correo: "valentina.castro@escuela.com", rol: "Estudiante", estado: "Activo", ultimoIngreso: new Date().toISOString() }
   ];
+  const filteredUsuarios = usuarios.filter((usuario) =>
+  usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  usuario.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  usuario.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  usuario.estado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  usuario.ultimoIngreso.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  
+
 
   return (
-    <AdminLayout>
+    <AdminLayout onSearch={setSearchTerm}>
         <div className={style["layout"]}>
 
       
@@ -37,7 +51,7 @@ function UsuariosAdmin() {
 
         <AdminDataTable 
           columns={columns} 
-          data={usuarios}
+          data={filteredUsuarios}
           renderRow={(usuario) => (
             <tr key={usuario.id}>
               <td className={style.nameText}>{usuario.nombre}</td>
