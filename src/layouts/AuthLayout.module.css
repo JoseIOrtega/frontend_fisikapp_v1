@@ -1,23 +1,26 @@
+/* ============================= */
+/* LAYOUT GENERAL */
+/* ============================= */
 .layout {
     background-color: var(--color-principal);
     display: flex;
-    /* CAMBIO: De column a row para tener dos columnas */
-    flex-direction: row; 
+    flex-direction: row;
     min-height: 100vh;
-    width: 100%;
+    
     position: relative;
     overflow: hidden;
 }
 
-/* Columna Izquierda: Logo y Branding */
-.imagen-logo {
-    flex: 1; /* Ocupa la mitad */
+/* ============================= */
+/* COLUMNA IZQUIERDA  (LOGO)*/
+/* ============================= */
+.brandColumn {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 10;
-    position: relative;
+    background-color: #142050;
     padding: 40px;
 }
 
@@ -26,55 +29,44 @@
     max-width: 350px;
 }
 
-p{
+.brandTagline {
     font-size: 20px;
     color: #ffffff;
+    text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
+    line-height: 1.4;
 }
 
-.brandTagline {
-    /* ... tus otros estilos (color, font-size) ... */
-    text-align: center;      /* Fuerza a que las palabras nazcan del centro */
-    max-width: 80%;          /* Evita que el texto toque los bordes laterales */
-    margin: 0 auto;          /* Centra el bloque de texto horizontalmente */
-    line-height: 1.4;        /* Da un poco de aire entre líneas si el texto salta */
-}
-
-/* --- COLUMNA IZQUIERDA (Logo) --- */
-.brandColumn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Esto lo mantiene centrado verticalmente */
-    align-items: center;
-    background-color: #142050;
-    padding: 40px;
-    height: 100vh; /* Ocupa todo el alto */
-}
-
-/* --- COLUMNA DERECHA (Formulario) --- */
+/* ============================= */
+/*  COLUMNA DERECHA (FORMULARIO) */
+/* ============================= */
 .formColumn {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;     /* Centra el formulario horizontalmente */
-    justify-content: flex-start; /* IMPORTANTE: Que empiece desde arriba */
-    padding: 60px 20px;      /* Damos un margen generoso arriba y abajo */
+    align-items: center;
+    justify-content: flex-start;
+    /*padding: 60px 20px;*/
+    padding: 30px 15px;
     height: 100vh;
-    overflow-y: auto;        /* Habilita el scroll si el formulario es largo */
-    background-color: #142050; /* El mismo fondo para que no se note corte #e9ebeb*/
+    overflow-y: auto;
+    background-color: var(--fondo-principal);
 }
 
-/* Opcional: Haz que el scroll sea invisible o muy delgado */
+/* Scroll */
 .formColumn::-webkit-scrollbar {
     width: 5px;
 }
+
 .formColumn::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
 
-
-/* CAPA 1: Átomos pequeños y rápidos (Fondo) */
+/* ============================= */
+/* FONDO ANIMADO (PARTÍCULAS) */
+/* ============================= */
 .layout::before {
     content: "";
     position: absolute;
@@ -93,7 +85,6 @@ p{
     z-index: 1;
 }
 
-/* CAPA 2: Átomos grandes y lentos (Primer plano) */
 .layout::after {
     content: "";
     position: absolute;
@@ -111,7 +102,7 @@ p{
     z-index: 2;
 }
 
-/* Animación: Movimiento de traslación suave */
+/* Animaciones fondo */
 @keyframes movimientoAtomico {
     from { transform: rotate(0deg) translate(0, 0); }
     to { transform: rotate(5deg) translate(-10%, -10%); }
@@ -122,7 +113,9 @@ p{
     to { transform: rotate(-5deg) translate(10%, 10%); }
 }
 
-/* Tu clase base se queda igual, pero quitamos el animation de aquí */
+/* ============================= */
+/*  METEORITOS */
+/* ============================= */
 .meteorito {
     position: absolute;
     width: 4px;
@@ -145,118 +138,111 @@ p{
     background: linear-gradient(90deg, #fff, transparent);
 }
 
-/* --- VARIACIONES ALEATORIAS --- */
-
-/* Meteorito 1: El clásico (Diagonal 45° de esquina a esquina) */
+/* Variaciones */
 .m1 {
     top: 50px;
     right: 10%;
-    animation: meteoritoAnim1 12s linear infinite;
+    animation: meteoritoAnim1 8s linear infinite;
     animation-delay: 1s;
 }
 
-/* Meteorito 2: Nace a la izquierda y cruza horizontal */
 .m2 {
-    top: 25%;         /* Altura en la pantalla */
-    left: -50px;      /* Empieza fuera a la izquierda */
-    animation: meteoritoAnim2 10s linear infinite;
+    top: 25%;
+    left: -50px;
+    animation: meteoritoAnim2 12s linear infinite;
     animation-delay: 5s;
+    filter: blur(1px);
 }
 
-/* Meteorito 3: Nace a la izquierda y cae en diagonal */
 .m3 {
-    top: 10%;         /* Un poco más arriba */
-    left: -50px;      /* Empieza fuera a la izquierda */
-    animation: meteoritoAnim3 15s linear infinite;
+    top: 10%;
+    left: -50px;
+    animation: meteoritoAnim3 18s linear infinite;
     animation-delay: 10s;
-    transform: scale(0.6); /* Se ve más pequeño/lejano */
+    filter: blur(2px);
 }
 
-.m2::before, .m3::before {
-    left: auto;          /* Quitamos el pegado a la izquierda */
-    right: 50%;         /* La cola nace desde el centro hacia la izquierda */
-    width: 150px;       /* Largo de la estela */
-    background: linear-gradient(-90deg, #fff, transparent); /* Gradiente invertido */
+.m4 {
+    top: 40%;
+    left: -100px;
+    animation: meteoritoCentro 10s linear infinite;
+    animation-delay: 2s;
+    filter: blur(0.5px);
+}
+.m4 {
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 0 30px rgba(255,255,255,1);
 }
 
-/* --- ANIMACIONES INDIVIDUALES (Para cambiar los ángulos) --- */
+/* Ajuste cola */
+.m2::before,
+.m3::before,
+.m4::before {
+    right: 50%;
+    background: linear-gradient(-90deg, #fff, transparent);
+}
+
+
+.m1 { transform: scale(1); filter: blur(0px); }
+.m2 { transform: scale(0.7); filter: blur(1px); }
+.m3 { transform: scale(0.4); filter: blur(2px); }
+.m4 {transform: scale(0.4); filter: blur(0.5px);}
+.m1 { animation-delay: 0s; }
+.m2 { animation-delay: 2s; }
+.m3 { animation-delay: 4s; }
+.m4 { animation-delay: 6s; }
+
 
 @keyframes meteoritoAnim1 {
-    0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+    0% { transform: rotate(-25deg) translate(0, 0); opacity: 0; }
     10% { opacity: 1; }
-    40% { transform: rotate(-45deg) translateX(-130vw) scale(0.2); opacity: 0; }
-    100% { opacity: 0; }
+    40% { transform: rotate(-25deg) translate(-100vw) scale(0.2); opacity: 0; }
 }
 
 @keyframes meteoritoAnim2 {
-    0% { 
-        /* Ángulo pequeño (15deg) para que cruce horizontalmente */
-        transform: rotate(15deg) translateX(-100px); 
-        opacity: 0; 
-    }
-    10% { 
-        opacity: 1; 
-    }
-    45% { 
-        /* Valor POSITIVO en X para que avance a la derecha */
-        transform: rotate(15deg) translateX(120vw) scale(0.5); 
-        opacity: 0; 
-    }
-    100% { opacity: 0; }
+    0% { transform: rotate(5deg) translateX(-100px); opacity: 0; }
+    10% { opacity: 1; }
+    45% { transform: rotate(5deg) translateX(120vw) scale(0.6); opacity: 0; }
 }
 
 @keyframes meteoritoAnim3 {
-    0% { 
-        /* Ángulo más inclinado (35deg) para que caiga en diagonal */
-        transform: rotate(35deg) translateX(-100px); 
-        opacity: 0; 
-    }
-    10% { 
-        opacity: 1; 
-    }
-    40% { 
-        transform: rotate(35deg) translateX(120vw) scale(0.3); 
-        opacity: 0; 
-    }
-    100% { opacity: 0; }
+    0% { transform: rotate(25deg) translateX(-100px) translateY(-30px); opacity: 0; }
+    10% { opacity: 1; }
+    40% { transform: rotate(25deg) translateX(120vw) translateY(-30px) scale(0.3); opacity: 0; }
 }
 
-/* --- DISEÑO RESPONSIVE (Móviles y Tablets) --- */
+@keyframes meteoritoCentro {
+    0% {transform: rotate(25deg) translateX(0) translateY(0) scale(1);opacity: 0;}
+    10% {opacity: 1;}
+    60% {transform: rotate(25deg) translateX(70vw) translateY(-30px) scale(0.5);opacity: 0.7;}
+    100% {transform: rotate(25deg) translateX(100vw) translateY(-50px) scale(0.2);opacity: 0;}
+}
+
+/* ============================= */
+/*  RESPONSIVE */
+/* ============================= */
 @media (max-width: 768px) {
     .layout {
-        display: flex;
         flex-direction: column;
-        min-height: 100vh; /* Asegura que el layout ocupe toda la pantalla */
     }
 
     .brandColumn {
-        flex: none;             /* Ya no ocupa el 50% */
         width: 100%;
+        height: auto;
+        /*min-height: 40vh;*/
+        min-height: 25vh;
         padding: 20px;
-        height: auto;           /* Se ajusta al contenido */
-        min-height: 40vh;       /* Le damos un espacio razonable al logo */
     }
 
     .logo {
-        max-width: 250px;       /* Reducimos el logo a la mitad en móvil */
+        /*max-width: 250px;*/
+        max-width: 280px;
     }
 
-    .brandName {
-        font-size: 2rem;        /* Letra más pequeña */
-    }
-
-    /* Esta es la columna gris del formulario */
     .formColumn {
-        flex: 1;             /* <--- MAGIA: Esto hace que se estire hasta el fondo */
         width: 100%;
-        background-color: #142050; /* Asegúrate de que el color gris esté aquí #f0f2f5*/
-        padding-bottom: 50px;      /* Un margen extra para que no pegue al borde */
-        display: flex;
-        flex-direction: column;
+        background-color: #142050;
+        padding-bottom: 50px;
+
         align-items: center;
     }
 }
-
-
-
-

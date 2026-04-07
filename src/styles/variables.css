@@ -10,6 +10,8 @@
     --gris-texto: #142050;         /* Para el TextLink */
     --color-error: #ef4444;        /* Para mensajes de "Contraseña incorrecta" */
 
+    --fondo-principal: #142050;
+
     /* Tamaños de Fuente */
     --fuente-titulo: 24px;
     --fuente-subtitulo: 18px;

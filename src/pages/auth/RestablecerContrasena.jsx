@@ -2,25 +2,45 @@ import AuthLayout from "../../layouts/AuthLayout";
 import AuthForm from "../../components/UI/AuthForm";
 import AuthInput from "../../components/UI/AuthInput";
 import AuthButton from "../../components/UI/AuthButton";
-import style from "./RestablecerContrasena.module.css";
+import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
+import style from "./RestablecerContrasena.module.css";
 
 function RestablecerContrasena() {
 
-    const navigate = useNavigate();
+const navigate = useNavigate();
 
-    const handleRegisterClick = () => {
-        navigate('/'); 
+    const { showModal } = useModal(); // 2. Activamos el control remoto
+
+    const handleGuardarPassword = (e) => {
+        if (e) e.preventDefault();
+
+        // SIMULACIÓN (Esto lo conectaremos al backend después)
+        const passwordsCoinciden = true; 
+
+        if (passwordsCoinciden) {
+            // 3. Mensaje de éxito antes de redirigir
+            showModal(
+                'success', 
+                '¡Contraseña actualizada! Ya puedes iniciar sesión con tu nueva contraseña.'
+            );
+            navigate('/'); // Lo enviamos al Login
+        } else {
+            showModal(
+                'error', 
+                'Las contraseñas no coinciden.'
+            );
+        }
     };
 
     return (
         <AuthLayout>
             <div className={style.ubicacion}>
-                <AuthForm>
+                <AuthForm onSubmit={handleGuardarPassword}>
                     <AuthInput label="Nueva Contraseña" type="password" placeholder="***********" required></AuthInput>
                     <AuthInput label="Confirmar Contraseña" type="password" placeholder="***********" required></AuthInput>
                     <div className={style.espacio}>
-                        <AuthButton type="button" onClick={handleRegisterClick}>Guardar nueva contraseña</AuthButton>
+                        <AuthButton type="submit">Guardar nueva contraseña</AuthButton>
                     </div>
                 </AuthForm>
             </div>

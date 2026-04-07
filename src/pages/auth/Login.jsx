@@ -3,37 +3,73 @@ import AuthForm from "../../components/UI/AuthForm";
 import AuthInput from "../../components/UI/AuthInput";
 import AuthTextLink from "../../components/UI/AuthTextLink";
 import AuthButton from "../../components/UI/AuthButton";
-import style from './Login.module.css';
 import { useNavigate } from 'react-router-dom';
+import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
+import { loginUser } from '../../services/auth/authService';
+import { useState } from 'react';
+import style from './Login.module.css';
 
 function Login() {
-
     const navigate = useNavigate();
+    const { showModal } = useModal();
+    const [correo, setCorreo] = useState('');
+    const [clave, setClave] = useState('');
+    const [cargando, setCargando] = useState(false); // Nuevo: Estado para evitar doble clic
+
+    const handleInciarSesionClick = async (e) => {
+        if (e) e.preventDefault();
+
+
+        if (!correo || !clave) {
+            showModal('warning', 'Por favor, completa todos los campos.');
+            return;
+        }
+
+        setCargando(true); // Desactivamos el botón mientras esperamos
+
+        try {
+            const datos = await loginUser(correo, clave);
+            if (datos && datos.access) {
+            
+                localStorage.setItem('token', datos.access);
+                if(datos.refresh) localStorage.setItem('refreshToken', datos.refresh);
+
+                showModal('success', '¡Bienvenido a Fisikapp!');
+                // Pequeña pausa para que el usuario vea el mensaje de éxito
+                setTimeout(() => {
+                    navigate('/admin');
+                }, 1500);
+
+            } else {
+                showModal('error', 'Correo o contraseña incorrectos. Por favor, verifica tus datos.');
+            }
+        } catch (error) {
+            console.error("Error en login:", error);
+            // showModal('error', error.message || 'Error al conectar con el servidor.');
+        } finally {
+            setCargando(false); // Reactivamos el botón
+        }
+    };
 
     const handleRegisterClick = () => {
         navigate('/registrar-usuario'); 
     };
 
-    const handleInciarSesionClick=()=>{
-        navigate('/admin')
-    }
-
     return (
         <AuthLayout>
             <div className={style.ubicacion}>
-                <AuthForm>
-                    <AuthInput label="Correo electrónico" type="email" placeholder="correo@ejemplo.com" required></AuthInput>
-                    <AuthInput label="Contraseña" type="password" placeholder="***********" required></AuthInput>
+                <AuthForm onSubmit={handleInciarSesionClick}>
+                    <AuthInput label="Correo electrónico" type="text" value={correo} onChange={(e) => setCorreo(e.target.value)}  placeholder="correo@ejemplo.com" required />
+                    <AuthInput label="Contraseña" type="password" value={clave} onChange={(e) => setClave(e.target.value)}   placeholder="***********" required />
                     
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
-                    <AuthButton type="submit" onClick={handleInciarSesionClick}>Inicia sesión</AuthButton>
-                    <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Registrate</AuthButton>
-
+                    <AuthButton type="submit" disabled={cargando}>{cargando ? 'Entrando...' : 'Inicia sesión'}</AuthButton>
+                    <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Regístrate</AuthButton>
                 </AuthForm>
             </div>
-
         </AuthLayout>
     );
 }
+
 export default Login;
