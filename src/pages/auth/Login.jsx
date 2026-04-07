@@ -19,6 +19,8 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
+        showModal('success', '¡Bienvenido a Fisikapp!');
+        navigate('/admin');
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
