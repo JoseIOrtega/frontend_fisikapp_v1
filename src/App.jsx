@@ -3,6 +3,7 @@ import AuthRoutes from "./routes/AuthRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import './styles/variables.css';
 import './styles/index.css'
+import AdminModalLaboratorio from "./components/modals/AdminModalLaboratorio";
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/*" element={<AuthRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/add/*" element={<AdminModalLaboratorio />} />
       </Routes>
     </BrowserRouter>
   );
