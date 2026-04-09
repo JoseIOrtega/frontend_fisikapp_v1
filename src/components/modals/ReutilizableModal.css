@@ -1,0 +1,119 @@
+/* El fondo oscuro que cubre toda la pantalla */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 25, 47, 0.6); /* Azul muy oscuro traslúcido */
+  backdrop-filter: blur(5px); /* Desenfoque profesional del fondo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000; /* Asegura que esté por encima de todo */
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* El contenedor blanco del mensaje */
+.modal {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Botón X en la esquina superior */
+.closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #A3AED0;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconContainer {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  color: #1B254B;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.message {
+  color: #707EAE;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+/* Botón principal de acción */
+.actionBtn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-2px);
+}
+
+/* Colores dinámicos para los botones */
+.success { background-color: #05CD99; }
+.error { background-color: #EE5D50; }
+.warning { background-color: #FFBC11; }
+.info { background-color: #422AFB; }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+.actionBtn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.actionBtn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-2px);
+}
