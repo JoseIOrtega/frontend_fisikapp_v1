@@ -1,4 +1,3 @@
-import React, { useState } from 'react'; // CORRECCIÓN 1: Importar useState
 import AuthLayout from "../../layouts/AuthLayout";
 import AuthForm from "../../components/UI/AuthForm";
 import AuthInput from "../../components/UI/AuthInput"; 
@@ -7,6 +6,7 @@ import AuthButton from "../../components/UI/AuthButton";
 import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/auth/authService'; // Asegúrate de importar tu servicio
+import { useState } from 'react'; 
 import style from './RegistrarUsuario.module.css';
 
 function RegistrarUsuario() {

@@ -21,7 +21,7 @@ export const API_CONFIG = {
             LOGIN: `${BASE_URL}/api/users/login/`,                        // Para Login.jsx
             REGISTER: `${BASE_URL}/api/users/usuarios/`,                  // Para RegistrarUsuario.jsx
             // RECOVER: `${BASE_URL}/auth/recover/`,                      // Para RecuperarContrasena.jsx
-            RESET: `${BASE_URL}/api/users/restablecer-password/`,         // Para RestablecerContrasena.jsx
+            // RESET: `${BASE_URL}/api/users/restablecer-password/`,         // Para RestablecerContrasena.jsx
         },
     }
 };
