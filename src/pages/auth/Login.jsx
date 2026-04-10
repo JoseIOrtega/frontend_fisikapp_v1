@@ -19,8 +19,6 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
-        showModal('success', '¡Bienvenido a Fisikapp!');
-        navigate('/admin');
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
@@ -36,7 +34,6 @@ function Login() {
                 localStorage.setItem('token', datos.access);
                 if(datos.refresh) localStorage.setItem('refreshToken', datos.refresh);
 
-                showModal('success', '¡Bienvenido a Fisikapp!');
                 // Pequeña pausa para que el usuario vea el mensaje de éxito
                 setTimeout(() => {
                     navigate('/admin');
@@ -47,7 +44,7 @@ function Login() {
             }
         } catch (error) {
             console.error("Error en login:", error);
-            // showModal('error', error.message || 'Error al conectar con el servidor.');
+            showModal('error', error.message || 'Error al conectar con el servidor.');
         } finally {
             setCargando(false); // Reactivamos el botón
         }
@@ -66,7 +63,7 @@ function Login() {
                     
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
-                    <AuthButton type="submit" disabled={cargando}>{cargando ? 'Entrando...' : 'Inicia sesión'}</AuthButton>
+                    <AuthButton type="submit" disabled={cargando}>{cargando ? 'Inicia sesión' : 'Inicia sesión'}</AuthButton>
                     <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Regístrate</AuthButton>
                 </AuthForm>
             </div>
