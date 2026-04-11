@@ -10,7 +10,7 @@ export const loginUser = async (correo, clave) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            username: correo, 
+            correo: correo, 
             password: clave 
         })
     });
@@ -21,6 +21,18 @@ export const loginUser = async (correo, clave) => {
     if (response.ok) {
         return datos; 
     }
+};
+
+// Registro de usuario - sin token (porque son usuarios nuevos)
+export const registerUser = async (datos) => {
+    const response = await fetch(API_CONFIG.ENDPOINTS.AUTH.REGISTER, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datos)
+    });
+    return response;
 };
 
 
