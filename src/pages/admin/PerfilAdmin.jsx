@@ -13,24 +13,28 @@ function PerfilAdmin() {
         </div>
         <div className={style["card"]}>
           <div>
-            <AuthInput label="Nombre" type="text" placeholder="Diana" />
+            <AuthInput label="Nombre Completo" type="text" placeholder="Daniela" />
           </div>
           <div>
             <AuthInput label="Correo electrónico" type="email" placeholder="correo@ejemplo.com" />
           </div>
           <div>
-            <AuthInput label="Contraseña" type="password" placeholder="********" />
+            <AuthInput label="Contraseña" type="email" placeholder="*******" />
+          </div>
+          <div>
+            <AuthInput label="Fecha Nacimiento" type="date" placeholder="********" />
           </div>
           <div>
             <AuthInput label="Rol" type="text" placeholder="Administrador" />
           </div>
           <div>
-            <AuthInput label="Laboratorios Creados" type="number" placeholder="8" />
+            <AuthInput label="Institución / Colegio" placeholder="Nombre de tu institución "required />
           </div>
           <div>
             <AuthInput label="Última Actividad" type="text" placeholder="Hoy" />
           </div>
           <button className={style["btnGuardar"]}>Guardar Cambios</button>
+          <button className={style["btnActualizar"]}>Actualizar</button>
         </div>
       </div>
     </AdminLayout>

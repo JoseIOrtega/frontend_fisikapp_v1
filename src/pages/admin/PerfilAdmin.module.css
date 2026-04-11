@@ -71,7 +71,7 @@
 .btnGuardar {
   margin-top: 15px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #4f46e5, #6366f1); /* azul degradado */
+  background: linear-gradient(135deg, #1d9750, #159c4d); /* azul degradado */
   color: white;
   font-weight: 600;
   font-size: 16px;
@@ -88,6 +88,29 @@
 }
 
 .btnGuardar:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+.btnActualizar {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #38357c, #373877); /* azul degradado */
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btnActualizar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+}
+
+.btnActualizar:active {
   transform: scale(0.97);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
 }
