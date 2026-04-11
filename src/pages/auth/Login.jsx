@@ -32,6 +32,9 @@ function Login() {
             if (datos && datos.access) {
             
                 localStorage.setItem('token', datos.access);
+                localStorage.setItem('user_email', correo);
+
+
                 if(datos.refresh) localStorage.setItem('refreshToken', datos.refresh);
 
                 // Pequeña pausa para que el usuario vea el mensaje de éxito
