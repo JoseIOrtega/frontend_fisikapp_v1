@@ -34,6 +34,15 @@ function LaboratorioAdmin() {
     { id: 10, nombre_de_laboratorio: "Lab. Ondas Mecánicas", categoria: "Ondas", creador: "Laura Pérez", estado: "Activo", ultimoIngreso: "2026-04-01T16:00:00Z" }
   ];
 
+  function llevarLaboratorio() {
+    return(
+      <div>
+        <h2>hola</h2>
+        <input placeholder="escribi porfavor"></input>
+      </div>
+    )
+  }
+
 const filteredAdmins = laboratorios.filter((laboratorio) => 
 laboratorio.nombre_de_laboratorio.toLowerCase().includes(searchTerm.toLowerCase()) || 
 laboratorio.categoria.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -47,7 +56,7 @@ laboratorio.ultimoIngreso.toLowerCase().includes(searchTerm.toLowerCase())
         <div className={style["layout"]}>
             <div className={style["seccion_del_header"]}>
               <h2 className={style.titulo_header_laboratorio}>Laboratorios</h2>
-              <AdminCrateButton icon={FlaskConical} text="Añadir Laboratorio"></AdminCrateButton>
+              <AdminCrateButton onClick={llevarLaboratorio} icon={FlaskConical} text="Añadir Laboratorio"></AdminCrateButton>
             </div>
 
             <AdminDataTable
