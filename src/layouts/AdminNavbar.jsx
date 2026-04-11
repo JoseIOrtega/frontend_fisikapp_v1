@@ -2,7 +2,7 @@ import style from './AdminNavbar.module.css';
 import AdminUserMenu from '../components/UI/AdminUserMenu';
 import AdminSearchBar from '../components/UI/AdminSearchBar';
 
-function AdminNavbar({ pageTitle }) {
+function AdminNavbar({ pageTitle, onSearch }) {
     return (
     <header className={style.navbar}>
       {/* Izquierda: Ruta y Título Dinámico */}
@@ -13,7 +13,7 @@ function AdminNavbar({ pageTitle }) {
 
       {/* Derecha: Buscador y Acciones */}
       <div className={style.rightSection}>
-        <AdminSearchBar></AdminSearchBar>
+        <AdminSearchBar onSearch={onSearch}></AdminSearchBar>
         <div className={style.actions}>
           <AdminUserMenu userName="Jose" /> 
         </div>

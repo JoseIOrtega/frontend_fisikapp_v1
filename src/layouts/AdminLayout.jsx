@@ -5,7 +5,7 @@ import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
 import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
 
-function AdminLayout({ children }) {
+function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const location = useLocation();
@@ -13,7 +13,7 @@ function AdminLayout({ children }) {
   // Diccionario de rutas para Fisikapp
   const routeNames = {
     "/admin/dashboard": "Dashboard",
-    "/admin/laboratorio": "Laboratorios",
+    "/admin/laboratorio": "Gestión de Laboratorios",
     "/admin/usuarios": "Gestión de Usuarios",
     "/admin/perfil": "Mi Perfil",
     "/admin/gestionadmin": "Gestión de Admins",
@@ -44,7 +44,7 @@ function AdminLayout({ children }) {
 
       <div className={style['main-content']}>
         {/* 4. Navbar: Ahora le pasamos el título */}
-        <AdminNavbar pageTitle={currentTitle} />
+        <AdminNavbar pageTitle={currentTitle} onSearch={onSearch}/>
         <div className={style['info']}>
           {children}
         </div>
