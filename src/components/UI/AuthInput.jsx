@@ -1,7 +1,7 @@
 import style from './AuthInput.module.css';
 
-// Agregamos 'value' y 'onChange' a las desestructuración de props
-const Input = ({ label, type = "text", placeholder, name, required = false, value, onChange }) => {
+// 1. Agregamos 'disabled' a la desestructuración
+const Input = ({ label, type = "text", placeholder, name, required = false, value, onChange, disabled }) => {
   return (
     <div className={style["input-group"]}>
       {label && <label className={style["label-registrar"]}>{label}</label>}
@@ -11,9 +11,10 @@ const Input = ({ label, type = "text", placeholder, name, required = false, valu
         name={name} 
         placeholder={placeholder} 
         required={required}
-        // ESTO ES LO QUE FALTABA:
         value={value} 
-        onChange={onChange} 
+        onChange={onChange}
+        // 2. Aquí le pasamos la propiedad al input de HTML
+        disabled={disabled} 
       />
     </div>
   );

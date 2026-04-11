@@ -37,6 +37,30 @@
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
+.headerPerfil {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.rol {
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 16px;
+    letter-spacing: 1px;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
 /* Botón mejorado */
 .btn {
   margin-top: 10px;
@@ -114,3 +138,25 @@
   transform: scale(0.97);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
 }
+
+/* Cuando el input está bloqueado */
+.card input:disabled {
+    background-color: #e2e8f0; /* Un gris más oscuro */
+    color: #64748b;
+    cursor: not-allowed;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Botón cancelar por si se arrepienten */
+.btnCancelar {
+    margin-top: 5px;
+    padding: 10px;
+    background: #949393d5; /* Rojo */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+

@@ -23,5 +23,10 @@ export const API_CONFIG = {
             // RECOVER: `${BASE_URL}/auth/recover/`,                      // Para RecuperarContrasena.jsx
             // RESET: `${BASE_URL}/api/users/restablecer-password/`,         // Para RestablecerContrasena.jsx
         },
+
+        ADMIN: {
+            PERFIL: `${BASE_URL}/api/users/usuarios/`,                        // Para perfil de usuarios.jsx
+        },
+        
     }
 };
