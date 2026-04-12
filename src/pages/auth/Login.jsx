@@ -29,13 +29,19 @@ function Login() {
 
         try {
             const datos = await loginUser(correo, clave);
+            console.log("MOSTRAR LOS DATOS: ", datos)
             if (datos && datos.access) {
             
                 localStorage.setItem('token', datos.access);
-                localStorage.setItem('user_email', correo);
+                    
+                // Función rápida para decodificar el token sin librerías
+                const base64Url = datos.access.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(window.atob(base64));
 
-
-                if(datos.refresh) localStorage.setItem('refreshToken', datos.refresh);
+                // Guardamos el ID que viene dentro del token
+                const userId = payload.user_id || payload.id || payload.sub;
+                localStorage.setItem('user_id', userId);
 
                 // Pequeña pausa para que el usuario vea el mensaje de éxito
                 setTimeout(() => {

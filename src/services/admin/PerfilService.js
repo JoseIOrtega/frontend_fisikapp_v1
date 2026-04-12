@@ -1,28 +1,58 @@
 import { API_CONFIG } from '../apiConfig';
 
-// 1. FUNCIÓN PARA TRAER LOS DATOS (Al cargar la página)
-export const getPerfilUser = async () => {
+
+// Para obtener los datos por ID usando la configuración global
+export const obtenerDatosPorId = async (id) => {
     const token = localStorage.getItem('token');
-    const correoLogueado = localStorage.getItem('user_email');
     
-    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.PERFIL, { 
+    // Construimos la URL usando la constante de tu configuración
+    // Asegúrate de que API_CONFIG.ENDPOINTS.ADMIN.PERFIL termine en '/'
+    const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${id}/`;
+
+    const response = await fetch(url, {
         method: "GET",
-        headers: { 
+        headers: {
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` // <--- Mantén 'Token' lo que pide Django
+            "Authorization": `Token ${token}` // <--- Usamos 'Token' como en tus otros servicios
         }
     });
 
-    if (!response.ok) throw new Error("Error al obtener perfil");
+    if (!response.ok) throw new Error("No se pudo obtener el usuario por ID");
 
-    const datos = await response.json();
+    return await response.json();
+};
 
+export const getPerfilUser = async () => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id'); 
 
-    if (Array.isArray(datos)) {
-        // Buscamos al usuario que coincida con el correo que ingresó en el Login
-        const usuarioCorrecto = datos.find(u => u.correo === correoLogueado);
-        return usuarioCorrecto || datos[0]; 
+    // Validación de seguridad
+    if (!userId) {
+        console.error("Error: No hay user_id en el localStorage");
+        throw new Error("Sesión no identificada");
     }
+
+    // Construcción de la URL: http://127.0.0.1:8000/api/users/Registrar/{id}/
+    const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${userId}/`;
+
+    console.log("Intentando conectar a:", url); // Para que verifiques en consola
+
+    const response = await fetch(url, { 
+        method: "GET",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // Cambiado a Bearer para JWT
+        }
+    });
+
+    if (!response.ok) {
+        const errorHtml = await response.text();
+        console.error("El servidor respondió con un error:", errorHtml);
+        throw new Error("No se pudieron cargar los datos del perfil.");
+    }
+
+    // Retorna el objeto del usuario directamente
+    return await response.json(); 
 };
 
 // 2. FUNCIÓN PARA ACTUALIZAR (Cuando presionan "Guardar Cambios")
@@ -55,3 +85,5 @@ export const updatePerfilUser = async (userData) => {
     
     return datos;
 };
+
+

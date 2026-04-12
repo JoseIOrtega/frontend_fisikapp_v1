@@ -19,13 +19,13 @@ export const API_CONFIG = {
     ENDPOINTS: {
         AUTH: {
             LOGIN: `${BASE_URL}/api/users/login/`,                        // Para Login.jsx
-            REGISTER: `${BASE_URL}/api/users/usuarios/`,                  // Para RegistrarUsuario.jsx
+            REGISTER: `${BASE_URL}/api/users/Registrar/`,                 // Para RegistrarUsuario.jsx
             // RECOVER: `${BASE_URL}/auth/recover/`,                      // Para RecuperarContrasena.jsx
-            // RESET: `${BASE_URL}/api/users/restablecer-password/`,         // Para RestablecerContrasena.jsx
+            // RESET: `${BASE_URL}/api/users/restablecer-password/`,      // Para RestablecerContrasena.jsx
         },
 
         ADMIN: {
-            PERFIL: `${BASE_URL}/api/users/usuarios/`,                        // Para perfil de usuarios.jsx
+            PERFIL: `${BASE_URL}/api/users/Registrar/`,                    // Para perfil de usuarios.jsx
         },
         
     }

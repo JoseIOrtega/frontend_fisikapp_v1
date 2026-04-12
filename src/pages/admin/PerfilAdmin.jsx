@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react'; 
 import AdminLayout from "../../layouts/AdminLayout";
 import style from './PerfilAdmin.module.css';
 import AuthInput from "../../components/UI/AuthInput";
@@ -25,11 +25,12 @@ function PerfilAdmin() {
         const cargarDatos = async () => {
             try {
                 const dataObtenida = await getPerfilUser();
+
+                console.log("Estos son los DATOS:  ",dataObtenida);
                 
-                // Si dataObtenida existe, llenamos el estado
                 if (dataObtenida) {
                     setFormData({
-                        id: dataObtenida.id || '', // <--- ¡Importante capturarlo!
+                        id: dataObtenida.id || '',
                         nombre: dataObtenida.nombre || '',
                         correo: dataObtenida.correo || '',
                         fecha_nacimiento: dataObtenida.fecha_nacimiento || '',
@@ -37,6 +38,17 @@ function PerfilAdmin() {
                         institucion: dataObtenida.institucion || '',
                         rol: dataObtenida.rol || ''
                     });
+
+                    // --- ¡ESTO ES LO NUEVO! ---
+                    // 1. Guardamos el nombre REAL en la mochila del navegador
+                    // --- ESTO ES LO QUE DEBES AGREGAR ---
+                    if (dataObtenida.nombre) {
+                        // Guardamos el nombre real (ej. "Jose")
+                        localStorage.setItem('user_name', dataObtenida.nombre);
+                        // Le avisamos al Navbar que ya tenemos el nombre real
+                        window.dispatchEvent(new Event('storage'));
+                    }
+                    // ------------------------------------
                 }
             } catch (error) {
                 console.error("Error al cargar perfil:", error);

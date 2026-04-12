@@ -5,7 +5,7 @@ import AuthTextLink from "../../components/UI/AuthTextLink";
 import AuthButton from "../../components/UI/AuthButton";
 import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../services/auth/authService'; // Asegúrate de importar tu servicio
+import { registerUser } from '../../services/auth/authService';
 import { useState } from 'react'; 
 import style from './RegistrarUsuario.module.css';
 
@@ -21,20 +21,35 @@ function RegistrarUsuario() {
         password: '',
         confirmPassword: '',
         institucion: '',
-        rol: 'docente'
+        rol: 'estudiante'
     });
 
-    //Función para capturar lo que se escribe
+    // --- NUEVO: Estado para el mensaje de error de la contraseña ---
+    const [passwordError, setPasswordError] = useState('');
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData({ ...formData, [name]: value });
+
+        // Validar contraseña mientras escribe
+        if (name === 'password') {
+            const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            if (value.length > 0 && !regex.test(value)) {
+                setPasswordError('Mínimo 8 caracteres, letras y números.');
+            } else {
+                setPasswordError('');
+            }
+        }
     };
 
     const handleRegistro = async (e) => {
         if (e) e.preventDefault();
+
+        // Validaciones finales antes de enviar
+        if (passwordError) {
+            showModal('error', 'Por favor usa una contraseña más segura.');
+            return;
+        }
 
         if (formData.password !== formData.confirmPassword) {
             showModal('error', 'Las contraseñas no coinciden.');
@@ -42,10 +57,23 @@ function RegistrarUsuario() {
         }
 
         try {
-            await registerUser(formData); 
-            showModal('success', '¡Cuenta creada! Ya puedes iniciar sesión.');
+            // "Limpiamos" el objeto: Django espera exactamente estos campos según tu Swagger
+            const payload = {
+                nombre: formData.nombre,
+                correo: formData.correo,
+                password: formData.password,
+                rol: formData.rol,
+                identificacion: formData.identificacion,
+                fecha_nacimiento: formData.fecha_nacimiento,
+                institucion: formData.institucion,
+                estado: true // Lo agregamos porque el Swagger lo marca como requerido
+            };
+
+            await registerUser(payload); 
+            showModal('success', '¡Cuenta creada con éxito! Bienvenid@.');
             navigate('/');
         } catch (error) {
+            // El error.message ahora vendrá detallado desde el servicio
             showModal('error', error.message || 'Error al registrar');
         }
     };
@@ -54,7 +82,6 @@ function RegistrarUsuario() {
         <AuthLayout>
             <div className={style.ubicacion}>
                 <AuthForm onSubmit={handleRegistro}>
-                    {/* IMPORTANTE: Agregamos name, value y onChange a cada input */}
                     <AuthInput 
                         label="Nombre completo" 
                         name="nombre"
@@ -96,22 +123,26 @@ function RegistrarUsuario() {
                         placeholder="correo@ejemplo.com" 
                         required 
                     />
+                    
+                    {/* Input de Contraseña con mensaje de ayuda */}
                     <AuthInput 
                         label="Contraseña" 
                         name="password"
                         type="password" 
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="••••••••" 
+                        placeholder="Mínimo 8 caracteres (letras y números)" 
                         required 
                     />
+                    {passwordError && <p className={style.errorText}>{passwordError}</p>}
+
                     <AuthInput 
                         label="Confirmar contraseña" 
                         name="confirmPassword"
                         type="password" 
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        placeholder="••••••••" 
+                        placeholder="Repite tu contraseña" 
                         required 
                     />
                     
