@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import style from './AdminNavbar.module.css';
-import AdminUserMenu from '../components/UI/AdminUserMenu';
-import AdminSearchBar from '../components/UI/AdminSearchBar';
+import AdminUserMenu from '../components/UI/admin/AdminUserMenu';
+import AdminSearchBar from '../components/UI/admin/AdminSearchBar';
 
 function AdminNavbar({ pageTitle, onSearch }) {
     // Inicializamos con lo que haya en la mochila, o "Usuario" por defecto

@@ -1,8 +1,8 @@
 import AuthLayout from "../../layouts/AuthLayout";
-import AuthForm from "../../components/UI/AuthForm";
-import AuthInput from "../../components/UI/AuthInput";
-import AuthButton from "../../components/UI/AuthButton";
-import AuthTextLink from "../../components/UI/AuthTextLink";
+import AuthForm from "../../components/UI/auth/AuthForm";
+import AuthInput from "../../components/UI/auth/AuthInput";
+import AuthButton from "../../components/UI/auth/AuthButton";
+import AuthTextLink from "../../components/UI/auth/AuthTextLink";
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext';
 import style from "./RecuperarContrasena.module.css";

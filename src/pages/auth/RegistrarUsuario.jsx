@@ -1,8 +1,8 @@
 import AuthLayout from "../../layouts/AuthLayout";
-import AuthForm from "../../components/UI/AuthForm";
-import AuthInput from "../../components/UI/AuthInput"; 
-import AuthTextLink from "../../components/UI/AuthTextLink";
-import AuthButton from "../../components/UI/AuthButton";
+import AuthForm from "../../components/UI/auth/AuthForm";
+import AuthInput from "../../components/UI/auth/AuthInput"; 
+import AuthTextLink from "../../components/UI/auth/AuthTextLink";
+import AuthButton from "../../components/UI/auth/AuthButton";
 import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/auth/authService';

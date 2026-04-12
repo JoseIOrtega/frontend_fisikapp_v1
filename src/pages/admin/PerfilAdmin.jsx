@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'; 
 import AdminLayout from "../../layouts/AdminLayout";
 import style from './PerfilAdmin.module.css';
-import AuthInput from "../../components/UI/AuthInput";
+import AuthInput from "../../components/UI/auth/AuthInput";
 import { useModal } from '../../context/ModalContext';
 // 1. Asegúrate de importar ambas funciones del servicio
 import { getPerfilUser, updatePerfilUser } from '../../services/admin/PerfilService';
