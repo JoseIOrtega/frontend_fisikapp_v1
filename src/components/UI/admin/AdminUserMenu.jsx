@@ -11,19 +11,11 @@ function AdminUserMenu({ userName = "Usuario" }) {
 
   // AJUSTE: Función de cerrar sesión completa
   const handleCerrarSesionClick = () => {
-    // 1. Limpiamos TODA la mochila de datos
+    
     localStorage.clear(); 
     
-    // O si prefieren ser específicos:
-    // localStorage.removeItem('token');
-    // localStorage.removeItem('user_email');
-    // localStorage.removeItem('user_name');
-
     // 2. Mandamos al usuario al Login
-    navigate('/');
-    
-    // 3. Opcional: Forzar recarga para limpiar cualquier estado de React en memoria
-    window.location.reload();
+    window.location.href = '/';
   };
 
   const menuRef = useRef(null);

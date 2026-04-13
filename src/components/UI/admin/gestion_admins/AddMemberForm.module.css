@@ -1,0 +1,80 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.selectGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    font-size: 0.95rem;
+    color: #2d3748;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.select:focus {
+    border-color: #3182ce;
+}
+
+.passwordGroup {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Ajuste para que el input de contraseña no choque con el botón */
+.passwordGroup input {
+    padding-right: 45px;
+}
+
+.btnRegenerate {
+    position: absolute;
+    right: 10px;
+    bottom: 12px;
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.btnRegenerate:hover {
+    color: #3182ce;
+    transform: rotate(180deg);
+}
+
+.infoText {
+    font-size: 0.75rem;
+    color: #718096;
+    font-style: italic;
+    margin: 0;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}

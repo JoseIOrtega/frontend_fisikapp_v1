@@ -6,6 +6,7 @@ import AuthButton from "../../components/UI/auth/AuthButton";
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
 import { loginUser } from '../../services/auth/authService';
+import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
 import style from './Login.module.css';
 
@@ -19,6 +20,9 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
+        // NUEVO: Limpiamos datos viejos para que no se mezclen los IDs
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
@@ -42,6 +46,13 @@ function Login() {
                 // Guardamos el ID que viene dentro del token
                 const userId = payload.user_id || payload.id || payload.sub;
                 localStorage.setItem('user_id', userId);
+
+                // Registramos el ingreso en los Logs antes de navegar
+                try {
+                    await registrarLogLogin(userId);
+                } catch (logError) {
+                    console.error("No se pudo registrar el log, pero el login continúa", logError);
+                }
 
                 // Pequeña pausa para que el usuario vea el mensaje de éxito
                 setTimeout(() => {
