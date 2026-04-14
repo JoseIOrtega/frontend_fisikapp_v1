@@ -7,7 +7,7 @@
 }
 
 .modalContent :global(.modal-header) {
-    background: linear-gradient(135deg, var(--color-principal) 0%, var(--color-acento) 100%);
+    background: var(--color-principal);
     border-bottom: 1px solid rgba(57, 173, 215, 0.3);
     border-radius: var(--radio-card) var(--radio-card) 0 0;
     padding: var(--espacio-lg);
@@ -119,7 +119,7 @@
 
 /* Personalización de Botones */
 .modalContent :global(.btn-primary) {
-    background-color: var(--color-acento);
+    background-color: var(--color-principal);
     border: none;
     color: var(--blanco-puro);
     font-weight: var(--peso-semi);
