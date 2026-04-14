@@ -4,18 +4,3 @@
 .buttonContainer {
     margin-top: 10px;
 }
-
-.error_message {
-    color: #ff4d4d;
-    font-size: 0.6rem;
-    /* Reducimos la altura y los márgenes significativamente */
-    height: 2px; 
-    margin: 0px; 
-    transition: opacity 0.2s ease;
-    opacity: 0;
-    font-weight: 500;
-}
-
-.visible {
-    opacity: 1;
-}

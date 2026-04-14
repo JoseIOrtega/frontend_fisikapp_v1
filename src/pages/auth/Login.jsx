@@ -91,8 +91,8 @@ function Login() {
                         // PASAMOS EL ICONO COMO PROP
                         iconAction={
                             verClave 
-                                ? <EyeOff size={20} onClick={() => setVerClave(false)} /> 
-                                : <Eye size={20} onClick={() => setVerClave(true)} />
+                                ? <Eye size={20} onClick={() => setVerClave(false)} /> 
+                                : <EyeOff size={20} onClick={() => setVerClave(true)} />
                         }
                     ></AuthInput>
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>

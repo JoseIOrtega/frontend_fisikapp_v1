@@ -37,7 +37,7 @@ function RegistrarUsuario() {
         if (name === 'password') {
             const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
             if (value.length > 0 && !regex.test(value)) {
-                setPasswordError('Dede contener mayusculas, caracteres especiales y números.');
+                setPasswordError('');
             } else {
                 setPasswordError('');
             }
@@ -130,20 +130,19 @@ function RegistrarUsuario() {
                     <AuthInput 
                         label="Contraseña" 
                         name="password"
-                        type={verClave ? "text" : "password"}
+                        type={verClave ? "text" : "password"} 
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Mínimo 8 caracteres, letras y números."
+                        placeholder="Mínimo 8 caracteres (letras y números)" 
                         required
+                        // PASAMOS EL ICONO COMO PROP
                         iconAction={
-                                verClave 
-                                    ? <EyeOff size={20} onClick={() => setVerClave(false)} /> 
-                                    : <Eye size={20} onClick={() => setVerClave(true)} />
-                            }
+                            verClave 
+                                ? <Eye size={20} onClick={() => setVerClave(false)} /> 
+                                : <EyeOff size={20} onClick={() => setVerClave(true)} />
+                        } 
                     />
-                    <p className={`${style.error_message} ${passwordError ? style.visible : ''}`}>
-                        {passwordError || " "} {/* El espacio en blanco evita que el colapse */}
-                    </p>
+                    {passwordError && <p className={style.errorText}>{passwordError}</p>}
 
                     <AuthInput 
                         label="Confirmar contraseña" 
