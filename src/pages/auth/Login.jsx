@@ -8,6 +8,7 @@ import { useModal } from '../../context/ModalContext'; // 1. Importamos el contr
 import { loginUser } from '../../services/auth/authService';
 import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
 function Login() {
@@ -16,6 +17,7 @@ function Login() {
     const [correo, setCorreo] = useState('');
     const [clave, setClave] = useState('');
     const [cargando, setCargando] = useState(false); // Nuevo: Estado para evitar doble clic
+    const [verClave, setVerClave] = useState(false); // Estado para el ojo
 
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
@@ -33,7 +35,7 @@ function Login() {
 
         try {
             const datos = await loginUser(correo, clave);
-            console.log("MOSTRAR LOS DATOS: ", datos)
+           
             if (datos && datos.access) {
             
                 localStorage.setItem('token', datos.access);
@@ -79,8 +81,20 @@ function Login() {
             <div className={style.ubicacion}>
                 <AuthForm onSubmit={handleInciarSesionClick}>
                     <AuthInput label="Correo electrónico" type="text" value={correo} onChange={(e) => setCorreo(e.target.value)}  placeholder="correo@ejemplo.com" required />
-                    <AuthInput label="Contraseña" type="password" value={clave} onChange={(e) => setClave(e.target.value)}   placeholder="***********" required />
-                    
+                    <AuthInput 
+                        label="Contraseña" 
+                        type={verClave ? "text" : "password"} 
+                        value={clave} 
+                        onChange={(e) => setClave(e.target.value)}  
+                        placeholder="***********" 
+                        required 
+                        // PASAMOS EL ICONO COMO PROP
+                        iconAction={
+                            verClave 
+                                ? <EyeOff size={20} onClick={() => setVerClave(false)} /> 
+                                : <Eye size={20} onClick={() => setVerClave(true)} />
+                        }
+                    ></AuthInput>
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
                     <AuthButton type="submit" disabled={cargando}>{cargando ? 'Inicia sesión' : 'Inicia sesión'}</AuthButton>

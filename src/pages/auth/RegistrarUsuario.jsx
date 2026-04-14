@@ -7,11 +7,13 @@ import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/auth/authService';
 import { useState } from 'react'; 
+import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './RegistrarUsuario.module.css';
 
 function RegistrarUsuario() {
     const { showModal } = useModal();
     const navigate = useNavigate();
+    const [verClave, setVerClave] = useState(false); // Estado para el ojo
     
     const [formData, setFormData] = useState({
         nombre: '',
@@ -35,7 +37,7 @@ function RegistrarUsuario() {
         if (name === 'password') {
             const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
             if (value.length > 0 && !regex.test(value)) {
-                setPasswordError('Mínimo 8 caracteres, letras y números.');
+                setPasswordError('Dede contener mayusculas, caracteres especiales y números.');
             } else {
                 setPasswordError('');
             }
@@ -128,13 +130,20 @@ function RegistrarUsuario() {
                     <AuthInput 
                         label="Contraseña" 
                         name="password"
-                        type="password" 
+                        type={verClave ? "text" : "password"}
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Mínimo 8 caracteres (letras y números)" 
-                        required 
+                        placeholder="Mínimo 8 caracteres, letras y números."
+                        required
+                        iconAction={
+                                verClave 
+                                    ? <EyeOff size={20} onClick={() => setVerClave(false)} /> 
+                                    : <Eye size={20} onClick={() => setVerClave(true)} />
+                            }
                     />
-                    {passwordError && <p className={style.errorText}>{passwordError}</p>}
+                    <p className={`${style.error_message} ${passwordError ? style.visible : ''}`}>
+                        {passwordError || " "} {/* El espacio en blanco evita que el colapse */}
+                    </p>
 
                     <AuthInput 
                         label="Confirmar contraseña" 

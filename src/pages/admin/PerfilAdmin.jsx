@@ -25,8 +25,6 @@ function PerfilAdmin() {
         const cargarDatos = async () => {
             try {
                 const dataObtenida = await getPerfilUser();
-
-                console.log("Estos son los DATOS:  ",dataObtenida);
                 
                 if (dataObtenida) {
                     setFormData({

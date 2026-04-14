@@ -36,8 +36,6 @@ export const getPerfilUser = async () => {
 
     const url=API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(userId);
 
-    console.log("Intentando conectar a:", url); // Para que verifiques en consola
-
     const response = await fetch(url, { 
         method: "GET",
         headers: { 
@@ -67,8 +65,6 @@ export const updatePerfilUser = async (userData) => {
     const idUsuario = userData.id || 1; 
     const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
 
-    console.log("Intentando actualizar en:", url);
-    console.log("Datos enviados:", userData);
 
     const response = await fetch(url, { 
         method: "PATCH", 
