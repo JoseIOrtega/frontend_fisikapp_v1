@@ -17,8 +17,8 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
         clave: generarClave() // Así ya nace con una clave y no necesitas el useEffect inicial
     });
 
-    // Eliminamos el useEffect que estaba causando el problema de setFormData
-    // porque ya inicializamos la clave arriba.
+    
+    // ya inicializamos la clave arriba.
 
     const handleChange = (e) => {
         const { name, value } = e.target;

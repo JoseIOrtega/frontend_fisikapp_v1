@@ -30,6 +30,5 @@ export const API_CONFIG = {
             USUARIOS_BASE: `${BASE_URL}/api/users/Registrar/`,                 // Para todos los usuarios
             LOGS: `${BASE_URL}/api/logs/`,
         },
-        
     }
 };

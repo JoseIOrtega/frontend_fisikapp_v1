@@ -74,7 +74,7 @@ function GestionAdmin() {
       showModal('success', '¡Administrador creado con éxito!');
       setMostrarModalCrear(false);
       
-      // ✅ AHORA SÍ FUNCIONA porque la función es visible aquí
+      //AHORA SÍ FUNCIONA porque la función es visible aquí
       fetchDatos(); 
 
     } catch (error) {

@@ -3,86 +3,92 @@ import AdminLayout from "../../layouts/AdminLayout";
 import style from './PerfilAdmin.module.css';
 import AuthInput from "../../components/UI/auth/AuthInput";
 import { useModal } from '../../context/ModalContext';
-// 1. Asegúrate de importar ambas funciones del servicio
 import { getPerfilUser, updatePerfilUser } from '../../services/admin/PerfilService';
+import { Eye, EyeOff } from 'lucide-react';
 
 function PerfilAdmin() {
     const { showModal } = useModal();
     const [editando, setEditando] = useState(false);
-
+    const [verClave, setVerClave] = useState(false);
     const [formData, setFormData] = useState({
-        id: '', // <--- Agregamos esto
-        nombre: '',
-        correo: '',
-        fecha_nacimiento: '',
-        identificacion: '',
-        institucion: '',
-        rol: ''
+        id: '', nombre: '', correo: '', fecha_nacimiento: '',
+        identificacion: '', institucion: '', rol: '',
+        password: '', confirmPassword: ''
     });
 
-    // 2. Efecto para cargar los datos del usuario apenas abra la página
     useEffect(() => {
         const cargarDatos = async () => {
             try {
                 const dataObtenida = await getPerfilUser();
-                
                 if (dataObtenida) {
                     setFormData({
-                        id: dataObtenida.id || '',
-                        nombre: dataObtenida.nombre || '',
-                        correo: dataObtenida.correo || '',
-                        fecha_nacimiento: dataObtenida.fecha_nacimiento || '',
-                        identificacion: dataObtenida.identificacion || '',
-                        institucion: dataObtenida.institucion || '',
-                        rol: dataObtenida.rol || ''
+                        ...dataObtenida,
+                        password: '', 
+                        confirmPassword: ''
                     });
-
-                    // --- ¡ESTO ES LO NUEVO! ---
-                    // 1. Guardamos el nombre REAL en la mochila del navegador
-                    // --- ESTO ES LO QUE DEBES AGREGAR ---
-                    if (dataObtenida.nombre) {
-                        // Guardamos el nombre real (ej. "Jose")
-                        localStorage.setItem('user_name', dataObtenida.nombre);
-                        // Le avisamos al Navbar que ya tenemos el nombre real
-                        window.dispatchEvent(new Event('storage'));
-                    }
-                    // ------------------------------------
                 }
-            } catch (error) {
-                console.error("Error al cargar perfil:", error);
-                showModal('error', 'No se pudieron cargar los datos del perfil.');
+            } catch {
+                showModal('error', 'No se pudieron cargar los datos.');
             }
         };
         cargarDatos();
     }, []);
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleGuardar = async () => {
+        // --- VALIDACIÓN DE CONTRASEÑAS ---
+        if (formData.password && formData.password.trim() !== "") {
+            if (formData.password !== formData.confirmPassword) {
+                showModal('warning', 'Las contraseñas no coinciden. Por favor, verifícalas.');
+                return;
+            }
+            if (formData.password.length < 6) {
+                showModal('warning', 'La clave debe tener al menos 6 caracteres.');
+                return;
+            }
+        }
+
         try {
-            // Usamos el nombre correcto de la función que definimos en el servicio
-            await updatePerfilUser(formData); 
+            // --- LIMPIEZA DE DATOS (PARA NO "ROMPER" EL BACKEND) ---
+            // Solo enviamos los campos que el perfil permite editar.
+            // Sacamos 'rol', 'estado' y 'confirmPassword' para que no den error.
+            const datosReales = {
+                id: formData.id,
+                nombre: formData.nombre,
+                correo: formData.correo,
+                identificacion: formData.identificacion,
+                institucion: formData.institucion,
+                fecha_nacimiento: formData.fecha_nacimiento
+            };
+
+            // Solo agregamos el password si el usuario escribió uno nuevo
+            if (formData.password && formData.password.trim() !== "") {
+                datosReales.password = formData.password.trim();
+            }
+
+            console.log("DATOS LIMPIOS ENVIADOS:", datosReales);
+
+            await updatePerfilUser(datosReales); 
             
-            showModal('success', '¡Perfil actualizado con éxito!');
-            setEditando(false); 
+            showModal('success', '¡Información actualizada con éxito!');
+            setEditando(false);
+            setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
+            
         } catch (error) {
-            showModal('error', 'No se pudieron guardar los cambios.');
-            console.error(error);
+            console.error("Error al guardar:", error);
+            showModal('error', 'Hubo un error. Es posible que el servidor no acepte el cambio de clave por este medio.');
         }
     };
 
     return (
         <AdminLayout>
             <div className={style["layout"]}>
-                <h2>Perfil del Usuario</h2>
+                <h2>Configuración de Mi Perfil</h2>
                 <div className={style["headerPerfil"]}>
-                    {/* Usamos optional chaining (?.) por si el rol tarda en cargar */}
-                    <h3 className={style["rol"]}>{formData.rol?.toUpperCase() || 'CARGANDO...'}</h3>
+                    <h3 className={style["rol"]}>{formData.rol?.toUpperCase() || 'USUARIO'}</h3>
                 </div>
 
                 <div className={style["card"]}>
@@ -92,13 +98,45 @@ function PerfilAdmin() {
                     <AuthInput label="Fecha de Nacimiento" name="fecha_nacimiento" type="date" value={formData.fecha_nacimiento} onChange={handleChange} disabled={!editando}/>
                     <AuthInput label="Institución / Colegio" name="institucion" value={formData.institucion} onChange={handleChange} disabled={!editando}/>
 
-                    <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                    {editando && (
+                        <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                            <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '10px' }}>
+                                Solo completa estos campos si deseas cambiar tu contraseña actual.
+                            </p>
+                            <AuthInput 
+                                label="Nueva Contraseña" 
+                                name="password" 
+                                type={verClave ? "text" : "password"}  
+                                value={formData.password} 
+                                onChange={handleChange} 
+                                placeholder="Mínimo 6 caracteres"
+                                iconAction={
+                                    verClave 
+                                        ? <Eye size={20} onClick={() => setVerClave(false)} /> 
+                                        : <EyeOff size={20} onClick={() => setVerClave(true)} />
+                                }
+                            />
+                            <AuthInput 
+                                label="Confirmar Contraseña" 
+                                name="confirmPassword" 
+                                type="password" 
+                                value={formData.confirmPassword} 
+                                onChange={handleChange} 
+                                placeholder="Repite la contraseña"
+                            />
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '25px' }}>
                         {!editando ? (
-                            <button className={style["btnActualizar"]} onClick={() => setEditando(true)}>Actualizar Información</button>
+                            <button className={style["btnActualizar"]} onClick={() => setEditando(true)}>Modificar Datos</button>
                         ) : (
                             <>
-                                <button className={style["btnGuardar"]} onClick={handleGuardar}> Guardar Cambios</button>
-                                <button className={style["btnCancelar"]} onClick={() => setEditando(false)}>Cancelar</button>
+                                <button className={style["btnGuardar"]} onClick={handleGuardar}>Guardar Cambios</button>
+                                <button className={style["btnCancelar"]} onClick={() => {
+                                    setEditando(false);
+                                    setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
+                                }}>Cancelar</button>
                             </>
                         )}
                     </div>

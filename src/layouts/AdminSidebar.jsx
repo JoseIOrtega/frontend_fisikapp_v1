@@ -1,4 +1,4 @@
-import { useState } from 'react'; // Importante para el submenú
+import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import imgLogo from "../assets/images/Logo.png";
 import style from './AdminSidebar.module.css';
@@ -9,10 +9,9 @@ import {
 
 function Sidebar({ esSuperAdmin }) {
     const location = useLocation();
-    // Estado para abrir/cerrar el submenú de laboratorios
-    const [labMenuOpen, setLabMenuOpen] = useState(location.pathname.includes('/admin/laboratorio'));
     
-    esSuperAdmin = true;
+    // El submenú se abre automáticamente si estamos en una ruta de laboratorio
+    const [labMenuOpen, setLabMenuOpen] = useState(location.pathname.includes('/admin/laboratorio'));
 
     return (
         <aside className={style.sidebar}>
@@ -23,7 +22,11 @@ function Sidebar({ esSuperAdmin }) {
             </div>
 
             <nav className={style.navigation}>
-                <NavLink to="/admin/dashboard" end className={({isActive}) => isActive ? style.activeLink : style.link}>
+                <NavLink 
+                    to="/admin/dashboard" 
+                    end 
+                    className={({isActive}) => isActive ? style.activeLink : style.link}
+                >
                     <Home size={20} /> <span>Dashboard</span>
                 </NavLink>
 
@@ -43,7 +46,6 @@ function Sidebar({ esSuperAdmin }) {
                         />
                     </div>
 
-                    {/* Los hijos del menú */}
                     <div className={`${style.subMenuItems} ${labMenuOpen ? style.show : ''}`}>
                         <NavLink to="/admin/laboratorio/auditoria_contenido" end className={({isActive}) => isActive ? style.activeSubLink : style.subLink}>
                             <span>Auditoría de Contenido</span>
@@ -56,7 +58,6 @@ function Sidebar({ esSuperAdmin }) {
                         </NavLink>
                     </div>
                 </div>
-                {/* --------------------------------------- */}
 
                 <NavLink to="/admin/usuarios" end className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <Users size={20} /> <span>Usuarios</span>
@@ -66,15 +67,25 @@ function Sidebar({ esSuperAdmin }) {
                     <UserPen size={20} /> <span>Perfil</span>
                 </NavLink>
 
+                {/* --- SECCIÓN PROTEGIDA: GESTIÓN ADMINS --- */}
                 <NavLink 
                     to={esSuperAdmin ? "/admin/gestionadmin" : "#"} 
                     end
-                    onClick={(e) => !esSuperAdmin && e.preventDefault()} 
+                    onClick={(e) => {
+                        if (!esSuperAdmin) {
+                            e.preventDefault(); // Bloquea la navegación si no tiene permiso
+                        }
+                    }} 
                     className={({ isActive }) => (isActive && esSuperAdmin) ? style.activeLink : style.link}
-                    style={!esSuperAdmin ? { cursor: 'not-allowed', opacity: 0.6 } : {}}
+                    // Aplicamos estilos visuales de bloqueo si no es superadmin
+                    style={!esSuperAdmin ? { cursor: 'not-allowed', opacity: 0.5 } : {}}
                 >
-                    {esSuperAdmin ? <Unlock size={20}/> : <Lock size={20} color="#A3AED0" />}
-                    <span>Gestión Admins</span>
+                    {esSuperAdmin ? (
+                        <Unlock size={20} className={style.iconNeon} /> 
+                    ) : (
+                        <Lock size={20} color="#A3AED0" />
+                    )}
+                    <span style={!esSuperAdmin ? { color: '#A3AED0' } : {}}>Gestión Admins</span>
                 </NavLink>
             </nav>
 

@@ -57,28 +57,61 @@ export const getPerfilUser = async () => {
 
 
 // 2. FUNCIÓN PARA ACTUALIZAR (Cuando presionan "Guardar Cambios")
+// export const updatePerfilUser = async (userData) => {
+//     const token = localStorage.getItem('token');
+    
+//     // Forzamos la URL para que siempre tenga el ID y el slash final
+//     // Si userData.id no existe, usa un ID manual para probar (ej. 1)
+//     const idUsuario = userData.id || 1; 
+//     const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
+
+
+//     const response = await fetch(url, { 
+//         method: "PATCH", 
+//         headers: { 
+//             "Content-Type": "application/json",
+//             "Authorization": `Token ${token}` 
+//         },
+//         body: JSON.stringify(userData)
+//     });
+
+//     const datos = await response.json();
+    
+//     if (!response.ok) {
+//         console.error("Error detallado del servidor:", datos);
+//         throw new Error("No se pudo actualizar");
+//     }
+    
+//     return datos;
+// };
+
+// --- Ajuste en PerfilService.js ---
+
 export const updatePerfilUser = async (userData) => {
     const token = localStorage.getItem('token');
-    
-    // Forzamos la URL para que siempre tenga el ID y el slash final
-    // Si userData.id no existe, usa un ID manual para probar (ej. 1)
-    const idUsuario = userData.id || 1; 
+    const idUsuario = userData.id; 
     const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
 
+    // Si detectamos password, avisamos en consola para depurar
+    if (userData.password) {
+        console.log("Enviando actualización con contraseña al endpoint de detalle...");
+    }
 
     const response = await fetch(url, { 
         method: "PATCH", 
         headers: { 
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` 
+            // UNIFICAMOS A 'Token' si es Django, o 'Bearer' si es JWT
+            "Authorization": `Bearer ${token}` 
         },
         body: JSON.stringify(userData)
     });
 
     const datos = await response.json();
+    console.log("Envio: ",datos);
     
     if (!response.ok) {
-        console.error("Error detallado del servidor:", datos);
+        console.error("Error del servidor:", datos);
         throw new Error("No se pudo actualizar");
     }
     
@@ -86,3 +119,23 @@ export const updatePerfilUser = async (userData) => {
 };
 
 
+export const cambiarPasswordUser = async (id, nuevaPassword) => {
+    const token = localStorage.getItem('token');
+    const url = `${API_CONFIG.BASE_URL}/usuarios/${id}/cambiar-password/`; // <--- Confirma esta ruta
+
+    const response = await fetch(url, {
+        method: "POST", // Generalmente los cambios de seguridad son POST
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Token ${token}`
+        },
+        body: JSON.stringify({ password: nuevaPassword })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "No se pudo cambiar la contraseña");
+    }
+
+    return await response.json();
+};

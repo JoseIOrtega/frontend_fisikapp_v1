@@ -11,6 +11,9 @@ function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
+  const userRole = localStorage.getItem('user_role'); 
+  const esSuperAdmin = userRole === 'superadmin';
+
   // Diccionario de rutas para Fisikapp
   const routeNames = {
     "/admin/dashboard": "Dashboard",
@@ -66,7 +69,7 @@ function AdminLayout({ children, onSearch }) {
 
       {/* 3. Sidebar: Le pasamos una clase extra si está abierto */}
       <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
-        <AdminSidebar esSuperAdmin={true} />
+        <AdminSidebar esSuperAdmin={esSuperAdmin}/>
       </div>
 
       <div className={style['main-content']}>

@@ -8,6 +8,7 @@ import { useModal } from '../../context/ModalContext'; // 1. Importamos el contr
 import { loginUser } from '../../services/auth/authService';
 import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
+import { obtenerDatosPorId } from '../../services/admin/PerfilService';
 import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
@@ -22,53 +23,69 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
-        // NUEVO: Limpiamos datos viejos para que no se mezclen los IDs
-        localStorage.removeItem('token');
-        localStorage.removeItem('user_id');
+        // Limpiamos datos viejos
+        localStorage.clear(); // Es más seguro limpiar todo al iniciar
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
             return;
         }
 
-        setCargando(true); // Desactivamos el botón mientras esperamos
+        setCargando(true);
 
         try {
             const datos = await loginUser(correo, clave);
-           
+
             if (datos && datos.access) {
-            
                 localStorage.setItem('token', datos.access);
-                    
-                // Función rápida para decodificar el token sin librerías
+                
+                // 1. Decodificación manual del token
                 const base64Url = datos.access.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const payload = JSON.parse(window.atob(base64));
-
-                // Guardamos el ID que viene dentro del token
                 const userId = payload.user_id || payload.id || payload.sub;
+                
                 localStorage.setItem('user_id', userId);
 
-                // Registramos el ingreso en los Logs antes de navegar
+                // --- ¡EL CAMBIO CLAVE AQUÍ! ---
+                // En lugar de confiar en el payload que dice 'estudiante', 
+                // consultamos el perfil real de la base de datos inmediatamente.
+                try {
+                    const perfilReal = await obtenerDatosPorId(userId); 
+                    if (perfilReal && perfilReal.rol) {
+                        localStorage.setItem('user_role', perfilReal.rol); // Guardará 'superadmin'
+                        localStorage.setItem('user_name', perfilReal.nombre);
+                        console.log("Rol real sincronizado:", perfilReal.rol);
+                    } else {
+                        // Si falla la consulta, usamos un fallback basado en el token
+                        const fallBackRole = payload.rol || (payload.is_superuser ? 'superadmin' : 'docente');
+                        localStorage.setItem('user_role', fallBackRole);
+                    }
+                } catch (perfilError) {
+                    console.error("Error al obtener perfil real en login:", perfilError);
+                    // Fallback de seguridad
+                    localStorage.setItem('user_role', 'docente'); 
+                }
+                // ------------------------------
+
+                // Registro de logs
                 try {
                     await registrarLogLogin(userId);
                 } catch (logError) {
-                    console.error("No se pudo registrar el log, pero el login continúa", logError);
+                    console.error("Error en log:", logError);
                 }
 
-                // Pequeña pausa para que el usuario vea el mensaje de éxito
                 setTimeout(() => {
                     navigate('/admin');
-                }, 1500);
+                }, 1000);
 
             } else {
-                showModal('error', 'Correo o contraseña incorrectos. Por favor, verifica tus datos.');
+                showModal('error', 'Correo o contraseña incorrectos.');
             }
         } catch (error) {
-            console.error("Error en login:", error);
             showModal('error', error.message || 'Error al conectar con el servidor.');
         } finally {
-            setCargando(false); // Reactivamos el botón
+            setCargando(false);
         }
     };
 

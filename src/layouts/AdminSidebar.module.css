@@ -145,11 +145,15 @@
 .subMenuItems {
     max-height: 0;
     overflow: hidden;
-    transition: all 0.3s ease-in-out;
+    /* transition: all 0.3s ease-in-out; */
     display: flex;
     flex-direction: column;
     padding-left: 35px; /* Para que se vea indentado */
     gap: 5px;
+}
+
+.subMenuItems {
+    transition: max-height 0.3s ease-out;
 }
 
 .subMenuItems.show {
