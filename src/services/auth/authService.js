@@ -16,7 +16,6 @@ export const loginUser = async (correo, clave) => {
     });
 
     const datos = await response.json(); 
-    console.log("Respuesta del servidor:", datos); 
 
     if (response.ok) {
         return datos; 

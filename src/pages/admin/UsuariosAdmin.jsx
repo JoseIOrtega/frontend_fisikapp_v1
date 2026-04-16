@@ -1,7 +1,7 @@
 import AdminLayout from "../../layouts/AdminLayout";
-import AdminDataTable from "../../components/UI/AdminDataTable";
-import AdminIconButton from "../../components/UI/AdminIconButton";
-import AdminCreateButton from "../../components/UI/AdminCreateButton";
+import AdminDataTable from "../../components/UI/admin/AdminDataTable";
+import AdminIconButton from "../../components/UI/admin/AdminIconButton";
+import AdminCreateButton from "../../components/UI/admin/AdminCreateButton";
 import { UserPlus, Edit, Eye, UserX, UserCheck } from "lucide-react";
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from "./UsuariosAdmin.module.css";
