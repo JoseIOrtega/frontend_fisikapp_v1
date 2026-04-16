@@ -50,17 +50,19 @@ export const registerUser = async (datos) => {
 
 
 
-export const AdminLab = async (titulo_lab, resumen, introduccion, marco_teorico, categoria, objetivo, palabras_clave) => {
-    const response = await fetch(/*API_CONFIG.ENDPOINTS.ADMIN.LABS,*/ {   // <----  hasta aqui alcancé
-
-
-
+export const AdminLab = async (tituloLaboratorio, descripcion, introduxxion, marcoTeorico, categorIA, object, palabrasClave) => {
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {   // <----  hasta aqui alcancé
 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            correo: correo, 
-            password: clave 
+            titulo_lab:       tituloLaboratorio, 
+            resumen:          descripcion,
+            introduccion:     introduxxion,
+            marco_teorico:    marcoTeorico,
+            categoria:        categorIA,
+            objetivo:         object,
+            palabras_clave:   palabrasClave
         })
     });
 

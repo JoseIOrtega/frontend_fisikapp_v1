@@ -23,5 +23,9 @@ export const API_CONFIG = {
             RECOVER: `${BASE_URL}/auth/recover/`,    // Para RecuperarContrasena.jsx
             RESET: `${BASE_URL}/auth/reset/`,        // Para RestablecerContrasena.jsx
         },
+
+        ADMIN: {
+            LABS: `${BASE_URL}/admin/laboratorios`,  // Para LaboratorioAdmin.jsx
+        }
     }
 };
