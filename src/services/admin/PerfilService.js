@@ -17,12 +17,13 @@ export const getPerfilUser = async () => {
 
     const datos = await response.json();
 
+    return datos;
 
-    if (Array.isArray(datos)) {
-        // Buscamos al usuario que coincida con el correo que ingresó en el Login
-        const usuarioCorrecto = datos.find(u => u.correo === correoLogueado);
-        return usuarioCorrecto || datos[0]; 
-    }
+    // if (Array.isArray(datos)) {
+    //     // Buscamos al usuario que coincida con el correo que ingresó en el Login
+    //     const usuarioCorrecto = datos.find(u => u.correo === correoLogueado);
+    //     return usuarioCorrecto || datos[0]; 
+    // }
 };
 
 // 2. FUNCIÓN PARA ACTUALIZAR (Cuando presionan "Guardar Cambios")

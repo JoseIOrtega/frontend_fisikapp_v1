@@ -19,7 +19,6 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
-
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
             return;
