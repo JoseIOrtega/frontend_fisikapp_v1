@@ -1,4 +1,5 @@
 const BASE_URL = "http://127.0.0.1:8000";
+//const BASE_URL = "https://backend-fisikapp.onrender.com";
 
 export const API_CONFIG = {
     BASE_URL,
@@ -19,14 +20,15 @@ export const API_CONFIG = {
     ENDPOINTS: {
         AUTH: {
             LOGIN: `${BASE_URL}/api/users/login/`,                        // Para Login.jsx
-            REGISTER: `${BASE_URL}/api/users/Registrar/`,                  // Para RegistrarUsuario.jsx
+            REGISTER: `${BASE_URL}/api/users/Registrar/`,                 // Para RegistrarUsuario.jsx
             // RECOVER: `${BASE_URL}/auth/recover/`,                      // Para RecuperarContrasena.jsx
-            // RESET: `${BASE_URL}/api/users/restablecer-password/`,         // Para RestablecerContrasena.jsx
+            // RESET: `${BASE_URL}/api/users/restablecer-password/`,      // Para RestablecerContrasena.jsx
         },
 
-        ADMIN: {
-            PERFIL: `${BASE_URL}/api/users/usuarios/`,                        // Para perfil de usuarios.jsx
+        ADMIN: {                    
+            USUARIO_DETALLE: (id) => `${BASE_URL}/api/users/Registrar/${id}/`, // Para usuario por id.jsx
+            USUARIOS_BASE: `${BASE_URL}/api/users/Registrar/`,                 // Para todos los usuarios
+            LOGS: `${BASE_URL}/api/logs/`,
         },
-        
     }
 };

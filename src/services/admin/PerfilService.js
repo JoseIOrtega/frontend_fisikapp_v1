@@ -1,57 +1,141 @@
 import { API_CONFIG } from '../apiConfig';
 
-// 1. FUNCIÓN PARA TRAER LOS DATOS (Al cargar la página)
-export const getPerfilUser = async () => {
+
+// Para obtener los datos por ID usando la configuración global
+export const obtenerDatosPorId = async (id) => {
     const token = localStorage.getItem('token');
-    const correoLogueado = localStorage.getItem('user_email');
     
-    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.PERFIL, { 
+    //const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${id}/`;
+    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
+
+    const response = await fetch(url, {
         method: "GET",
-        headers: { 
+        headers: {
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` // <--- Mantén 'Token' lo que pide Django
+            "Authorization": `Token ${token}` // <--- Usamos 'Token' como en tus otros servicios
         }
     });
 
-    if (!response.ok) throw new Error("Error al obtener perfil");
+    if (!response.ok) throw new Error("No se pudo obtener el usuario por ID");
 
-    const datos = await response.json();
-
-
-    if (Array.isArray(datos)) {
-        // Buscamos al usuario que coincida con el correo que ingresó en el Login
-        const usuarioCorrecto = datos.find(u => u.correo === correoLogueado);
-        return usuarioCorrecto || datos[0]; 
-    }
+    return await response.json();
 };
 
+
+
+
+export const getPerfilUser = async () => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id'); 
+
+    // Validación de seguridad
+    if (!userId) {
+        console.error("Error: No hay user_id en el localStorage");
+        throw new Error("Sesión no identificada");
+    }
+
+    const url=API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(userId);
+
+    const response = await fetch(url, { 
+        method: "GET",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // Cambiado a Bearer para JWT
+        }
+    });
+
+    if (!response.ok) {
+        const errorHtml = await response.text();
+        console.error("El servidor respondió con un error:", errorHtml);
+        throw new Error("No se pudieron cargar los datos del perfil.");
+    }
+
+    // Retorna el objeto del usuario directamente
+    return await response.json(); 
+};
+
+
+
 // 2. FUNCIÓN PARA ACTUALIZAR (Cuando presionan "Guardar Cambios")
+// export const updatePerfilUser = async (userData) => {
+//     const token = localStorage.getItem('token');
+    
+//     // Forzamos la URL para que siempre tenga el ID y el slash final
+//     // Si userData.id no existe, usa un ID manual para probar (ej. 1)
+//     const idUsuario = userData.id || 1; 
+//     const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
+
+
+//     const response = await fetch(url, { 
+//         method: "PATCH", 
+//         headers: { 
+//             "Content-Type": "application/json",
+//             "Authorization": `Token ${token}` 
+//         },
+//         body: JSON.stringify(userData)
+//     });
+
+//     const datos = await response.json();
+    
+//     if (!response.ok) {
+//         console.error("Error detallado del servidor:", datos);
+//         throw new Error("No se pudo actualizar");
+//     }
+    
+//     return datos;
+// };
+
+// --- Ajuste en PerfilService.js ---
+
 export const updatePerfilUser = async (userData) => {
     const token = localStorage.getItem('token');
-    
-    // Forzamos la URL para que siempre tenga el ID y el slash final
-    // Si userData.id no existe, usa un ID manual para probar (ej. 1)
-    const idUsuario = userData.id || 1; 
-    const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${idUsuario}/`;
+    const idUsuario = userData.id; 
+    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
 
-    console.log("Intentando actualizar en:", url);
-    console.log("Datos enviados:", userData);
+    // Si detectamos password, avisamos en consola para depurar
+    if (userData.password) {
+        console.log("Enviando actualización con contraseña al endpoint de detalle...");
+    }
 
     const response = await fetch(url, { 
         method: "PATCH", 
         headers: { 
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` 
+            // UNIFICAMOS A 'Token' si es Django, o 'Bearer' si es JWT
+            "Authorization": `Bearer ${token}` 
         },
         body: JSON.stringify(userData)
     });
 
     const datos = await response.json();
+    console.log("Envio: ",datos);
     
     if (!response.ok) {
-        console.error("Error detallado del servidor:", datos);
+        console.error("Error del servidor:", datos);
         throw new Error("No se pudo actualizar");
     }
     
     return datos;
+};
+
+
+export const cambiarPasswordUser = async (id, nuevaPassword) => {
+    const token = localStorage.getItem('token');
+    const url = `${API_CONFIG.BASE_URL}/usuarios/${id}/cambiar-password/`; // <--- Confirma esta ruta
+
+    const response = await fetch(url, {
+        method: "POST", // Generalmente los cambios de seguridad son POST
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Token ${token}`
+        },
+        body: JSON.stringify({ password: nuevaPassword })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "No se pudo cambiar la contraseña");
+    }
+
+    return await response.json();
 };

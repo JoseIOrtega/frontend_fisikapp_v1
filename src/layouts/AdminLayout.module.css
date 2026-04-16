@@ -1,7 +1,10 @@
 .admin-layout {
     display: flex;
-    min-height: 100vh;
-    background-color: #F0F2F5;
+    height: 100vh; /* El layout siempre mide el alto de la pantalla */
+    width: 100%;
+    /* CLAVE: El fondo de toda la zona derecha debe estar aquí o en el main-content */
+    background-color: #F0F2F5; 
+    overflow: hidden; /* Evita scroll doble */
 }
 
 .main-content {
@@ -9,10 +12,15 @@
     display: flex;
     flex-direction: column;
     padding: 20px 30px;
-    height: 100vh;
-    overflow-y: auto;
+    
+    /* Mantenemos estas para el scroll interno */
+    height: 100vh; 
+    overflow-y: auto; 
+    
+    background-color: #F0F2F5; /* Aseguramos el color aquí también */
     transition: all 0.3s ease;
 }
+
 
 /* --- BOTÓN MÓVIL --- */
 .mobileBtn {
