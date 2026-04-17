@@ -10,6 +10,7 @@ function PerfilAdmin() {
     const { showModal } = useModal();
     const [editando, setEditando] = useState(false);
     const [verClave, setVerClave] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         id: '', nombre: '', correo: '', fecha_nacimiento: '',
         identificacion: '', institucion: '', rol: '',
@@ -20,6 +21,8 @@ function PerfilAdmin() {
         const cargarDatos = async () => {
             try {
                 const dataObtenida = await getPerfilUser();
+
+                console.log("dataObtenida perfil:", dataObtenida);
                 if (dataObtenida) {
                     setFormData({
                         ...dataObtenida,
@@ -30,8 +33,13 @@ function PerfilAdmin() {
             } catch {
                 showModal('error', 'No se pudieron cargar los datos.');
             }
+            finally {
+            setLoading(false);
+        }
         };
+        
         cargarDatos();
+        
     }, []);
 
     const handleChange = (e) => {
@@ -88,7 +96,8 @@ function PerfilAdmin() {
             <div className={style["layout"]}>
                 <h2>Configuración de Mi Perfil</h2>
                 <div className={style["headerPerfil"]}>
-                    <h3 className={style["rol"]}>{formData.rol?.toUpperCase() || 'USUARIO'}</h3>
+                    <h3 className={style["rol"]}>{formData.rol ? formData.rol.toUpperCase() : ""}</h3>
+                    
                 </div>
 
                 <div className={style["card"]}>

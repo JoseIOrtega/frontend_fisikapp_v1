@@ -5,7 +5,7 @@ import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
 import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
 // --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
-import { obtenerDatosPorId } from '../../src/services/admin/PerfilService';
+import { getPerfilUser} from '../../src/services/admin/PerfilService';
 
 function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,7 +38,7 @@ function AdminLayout({ children, onSearch }) {
           if (id && (!nombreEnMochila || nombreEnMochila.includes('@') || nombreEnMochila === "Usuario")) {
               try {
                   // Llamamos a la función que estandarizamos con la URL correcta
-                  const usuario = await obtenerDatosPorId(id); 
+                  const usuario = await getPerfilUser(id); 
                   
                   if (usuario && usuario.nombre) {
                       localStorage.setItem('user_name', usuario.nombre);

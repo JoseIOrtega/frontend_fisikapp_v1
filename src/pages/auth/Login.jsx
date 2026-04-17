@@ -8,7 +8,7 @@ import { useModal } from '../../context/ModalContext'; // 1. Importamos el contr
 import { loginUser } from '../../services/auth/authService';
 import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
-import { obtenerDatosPorId } from '../../services/admin/PerfilService';
+import { getPerfilUser } from '../../services/admin/PerfilService';
 import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
@@ -51,7 +51,7 @@ function Login() {
                 // En lugar de confiar en el payload que dice 'estudiante', 
                 // consultamos el perfil real de la base de datos inmediatamente.
                 try {
-                    const perfilReal = await obtenerDatosPorId(userId); 
+                    const perfilReal = await getPerfilUser(); // cristian
                     if (perfilReal && perfilReal.rol) {
                         localStorage.setItem('user_role', perfilReal.rol); // Guardará 'superadmin'
                         localStorage.setItem('user_name', perfilReal.nombre);

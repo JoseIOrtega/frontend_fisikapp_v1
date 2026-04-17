@@ -6,6 +6,7 @@ import style from './AdminUserMenu.module.css';
 // ... tus imports actuales ...
 
 function AdminUserMenu({ userName = "Usuario" }) {
+  
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
 

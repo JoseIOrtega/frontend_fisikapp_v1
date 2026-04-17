@@ -2,7 +2,7 @@ import { API_CONFIG } from '../apiConfig';
 
 
 // Para obtener los datos por ID usando la configuración global
-export const obtenerDatosPorId = async (id) => {
+export const getPerfilUse = async (id) => {
     const token = localStorage.getItem('token');
     
     //const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${id}/`;
@@ -12,7 +12,7 @@ export const obtenerDatosPorId = async (id) => {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` // <--- Usamos 'Token' como en tus otros servicios
+            "Authorization": `Bearer ${token}` // <--- Usamos 'Token' como en tus otros servicios
         }
     });
 
@@ -34,7 +34,7 @@ export const getPerfilUser = async () => {
         throw new Error("Sesión no identificada");
     }
 
-    const url=API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(userId);
+    const url=API_CONFIG.ENDPOINTS.AUTH.PERFIL; // cristian
 
     const response = await fetch(url, { 
         method: "GET",
@@ -127,7 +127,7 @@ export const cambiarPasswordUser = async (id, nuevaPassword) => {
         method: "POST", // Generalmente los cambios de seguridad son POST
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}`
+            "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ password: nuevaPassword })
     });
