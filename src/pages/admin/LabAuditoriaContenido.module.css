@@ -1,0 +1,39 @@
+.layout {
+    padding: 20px;
+}
+
+.seccion_del_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.titulo_header_laboratorio {
+    color: #1B2559;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.statusActive {
+    color: #05CD99;
+    background: rgba(5, 205, 153, 0.1);
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.statusInactive {
+    color: #EE5D50;
+    background: rgba(238, 93, 80, 0.1);
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.actionsDetails {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}

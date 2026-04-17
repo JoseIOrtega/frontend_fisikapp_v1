@@ -1,0 +1,287 @@
+.layout {
+    padding: 20px;
+}
+
+.seccion_del_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.titulo_header_laboratorio {
+    color: #1B2559;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Estructura del Formulario */
+.form_container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 10px;
+}
+
+.form_section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.subtitulo {
+    color: #1B2559;
+    font-size: 18px;
+    font-weight: 700;
+    border-left: 4px solid #18ffba; /* Detalle de color de Fisikapp */
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+
+/* Diseño de los Inputs */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    color: #2B3674;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.input_diseno, .textarea_diseno {
+    padding: 12px 15px;
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #2B3674;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.input_diseno:focus, .textarea_diseno:focus {
+    border-color: #18ffba;
+}
+
+.textarea_diseno {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.btn_plus {
+    background-color: #18ffba;
+    color: #1B2559;
+    border: none;
+    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn_plus:hover {
+    transform: scale(1.05);
+}
+
+/* Texto de ayuda debajo de los campos */
+.helper_text {
+    font-size: 12px;
+    color: #A3AED0;
+    margin-top: 4px;
+}
+/* Texto de ayuda debajo de los campos */
+.helper_text_2 {
+    font-size: 12px;
+    color: #A3AED0;
+    margin-top: 0px;
+}
+
+/* Botón secundario para objetivos/palabras clave */
+.btn_plus_secondary {
+    background-color: transparent;
+    color: #18ffba;
+    border: 2px solid #18ffba;
+    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn_plus_secondary:hover {
+    background-color: #18ffba;
+    color: #1B2559;
+}
+
+/* Textarea más pequeño para la sección de objetivos */
+.textarea_diseno_small {
+    padding: 12px 15px;
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #2B3674;
+    outline: none;
+    width: 100%;
+    min-height: 42px; /* Alineado con el botón */
+    resize: none;
+}
+
+.textarea_resumen {
+    padding: 12px 15px;
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #2B3674;
+    outline: none;
+    min-height: 80px; /* Un poco más bajo que los demás */
+    width: 100%;
+    resize: vertical;
+}
+
+/* Usamos el grid que ya tienes para poner Intro y Marco Teórico lado a lado */
+/* Modifica el grid que ya tienes */
+.grid_inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px; /* Aumentamos el espacio entre columnas para que respire */
+    align-items: flex-start;
+}
+
+/* Contenedor para el input + botón */
+.input_group_row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start; /* Alinea el botón con la parte superior del textarea */
+    width: 100%;
+}
+
+/* Ajuste específico para que el input o textarea ocupe el espacio restante */
+.input_group_row input, 
+.input_group_row textarea {
+    flex: 1; /* Esto obliga al input a llenar el espacio y deja al botón su tamaño fijo */
+}
+
+.input_error {
+    border-color: #EE5D50 !important;
+}
+
+.error_text {
+    color: #EE5D50;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.fake_input {
+    flex: 1;
+    min-height: 42px;
+    padding: 8px 15px;
+    border: 1px solid #E0E5F2;
+    border-radius: 12px;
+    background-color: #F4F7FE; /* Color de fondo ligero para diferenciarlo */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.placeholder {
+    color: #A3AED0;
+    font-size: 14px;
+}
+
+.label_with_action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.btn_ia {
+    background: linear-gradient(135deg, #18ffba 0%, #1B2559 100%);
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn_ia:hover {
+    transform: scale(1.05);
+}
+
+.btn_ia_small {
+    background: #f0f2f8;
+    color: #1B2559;
+    border: 1px solid #18ffba;
+    padding: 2px 8px;
+    border-radius: 15px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+/* Contenedor para alinear label y botón */
+.header_with_ai {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* Botón principal de IA */
+.btn_ia_gradient {
+    background: #3e54ad;
+    color: rgb(243, 242, 242);
+    border: none;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(24, 255, 186, 0.2);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn_ia_gradient:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(32, 103, 255, 0.3);
+    filter: brightness(1.1);
+}
+
+/* Versión para los cuadros pequeños */
+.btn_ia_gradient_small {
+    background: #f4f7fe;
+    color: #1b2559;
+    border: 1.5px solid #18ffba;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn_ia_gradient_small:hover {
+    background: #18ffba31;
+    color: #1b2559;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+    .grid_inputs {
+        grid-template-columns: 1fr;
+    }
+}
