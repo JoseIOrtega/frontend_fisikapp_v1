@@ -55,6 +55,7 @@
     font-weight: 600;
     transition: all 0.3s ease;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 /* --- ESTADO ACTIVO (El que se veía oscuro) --- */
@@ -98,94 +99,74 @@
     color: #FFFFFF;
 }
 
-/* --- SUBMENÚ PARA LABORATORIOS --- */
-.menuItem {
+/* Contenedor del grupo */
+.subMenuContainer {
     display: flex;
     flex-direction: column;
+    gap: 5px;
 }
 
-.menuButton {
+.linkContent {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 15px;
-    padding: 12px 15px;
-    color: #A3AED0;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
 }
 
-.menuButton:hover {
+/* Estilo para cuando el padre está activo pero el menú cerrado */
+.activeParent {
+    color: #FFFFFF;
     background-color: rgba(255, 255, 255, 0.05);
-    color: #FFFFFF;
 }
 
-.menuButtonOpen {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #FFFFFF;
+/* La flechita */
+.arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
 }
 
-.submenu {
+.arrowRotate {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de sub-items con efecto de deslizamiento */
+.subMenuItems {
+    max-height: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    margin-left: 35px;
-    margin-top: 5px;
+    padding-left: 35px;
     gap: 5px;
-    animation: slideDown 0.3s ease-out;
+    transition: max-height 0.3s ease-out;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.subMenuItems.show {
+    max-height: 200px;
+    margin-bottom: 10px;
 }
 
+/* Estilo de los links hijos */
 .subLink {
-    display: block;
-    padding: 8px 15px;
     color: #A3AED0;
     text-decoration: none;
-    font-weight: 500;
     font-size: 14px;
+    padding: 8px 15px;
     border-radius: 8px;
-    transition: all 0.3s ease;
-    margin-left: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .subLink:hover {
-    background-color: rgba(255, 255, 255, 0.05);
     color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .activeSubLink {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #FFFFFF !important;
-    font-weight: 600;
-    position: relative;
-}
-
-.activeSubLink::after {
-    content: "";
-    position: absolute;
-    right: 5px;
-    top: 8px;
-    bottom: 8px;
-    width: 3px;
-    background-color: #18ffba;
-    border-radius: 3px;
-    box-shadow: 0px 0px 8px rgba(24, 255, 178, 0.5);
+    color: #18ffba;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
 }
 
 .sectionTitle {
