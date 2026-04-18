@@ -1,6 +1,6 @@
 import AdminLayout from "../../layouts/AdminLayout"
-import AdminDataTable from "../../components/UI/admin/AdminDataTable"
-import AdminIconButton from "../../components/UI/admin/AdminIconButton";
+import AdminDataTable from "../../components/UI/AdminDataTable"
+import AdminIconButton from "../../components/UI/AdminIconButton";
 import { Edit, Eye,Trash2, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from './LabRepositorioDeLabs.module.css'

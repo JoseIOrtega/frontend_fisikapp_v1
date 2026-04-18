@@ -1,6 +1,5 @@
 import AdminLayout from "../../layouts/AdminLayout"
-import AdminCrateButton from "../../components/UI/admin/AdminCreateButton"
-import AdminCardContainer from "../../components/UI/admin/AdminCardContainer"
+import AdminCreateButton from "../../components/UI/AdminCreateButton"
 import { FlaskConical, Plus, Target, Key } from 'lucide-react'; // Añadimos iconos para contexto
 import style from './LabConfigurarLabs.module.css'
 
@@ -10,10 +9,10 @@ function LabConfigurarLabs() {
         <div className={style["layout"]}>
             <div className={style["seccion_del_header"]}>
               <h2 className={style.titulo_header_laboratorio}>Configurar Laboratorios</h2>
-              <AdminCrateButton icon={FlaskConical} text="Guardar Plantilla" />
+              <AdminCreateButton icon={FlaskConical} text="Guardar Plantilla" />
             </div>
 
-            <AdminCardContainer>
+            <div>
                 <div className={style.form_container}>
                     
                     {/* PASO 1: CATEGORÍA (Dependencia Principal) */}
@@ -125,7 +124,7 @@ function LabConfigurarLabs() {
                     </section>
 
                 </div>
-            </AdminCardContainer>
+            </div>
         </div>
     </AdminLayout>
   )
