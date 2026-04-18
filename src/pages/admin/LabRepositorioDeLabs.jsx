@@ -14,7 +14,11 @@ function LabRepositorioDeLabs() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLaboratorios(getLaboratorios());
+    const loadLaboratorios = async () => {
+      const data = await getLaboratorios();
+      setLaboratorios(data);
+    };
+    loadLaboratorios();
   }, []);
 
   const columnas = [
@@ -38,6 +42,10 @@ function LabRepositorioDeLabs() {
     });
   };
 
+  const handleView = (laboratorio) => {
+    navigate(`/admin/laboratorio/repositorio_labs/${laboratorio.id}`);
+  };
+
   return (
     <AdminLayout onSearch={setSearchTerm}>
       <div className={style["layout"]}>
@@ -56,7 +64,7 @@ function LabRepositorioDeLabs() {
               <td title={new Date(laboratorio.fechacreacion).toLocaleString()} style={{ cursor: 'help' }}>{getRelativeTime(laboratorio.fechacreacion)}</td>
               <td className={style.actionsDetails}>
                 <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} />
-                <AdminIconButton icon={Eye} title="ver" type="detail" />
+                <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => handleView(laboratorio)} />
                 <AdminIconButton icon={laboratorio.estado === "Activo" ? UserX : UserCheck} type="delete" />
                 <AdminIconButton icon={Trash2} title="Eliminar" type="delete" />
               </td>

@@ -71,7 +71,7 @@ function LabConfigurarLabs() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validateForm()) {
       return;
     }
@@ -81,13 +81,28 @@ function LabConfigurarLabs() {
       id: formData.id ?? Date.now(),
       fechacreacion: formData.fechacreacion || new Date().toISOString(),
     };
-    saveLaboratorio(dataToSave);
-    setSuccessMessage("Laboratorio guardado exitosamente");
 
-    // Ocultar mensaje después de 3 segundos y navegar
-    setTimeout(() => {
-      navigate("/admin/laboratorio/repositorio_labs");
-    }, 3000);
+    try {
+      const result = await saveLaboratorio(dataToSave);
+      if (result) {
+        setSuccessMessage("Laboratorio guardado exitosamente");
+        // Recargar la página del repositorio para mostrar cambios
+        setTimeout(() => {
+          navigate("/admin/laboratorio/repositorio_labs");
+        }, 3000);
+      } else {
+        setSuccessMessage("Error al guardar el laboratorio");
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      setSuccessMessage("Error de conexión al guardar");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+    }
   };
 
   return (

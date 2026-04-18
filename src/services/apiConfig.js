@@ -25,7 +25,7 @@ export const API_CONFIG = {
         },
 
         ADMIN: {
-            LABS: `${BASE_URL}/admin/laboratorios`,  // Para LaboratorioAdmin.jsx
+            LABS: `${BASE_URL}/laboratorios`,  // Para LaboratorioAdmin.jsx - corregida según rutas Django
         }
     }
 };
