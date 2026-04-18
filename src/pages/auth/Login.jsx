@@ -19,9 +19,6 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
-        showModal('success', '¡Bienvenido a Fisikapp!');
-        navigate('/admin');
-
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
             return;
@@ -47,9 +44,9 @@ function Login() {
             }
         } catch (error) {
             console.error("Error en login:", error);
-            // showModal('error', error.message || 'Error al conectar con el servidor.');
+            showModal('error', error.message || 'Error al conectar con el servidor.');
         } finally {
-            setCargando(false); // Reactivamos el botón
+            setCargando(false);
         }
     };
 
