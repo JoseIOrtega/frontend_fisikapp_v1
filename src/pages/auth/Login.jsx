@@ -36,6 +36,8 @@ function Login() {
         try {
             const datos = await loginUser(correo, clave);
 
+            
+
             if (datos && datos.access) {
                 localStorage.setItem('token', datos.access);
                 
@@ -75,6 +77,7 @@ function Login() {
                     console.error("Error en log:", logError);
                 }
 
+                console.log("MOSTRAR DATOS ",datos);
                 setTimeout(() => {
                     navigate('/admin');
                 }, 1000);
