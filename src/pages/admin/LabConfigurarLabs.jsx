@@ -1,131 +1,209 @@
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminCreateButton from "../../components/UI/AdminCreateButton"
-import { FlaskConical, Plus, Target, Key } from 'lucide-react'; // Añadimos iconos para contexto
+import { FlaskConical, Plus } from 'lucide-react';
+import { saveLaboratorio } from '../../services/admin/labData';
 import style from './LabConfigurarLabs.module.css'
 
+const defaultForm = {
+  id: null,
+  nombre_de_laboratorio: "",
+  categoria: "",
+  estado: "Activo",
+  fechacreacion: new Date().toISOString(),
+  resumen: "",
+  introduccion: "",
+  marco_teorico: ""
+};
+
 function LabConfigurarLabs() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(defaultForm);
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    const laboratorio = location.state?.laboratorio;
+    if (laboratorio) {
+      setFormData({
+        ...defaultForm,
+        ...laboratorio,
+        resumen: laboratorio.resumen ?? "",
+        introduccion: laboratorio.introduccion ?? "",
+        marco_teorico: laboratorio.marco_teorico ?? ""
+      });
+    } else {
+      setFormData(defaultForm);
+    }
+    setErrors({});
+    setSuccessMessage("");
+  }, [location.state]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Limpiar error del campo cuando se modifica
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.nombre_de_laboratorio.trim()) {
+      newErrors.nombre_de_laboratorio = "El nombre del laboratorio es requerido";
+    }
+    if (!formData.categoria) {
+      newErrors.categoria = "Debe seleccionar una categoría";
+    }
+    if (!formData.resumen.trim()) {
+      newErrors.resumen = "El resumen es requerido";
+    }
+    if (!formData.introduccion.trim()) {
+      newErrors.introduccion = "La introducción es requerida";
+    }
+    if (!formData.marco_teorico.trim()) {
+      newErrors.marco_teorico = "El marco teórico es requerido";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    const dataToSave = {
+      ...formData,
+      id: formData.id ?? Date.now(),
+      fechacreacion: formData.fechacreacion || new Date().toISOString(),
+    };
+    saveLaboratorio(dataToSave);
+    setSuccessMessage("Laboratorio guardado exitosamente");
+
+    // Ocultar mensaje después de 3 segundos y navegar
+    setTimeout(() => {
+      navigate("/admin/laboratorio/repositorio_labs");
+    }, 3000);
+  };
+
   return (
     <AdminLayout>
-        <div className={style["layout"]}>
-            <div className={style["seccion_del_header"]}>
-              <h2 className={style.titulo_header_laboratorio}>Configurar Laboratorios</h2>
-              <AdminCreateButton icon={FlaskConical} text="Guardar Plantilla" />
-            </div>
-
-            <div>
-                <div className={style.form_container}>
-                    
-                    {/* PASO 1: CATEGORÍA (Dependencia Principal) */}
-                    <section className={style.form_section}>
-                        <h4 className={style.subtitulo}>1. Clasificación del Laboratorio</h4>
-                        <div className={style.field}>
-                            <label>Seleccionar Categoría Existente</label>
-                            <div className={style.input_group_row}>
-                                <select className={style.input_diseno}>
-                                    <option>Seleccione una categoría...</option>
-                                    <option>Cinemática</option>
-                                    <option>Electromagnetismo</option>
-                                </select>
-                                <button 
-                                    type="button" 
-                                    className={style.btn_plus_secondary} 
-                                    title="Crear Nueva Categoría"
-                                    onClick={() => {/* Lógica modal categoría */}}
-                                >
-                                    <Plus size={18} />
-                                </button>
-                            </div>
-                            <p className={style.helper_text}>Se requiere una categoría antes de proceder.</p>
-                        </div>
-                    </section>
-
-                    {/* SECCIÓN 2: ESTRUCTURA PEDAGÓGICA */}
-                    <section className={style.form_section}>
-                        <h4 className={style.subtitulo}>2. Estructura Pedagógica (Dependencias)</h4>
-                        <div className={style.grid_inputs}>
-                            
-                            {/* Gestión de Objetivos */}
-                            <div className={style.field}>
-                                <label>Objetivos del Laboratorio</label>
-                                <div className={style.input_group_row}>
-                                    <div className={style.fake_input}>
-                                        {/* Aquí se mostrarán los objetivos agregados como etiquetas */}
-                                        <span className={style.placeholder}>Añade objetivos detallados...</span>
-                                    </div>
-                                    <button 
-                                        type="button" 
-                                        className={style.btn_plus_secondary}
-                                        onClick={() => {/* Lógica para abrir modal de Objetivos */}}
-                                    >
-                                        <Plus size={20} />
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Gestión de Palabras Clave */}
-                            <div className={style.field}>
-                                <label>Palabras Clave</label>
-                                <div className={style.input_group_row}>
-                                    <div className={style.fake_input}>
-                                        <span className={style.placeholder}>Añade términos técnicos...</span>
-                                    </div>
-                                    <button 
-                                        type="button" 
-                                        className={style.btn_plus_secondary}
-                                        onClick={() => {/* Lógica para abrir modal de Palabras Clave */}}
-                                    >
-                                        <Plus size={20} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <p className={style.helper_text_2}>Añada estas dependencias antes de continuar.</p>
-                    </section>
-
-                    {/* PASO 3: CONTENIDO DETALLADO DEL LABORATORIO */}
-                    <section className={style.form_section}>
-                        <h4 className={style.subtitulo}>3. Contenido del Laboratorio (Auto-generado)</h4>
-                        
-                        <div className={style.field}>
-                            <div className={style.header_with_ai}>
-                                <label>Resumen*</label>
-                                <button type="button" className={style.btn_ia_gradient_small}>
-                                    ✨ Generar Resumen con IA
-                                </button>
-                            </div>
-                            <textarea 
-                                placeholder="La síntesis..." 
-                                className={style.textarea_diseno} 
-                            />
-                        </div>
-
-                        <div className={style.grid_inputs}>
-                            <div className={style.field}>
-                                <div className={style.header_with_ai}>
-                                    <label>Introducción*</label>
-                                    <button type="button" className={style.btn_ia_gradient_small}>✨ Generar</button>
-                                </div>
-                                <textarea 
-                                    placeholder="Contexto histórico..." 
-                                    className={style.textarea_diseno} 
-                                />
-                            </div>
-                            <div className={style.field}>
-                                <div className={style.header_with_ai}>
-                                    <label>Marco Teórico*</label>
-                                    <button type="button" className={style.btn_ia_gradient_small}>✨ Generar</button>
-                                </div>
-                                <textarea 
-                                    placeholder="Principios físicos..." 
-                                    className={style.textarea_diseno} 
-                                />
-                            </div>
-                        </div>
-                    </section>
-
-                </div>
-            </div>
+      <div className={style["layout"]}>
+        <div className={style["seccion_del_header"]}>
+          <h2 className={style.titulo_header_laboratorio}>Configurar Laboratorios</h2>
+          <AdminCreateButton icon={FlaskConical} text="Guardar Plantilla" onClick={handleSave} />
         </div>
+
+        {successMessage && (
+          <div className={style.successMessage}>
+            {successMessage}
+          </div>
+        )}
+
+        <div>
+          <div className={style.form_container}>
+
+            <section className={style.form_section}>
+              <h4 className={style.subtitulo}>1. Clasificación del Laboratorio</h4>
+              <div className={style.field}>
+                <label>Nombre de Laboratorio</label>
+                <input
+                  type="text"
+                  name="nombre_de_laboratorio"
+                  value={formData.nombre_de_laboratorio}
+                  onChange={handleInputChange}
+                  className={`${style.input_diseno} ${errors.nombre_de_laboratorio ? style.inputError : ''}`}
+                  placeholder="Nombre del laboratorio"
+                />
+                {errors.nombre_de_laboratorio && <span className={style.errorText}>{errors.nombre_de_laboratorio}</span>}
+              </div>
+
+              <div className={style.field}>
+                <label>Categoría</label>
+                <div className={style.input_group_row}>
+                  <select
+                    name="categoria"
+                    value={formData.categoria}
+                    onChange={handleInputChange}
+                    className={`${style.input_diseno} ${errors.categoria ? style.inputError : ''}`}
+                  >
+                    <option value="">Seleccione una categoría...</option>
+                    <option value="Cinemática">Cinemática</option>
+                    <option value="Mecánica">Mecánica</option>
+                    <option value="Electromagnetismo">Electromagnetismo</option>
+                  </select>
+                  <button
+                    type="button"
+                    className={style.btn_plus_secondary}
+                    title="Crear Nueva Categoría"
+                    onClick={() => {}}
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+                {errors.categoria && <span className={style.errorText}>{errors.categoria}</span>}
+              </div>
+
+              <div className={style.field}>
+                <label>Estado</label>
+                <select
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleInputChange}
+                  className={style.input_diseno}
+                >
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </div>
+            </section>
+
+            <section className={style.form_section}>
+              <h4 className={style.subtitulo}>2. Contenido del Laboratorio</h4>
+              <div className={style.field}>
+                <label>Resumen</label>
+                <textarea
+                  name="resumen"
+                  value={formData.resumen}
+                  onChange={handleInputChange}
+                  placeholder="La síntesis..."
+                  className={`${style.textarea_diseno} ${errors.resumen ? style.inputError : ''}`}
+                />
+                {errors.resumen && <span className={style.errorText}>{errors.resumen}</span>}
+              </div>
+              <div className={style.grid_inputs}>
+                <div className={style.field}>
+                  <label>Introducción</label>
+                  <textarea
+                    name="introduccion"
+                    value={formData.introduccion}
+                    onChange={handleInputChange}
+                    placeholder="Contexto histórico..."
+                    className={`${style.textarea_diseno} ${errors.introduccion ? style.inputError : ''}`}
+                  />
+                  {errors.introduccion && <span className={style.errorText}>{errors.introduccion}</span>}
+                </div>
+                <div className={style.field}>
+                  <label>Marco Teórico</label>
+                  <textarea
+                    name="marco_teorico"
+                    value={formData.marco_teorico}
+                    onChange={handleInputChange}
+                    placeholder="Principios físicos..."
+                    className={`${style.textarea_diseno} ${errors.marco_teorico ? style.inputError : ''}`}
+                  />
+                  {errors.marco_teorico && <span className={style.errorText}>{errors.marco_teorico}</span>}
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
     </AdminLayout>
   )
 }
