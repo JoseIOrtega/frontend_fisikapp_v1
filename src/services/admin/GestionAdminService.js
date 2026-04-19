@@ -64,11 +64,20 @@ export const crearNuevoAdmin = async (datosAdmin) => {
             }),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            // Esto ayuda a los estudiantes a entender qué falló (ej: correo ya existe)
-            throw new Error(errorData.detail || errorData.message || "Error al crear el miembro");
-        }
+       if (!response.ok) {
+    const errorData = await response.json();
+    
+    const mensajes = {
+        correo: 'El correo ya está registrado',
+        nombre: 'El nombre es inválido',
+        password: 'La contraseña no cumple los requisitos',
+    };
+
+    const campoConError = Object.keys(mensajes).find(campo => errorData[campo]);
+    const primerError = errorData.detail || errorData.message || mensajes[campoConError] || "Error al crear el miembro";
+    
+    throw new Error(primerError);
+}
 
         return await response.json();
     } catch (error) {

@@ -56,6 +56,8 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
                 required 
             />
 
+            
+
             <div className={style.row}>
                 <div className={style.selectGroup}>
                     <label className={style.label}>Rol de usuario</label>
@@ -74,6 +76,7 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
                     <AuthInput 
                         label="Contraseña Temporal" 
                         value={formData.clave} 
+                        onChange={() => {}}
                         readOnly 
                     />
                     <button 
