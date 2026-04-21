@@ -6,7 +6,7 @@ import AuthButton from "../../components/UI/auth/AuthButton";
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
 import { loginUser } from '../../services/auth/authService';
-//import { registrarLogLogin } from '../../services/admin/GestionAdminService';
+import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
