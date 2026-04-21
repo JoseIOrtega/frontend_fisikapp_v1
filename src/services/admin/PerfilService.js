@@ -101,36 +101,7 @@ export const changePasswordUser = async (passwords) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}` 
         },
-<<<<<<< HEAD
         body: JSON.stringify(passwords)
-=======
-        body: JSON.stringify(userData)
-    });
-
-    const datos = await response.json();
-    console.log("Envio: ",datos);
-    
-    if (!response.ok) {
-        console.error("Error del servidor:", datos);
-        throw new Error("No se pudo actualizar");
-    }
-    
-    return datos;
-};
-
-
-export const cambiarPasswordUser = async (id, nuevaPassword) => {
-    const token = localStorage.getItem('token');
-    const url = `${API_CONFIG.BASE_URL}/usuarios/${id}/cambiar-password/`; // <--- Confirma esta ruta
-
-    const response = await fetch(url, {
-        method: "POST", // Generalmente los cambios de seguridad son POST
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ password: nuevaPassword })
->>>>>>> d6bf2877d88d13a05cec4e06dd5ca6f0355ccc12
     });
 
     if (!response.ok) {
