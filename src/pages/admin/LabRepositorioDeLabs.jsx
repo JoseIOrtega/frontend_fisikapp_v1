@@ -65,7 +65,7 @@ function LabRepositorioDeLabs() {
               <td className={style.actionsDetails}>
                 <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} />
                 <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => handleView(laboratorio)} />
-                <AdminIconButton icon={laboratorio.estado === "Activo" ? UserX : UserCheck} type="delete" />
+                <AdminIconButton icon={laboratorio.estado === "Activo" ? UserX : UserCheck} title="bloquear" type="delete" />
                 <AdminIconButton icon={Trash2} title="Eliminar" type="delete" />
               </td>
             </tr>
