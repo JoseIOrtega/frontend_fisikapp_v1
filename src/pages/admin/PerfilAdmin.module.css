@@ -160,3 +160,59 @@
     font-size: 16px;
 }
 
+
+/* FOTO */
+
+/* PerfilAdmin.module.css */
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+/* PerfilAdmin.module.css */
+
+.avatarContainer {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  padding: 3px;
+  /* Usamos el azul oscuro profundo de tu marca */
+  background: #142050; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profileCircle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f1f5f9;
+  border: 3px solid white; 
+}
+
+.uploadBadge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  /* Este es el azul que usas en los iconos del Sidebar */
+  background: #18ffba; 
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid white;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.uploadBadge:hover {
+  background: #6f6ff5;
+  transform: scale(1.1);
+}

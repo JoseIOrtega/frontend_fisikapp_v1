@@ -1,24 +1,18 @@
-import { useState, useEffect, useRef } from 'react'; // Importamos los hooks necesarios
+import { useState, useEffect, useRef } from 'react';
 import { UserCircle, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import style from './AdminUserMenu.module.css';
 
-// ... tus imports actuales ...
-
-function AdminUserMenu({ userName = "Usuario" }) {
+// 1. Agregamos 'userPhoto' a las props que recibe el componente
+function AdminUserMenu({ userName = "Usuario", userPhoto = null }) {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
+  const menuRef = useRef(null);
 
-  // AJUSTE: Función de cerrar sesión completa
   const handleCerrarSesionClick = () => {
-    
     localStorage.clear(); 
-    
-    // 2. Mandamos al usuario al Login
     window.location.href = '/';
   };
-
-  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,11 +20,9 @@ function AdminUserMenu({ userName = "Usuario" }) {
         setShowMenu(false);
       }
     };
-
     if (showMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -38,21 +30,27 @@ function AdminUserMenu({ userName = "Usuario" }) {
 
   return (
     <div className={style.profileContainer} ref={menuRef}>
-      <UserCircle 
-        size={36} 
-        className={style.profileIcon} 
-        onClick={() => setShowMenu(!showMenu)} 
-      />
+      
+      {/* 2. CAMBIO CLAVE: Si hay foto, mostramos <img>, si no, el ícono de siempre */}
+      <div className={style.avatarWrapper} onClick={() => setShowMenu(!showMenu)}>
+        {userPhoto ? (
+          <img 
+            src={userPhoto} 
+            alt="Perfil" 
+            className={style.profileImage} 
+          />
+        ) : (
+          <UserCircle size={36} className={style.profileIcon} />
+        )}
+      </div>
 
       {showMenu && (
         <div className={style.dropdown}>
           <div className={style.menuHeader}>
-            {/* Aquí se mostrará el nombre real que viene del Navbar */}
             Hola, {userName}
           </div>
           <div className={style.divider} />
           
-          {/* Pueden redirigir a la página de perfil que ya creamos */}
           <button 
             className={style.menuItem} 
             onClick={() => { navigate('/admin/perfil'); setShowMenu(false); }}

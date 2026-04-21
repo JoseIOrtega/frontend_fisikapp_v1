@@ -22,120 +22,92 @@ export const obtenerDatosPorId = async (id) => {
 };
 
 
-
-
+// Funcion para traer los datos del usuario y agregarlos a los campos del formulario perfil
 export const getPerfilUser = async () => {
     const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('user_id'); 
-
-    // Validación de seguridad
-    if (!userId) {
-        console.error("Error: No hay user_id en el localStorage");
-        throw new Error("Sesión no identificada");
-    }
-
-    const url=API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(userId);
+    const url = API_CONFIG.ENDPOINTS.ADMIN.PERFIL;
 
     const response = await fetch(url, { 
         method: "GET",
         headers: { 
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Cambiado a Bearer para JWT
+            "Authorization": `Bearer ${token}`
         }
     });
 
-    if (!response.ok) {
-        const errorHtml = await response.text();
-        console.error("El servidor respondió con un error:", errorHtml);
-        throw new Error("No se pudieron cargar los datos del perfil.");
+    if (!response.ok) throw new Error("No se pudieron cargar los datos.");
+
+    const data = await response.json();
+
+    // --- PROCESAMIENTO DE DATOS ---
+    // Si el backend envía "/media/perfil/foto.jpg", aquí lo completamos
+    if (data.foto && typeof data.foto === 'string' && !data.foto.startsWith('http')) {
+        const baseUrl = API_CONFIG.BASE_URL.replace('/api', ''); 
+        data.foto = `${baseUrl}${data.foto}`; 
     }
 
-    // Retorna el objeto del usuario directamente
-    return await response.json(); 
+    return data; // Ahora data.foto ya es una URL completa
 };
 
+// Función para actualizar los datos y foto (FormData)
+export const updatePerfilUser = async (dataAEnviar) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.PERFIL, {
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: dataAEnviar
+    });
 
-
-// 2. FUNCIÓN PARA ACTUALIZAR (Cuando presionan "Guardar Cambios")
-// export const updatePerfilUser = async (userData) => {
+    if (!response.ok) {
+        // En lugar de lanzar un Error genérico, lanzamos el JSON del backend
+        const errorData = await response.json(); 
+        throw errorData; 
+    }
+    return await response.json();
+};
+// export const updatePerfilUser = async (dataAEnviar) => {
 //     const token = localStorage.getItem('token');
-    
-//     // Forzamos la URL para que siempre tenga el ID y el slash final
-//     // Si userData.id no existe, usa un ID manual para probar (ej. 1)
-//     const idUsuario = userData.id || 1; 
-//     const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
-
-
-//     const response = await fetch(url, { 
-//         method: "PATCH", 
-//         headers: { 
-//             "Content-Type": "application/json",
-//             "Authorization": `Token ${token}` 
-//         },
-//         body: JSON.stringify(userData)
+//     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.PERFIL, {
+//         method: "PATCH",
+//         headers: { "Authorization": `Bearer ${token}` }, // Sin Content-Type para FormData
+//         body: dataAEnviar
 //     });
-
-//     const datos = await response.json();
-    
-//     if (!response.ok) {
-//         console.error("Error detallado del servidor:", datos);
-//         throw new Error("No se pudo actualizar");
-//     }
-    
-//     return datos;
+//     if (!response.ok) throw new Error("Error al actualizar perfil");
+//     return await response.json();
 // };
 
-// --- Ajuste en PerfilService.js ---
-
-export const updatePerfilUser = async (userData) => {
+// Función para el cambio de la contraseña (JSON)
+// export const changePasswordUser = async (passwords) => {
+//     const token = localStorage.getItem('token');
+//     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CHANGE_PASSWORD, {
+//         method: "POST", // Usualmente es POST para cambios de seguridad
+//         headers: { 
+//             "Content-Type": "application/json",
+//             "Authorization": `Bearer ${token}` 
+//         },
+//         body: JSON.stringify(passwords)
+//     });
+//     if (!response.ok) {
+//         const error = await response.json();
+//         throw error; // Lanzamos el error del backend (ej: "Clave actual incorrecta")
+//     }
+//     return await response.json();
+// };
+export const changePasswordUser = async (passwords) => {
     const token = localStorage.getItem('token');
-    const idUsuario = userData.id; 
-    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(idUsuario);
-
-    // Si detectamos password, avisamos en consola para depurar
-    if (userData.password) {
-        console.log("Enviando actualización con contraseña al endpoint de detalle...");
-    }
-
-    const response = await fetch(url, { 
-        method: "PATCH", 
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CHANGE_PASSWORD, {
+        method: "POST",
         headers: { 
             "Content-Type": "application/json",
-            // UNIFICAMOS A 'Token' si es Django, o 'Bearer' si es JWT
             "Authorization": `Bearer ${token}` 
         },
-        body: JSON.stringify(userData)
-    });
-
-    const datos = await response.json();
-    console.log("Envio: ",datos);
-    
-    if (!response.ok) {
-        console.error("Error del servidor:", datos);
-        throw new Error("No se pudo actualizar");
-    }
-    
-    return datos;
-};
-
-
-export const cambiarPasswordUser = async (id, nuevaPassword) => {
-    const token = localStorage.getItem('token');
-    const url = `${API_CONFIG.BASE_URL}/usuarios/${id}/cambiar-password/`; // <--- Confirma esta ruta
-
-    const response = await fetch(url, {
-        method: "POST", // Generalmente los cambios de seguridad son POST
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Token ${token}`
-        },
-        body: JSON.stringify({ password: nuevaPassword })
+        body: JSON.stringify(passwords)
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "No se pudo cambiar la contraseña");
+        // IMPORTANTE: Esperamos el JSON antes de lanzarlo
+        const errorData = await response.json(); 
+        throw errorData; 
     }
-
     return await response.json();
 };

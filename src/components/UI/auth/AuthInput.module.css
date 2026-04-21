@@ -59,6 +59,23 @@
 }
 
 
+/* Estilo para resaltar el input cuando hay un error */
+.input-error {
+    border: 2px solid #ff4d4d !important; /* Rojo */
+    background-color: #fff5f5; /* Fondo rosado muy sutil */
+}
+
+/* Estilo para el texto pequeño de error debajo del input */
+.error-message {
+    color: #ff4d4d;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: block;
+    font-weight: 500;
+}
+
+
+
 @media (max-width: 480px) {
     .label-registrar {
         font-size: 12px; 
