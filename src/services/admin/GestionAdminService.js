@@ -127,3 +127,30 @@ export const eliminarUsuarioService = async (id) => {
         throw error;
     }
 };
+
+// 6. Registrar Log de Login (Ajustado a tu Swagger)
+export const registrarLogLogin = async (userId) => {
+    try {
+        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LOGS, {
+            method: "POST",
+            headers: {
+                ...API_CONFIG.getHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                accion: "Inicio de Sesión", // String según Swagger
+                descripcion: "El usuario ha ingresado exitosamente a Fisikapp.", // String según Swagger
+                usuario: userId // Number según Swagger (datos.user.id)
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudo registrar el log de actividad");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error en registrarLogLogin:", error);
+        throw error;
+    }
+};

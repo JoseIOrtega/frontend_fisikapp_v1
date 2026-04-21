@@ -30,6 +30,7 @@ export const API_CONFIG = {
             USUARIOS_BASE: `${BASE_URL}/users/usuarios/`,                  // Para todos los usuarios
             USUARIOS_ADMIN:`${BASE_URL}/users/crear-admin/`,               // Para usuarios administradores
             LOGS: `${BASE_URL}/logs/`,
+            
         },
     }
 };
