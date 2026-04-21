@@ -40,7 +40,11 @@ export const API_CONFIG = {
         PALABRAS_CLAVE: {
             LIST: `${BASE_URL}/api/palabras-clave/`,
             CREATE: `${BASE_URL}/api/palabras-clave/`
-        }
+        },
+
+        OBJETIVOS: {
+            LIST: `${BASE_URL}/objetivos/`,
+        },
         
     }
 };

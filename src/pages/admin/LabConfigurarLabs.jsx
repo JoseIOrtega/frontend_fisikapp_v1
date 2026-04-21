@@ -6,11 +6,17 @@ import style from './LabConfigurarLabs.module.css'
 
 import { useEffect, useState } from "react"
 import { getCategorias, getPalabrasClave } from "../../services/admin/ConfigLabServices"
+import { getObjetivos } from "../../services/admin/ConfigLabServices";
 import { useModal } from "../../context/ModalContext"
 
 function LabConfigurarLabs() {
 
   const { showModal } = useModal()
+
+  // ===== OBJETIVOS =====
+const [tipoObjetivo, setTipoObjetivo] = useState("");
+const [descripcionObjetivo, setDescripcionObjetivo] = useState("");
+const [objetivos, setObjetivos] = useState([]);
 
   // ===== CATEGORIAS =====
   const [categorias, setCategorias] = useState([])
@@ -23,26 +29,66 @@ function LabConfigurarLabs() {
   const [palabrasFiltradas, setPalabrasFiltradas] = useState([])
   const [palabrasSeleccionadas, setPalabrasSeleccionadas] = useState([])
 
+
+  const abrirModalObjetivos = async (tipo) => {
+    try {
+        const data = await getObjetivos();
+
+        const filtrados = data.filter(
+            (obj) => obj.tipo_objetivo.toLowerCase() === tipo
+        );
+
+        if (filtrados.length === 0) {
+            showModal("warning", "No hay objetivos de este tipo");
+            return;
+        }
+
+        showModal(
+            "info",
+            `Objetivos ${tipo}:\n\n` +
+            filtrados.map(o => "- " + o.descripcion_objetivo).join("\n")
+        );
+
+    } catch (error) {
+        showModal("error", "Error al cargar objetivos");
+    }
+  };
+
   // ===== LOAD DATA =====
   useEffect(() => {
 
     const cargarCategorias = async () => {
-      try {
-        const data = await getCategorias()
-        setCategorias(data)
-      } catch {
-        showModal("error", "Error cargando categorías")
-      }
-    }
+    try {
+        const data = await getCategorias();
 
-    const cargarPalabras = async () => {
-      try {
-        const data = await getPalabrasClave()
-        setTodasPalabras(data)
-      } catch {
-        showModal("error", "Error cargando palabras clave")
-      }
+        // 🔥 VALIDACIÓN CLAVE
+        if (Array.isArray(data)) {
+            setCategorias(data);
+        } else {
+            console.error("Respuesta inválida:", data);
+            setCategorias([]); // evita que explote
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        setCategorias([]);
     }
+};
+
+    const cargarPalabrasClave = async () => {
+    try {
+        const data = await getPalabrasClave();
+
+        if (Array.isArray(data)) {
+            setPalabrasClave(data);
+        } else {
+            setPalabrasClave([]);
+        }
+
+    } catch (error) {
+        setPalabrasClave([]);
+    }
+};
 
     cargarCategorias()
     cargarPalabras()
@@ -152,24 +198,18 @@ function LabConfigurarLabs() {
                         <div className={style.grid_inputs}>
                             
                             {/* OBJETIVOS */}
-                            <div className={style.field}>
-                                <label>Objetivos del Laboratorio</label>
-
-                                <div className={style.input_group_row}>
-                                    <div className={style.fake_input}>
-                                        <span className={style.placeholder}>
-                                            Añade objetivos detallados...
-                                        </span>
-                                    </div>
-
-                                    <button 
-                                        type="button" 
-                                        className={style.btn_plus_secondary}
-                                    >
-                                        <Plus size={20} />
-                                    </button>
-                                </div>
-                            </div>
+                            <select
+                                className={style.input_diseno}
+                                value={tipoObjetivo}
+                                onChange={(e) => {
+                                    setTipoObjetivo(e.target.value);
+                                    abrirModalObjetivos(e.target.value);
+                                }}
+                            >
+                                <option value="">Seleccione tipo de objetivo</option>
+                                <option value="general">Objetivo General</option>
+                                <option value="especifico">Objetivos Específicos</option>
+                            </select>
 
                             {/* ===== PALABRAS CLAVE ===== */}
                             <div className={style.field}>
