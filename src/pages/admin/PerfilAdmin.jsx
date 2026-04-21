@@ -28,6 +28,8 @@ function PerfilAdmin() {
         const cargarDatos = async () => {
             try {
                 const dataObtenida = await getPerfilUser();
+
+                console.log("dataObtenida perfil:", dataObtenida);
                 if (dataObtenida) {
                     setFormData({ ...dataObtenida });
                     // Guardamos una copia exacta para usarla si el usuario da a "Cancelar"
@@ -36,8 +38,13 @@ function PerfilAdmin() {
             } catch {
                 showModal('error', 'No se pudieron cargar los datos.');
             }
+            finally {
+            setLoading(false);
+        }
         };
+        
         cargarDatos();
+        
     }, []);
 
 
@@ -213,7 +220,8 @@ function PerfilAdmin() {
             <div className={style["layout"]}>
                 <h2>Configuración</h2>
                 <div className={style["headerPerfil"]}>
-                    <h3 className={style["rol"]}>{formData.rol?.toUpperCase() || 'USUARIO'}</h3>
+                    <h3 className={style["rol"]}>{formData.rol ? formData.rol.toUpperCase() : ""}</h3>
+                    
                 </div>
                 <div className={style["card"]}>
                     {/* SECCIÓN DE FOTO (Igual a como la tenías) */}
