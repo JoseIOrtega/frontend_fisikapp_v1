@@ -31,5 +31,16 @@ export const API_CONFIG = {
             USUARIOS_BASE: `${BASE_URL}/api/users/usuarios/`,                 // Para todos los usuarios
             LOGS: `${BASE_URL}/api/logs/`,
         },
+
+        CATEGORIAS: {
+            LIST: `${BASE_URL}/api/categorias/`,
+            CREATE: `${BASE_URL}/api/categorias/`
+        },
+
+        PALABRAS_CLAVE: {
+            LIST: `${BASE_URL}/api/palabras-clave/`,
+            CREATE: `${BASE_URL}/api/palabras-clave/`
+        }
+        
     }
 };
