@@ -3,6 +3,7 @@ import DashboardAdmin from "../pages/admin/DashboardAdmin";
 import LabAuditoriaContenido from "../pages/admin/LabAuditoriaContenido";
 import LabRepositorioDeLabs from "../pages/admin/LabRepositorioDeLabs";
 import LabConfigurarLabs from "../pages/admin/LabConfigurarLabs";
+import LabDetalleLaboratorio from "../pages/admin/LabDetalleLaboratorio";
 import UsuariosAdmin from "../pages/admin/UsuariosAdmin";
 import PerfilAdmin from "../pages/admin/PerfilAdmin";
 import GestionAdmin from "../pages/admin/GestionAdmin";
@@ -14,6 +15,8 @@ function AdminRoutes() {
       <Route path="dashboard" element={<DashboardAdmin />} />
       <Route path="laboratorio/auditoria_contenido" element={<LabAuditoriaContenido />} />
       <Route path="laboratorio/repositorio_labs" element={<LabRepositorioDeLabs />} />
+      <Route path="laboratorio" element={<Navigate to="laboratorio/repositorio_labs" />} />
+      <Route path="laboratorio/repositorio_labs/:id" element={<LabDetalleLaboratorio />} />
       <Route path="laboratorio/configurar_labs" element={<LabConfigurarLabs />} />
       <Route path="usuarios" element={<UsuariosAdmin />} />
       <Route path="perfil" element={<PerfilAdmin />} />
