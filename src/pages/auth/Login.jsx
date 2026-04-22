@@ -8,7 +8,6 @@ import { useModal } from '../../context/ModalContext'; // 1. Importamos el contr
 import { loginUser } from '../../services/auth/authService';
 import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
-import { obtenerDatosPorId } from '../../services/admin/PerfilService';
 import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
@@ -17,14 +16,14 @@ function Login() {
     const { showModal } = useModal();
     const [correo, setCorreo] = useState('');
     const [clave, setClave] = useState('');
-    const [cargando, setCargando] = useState(false); // Nuevo: Estado para evitar doble clic
+    const [cargando, setCargando] = useState(false);
     const [verClave, setVerClave] = useState(false); // Estado para el ojo
 
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
-        // Limpiamos datos viejos
-        localStorage.clear(); // Es más seguro limpiar todo al iniciar
+        // Limpiamos TODO para empezar de cero
+        localStorage.clear(); 
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
@@ -35,55 +34,36 @@ function Login() {
 
         try {
             const datos = await loginUser(correo, clave);
+            console.log("DATOS RECIBIDOS:", datos);
 
-            if (datos && datos.access) {
+            if (datos && datos.access && datos.user) {
+                // 1. Guardamos el token
                 localStorage.setItem('token', datos.access);
                 
-                // 1. Decodificación manual del token
-                const base64Url = datos.access.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const payload = JSON.parse(window.atob(base64));
-                const userId = payload.user_id || payload.id || payload.sub;
-                
-                localStorage.setItem('user_id', userId);
+                // 2. Guardamos la info del usuario DIRECTAMENTE del objeto 'user'
+                // Ya no necesitamos split('.'), atob(), ni JSON.parse manual.
+                localStorage.setItem('user_id', datos.user.id);
+                localStorage.setItem('user_name', datos.user.nombre);
+                localStorage.setItem('user_role', datos.user.rol);
 
-                // --- ¡EL CAMBIO CLAVE AQUÍ! ---
-                // En lugar de confiar en el payload que dice 'estudiante', 
-                // consultamos el perfil real de la base de datos inmediatamente.
+                // 3. Registrar Log (usando el ID que ya tenemos del objeto user)
                 try {
-                    const perfilReal = await obtenerDatosPorId(userId); 
-                    if (perfilReal && perfilReal.rol) {
-                        localStorage.setItem('user_role', perfilReal.rol); // Guardará 'superadmin'
-                        localStorage.setItem('user_name', perfilReal.nombre);
-                        console.log("Rol real sincronizado:", perfilReal.rol);
-                    } else {
-                        // Si falla la consulta, usamos un fallback basado en el token
-                        const fallBackRole = payload.rol || (payload.is_superuser ? 'superadmin' : 'docente');
-                        localStorage.setItem('user_role', fallBackRole);
-                    }
-                } catch (perfilError) {
-                    console.error("Error al obtener perfil real en login:", perfilError);
-                    // Fallback de seguridad
-                    localStorage.setItem('user_role', 'docente'); 
-                }
-                // ------------------------------
-
-                // Registro de logs
-                try {
-                    await registrarLogLogin(userId);
+                    await registrarLogLogin(datos.user.id);
                 } catch (logError) {
-                    console.error("Error en log:", logError);
+                    console.error("Error en Log:", logError);
                 }
 
+                // 4. Redirección
                 setTimeout(() => {
                     navigate('/admin');
                 }, 1000);
 
             } else {
-                showModal('error', 'Correo o contraseña incorrectos.');
+                showModal('error', 'Credenciales incorrectas.');
             }
         } catch (error) {
-            showModal('error', error.message || 'Error al conectar con el servidor.');
+            console.error("Error en login:", error);
+            showModal('error', 'Error al conectar con el servidor.');
         } finally {
             setCargando(false);
         }
@@ -112,6 +92,7 @@ function Login() {
                                 : <EyeOff size={20} onClick={() => setVerClave(true)} />
                         }
                     ></AuthInput>
+                    
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
                     <AuthButton type="submit" disabled={cargando}>{cargando ? 'Inicia sesión' : 'Inicia sesión'}</AuthButton>

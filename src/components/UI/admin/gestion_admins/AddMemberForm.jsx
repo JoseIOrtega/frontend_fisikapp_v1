@@ -7,13 +7,13 @@ import style from './AddMemberForm.module.css';
 // 1. LA FUNCIÓN VA AFUERA (así no marca error de referencia)
 const generarClave = () => `Fisikapp_${Math.random().toString(36).substring(2, 8)}`;
 
-function AddMemberForm({ onSave, onCancel, cargando }) {
+function AddMemberForm({ onSave, onCancel, cargando, errores }) {
     
     // 2. ESTADO INICIAL: Llamamos a la función aquí mismo
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
-        rol: 'admin',
+        rol: 'administrador',
         clave: generarClave() // Así ya nace con una clave y no necesitas el useEffect inicial
     });
 
@@ -44,6 +44,7 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
                 onChange={handleChange} 
                 placeholder="Ej. Carlos Martínez" 
                 required 
+                error={errores?.nombre}
             />
             
             <AuthInput 
@@ -54,6 +55,7 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
                 onChange={handleChange} 
                 placeholder="admin@fisikapp.com" 
                 required 
+                error={errores?.correo}
             />
 
             <div className={style.row}>
@@ -61,7 +63,7 @@ function AddMemberForm({ onSave, onCancel, cargando }) {
                     <label className={style.label}>Rol de usuario</label>
                     <select 
                         name="rol"
-                        className={style.select}
+                        className={`${style.select} ${errores?.rol ? style.selectError : ''}`}
                         value={formData.rol} 
                         onChange={handleChange}
                     >

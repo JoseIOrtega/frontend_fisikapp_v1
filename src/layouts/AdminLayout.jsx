@@ -5,7 +5,7 @@ import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
 import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
 // --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
-import { obtenerDatosPorId } from '../../src/services/admin/PerfilService';
+import { getPerfilUser} from '../../src/services/admin/PerfilService';
 
 function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,19 +34,16 @@ function AdminLayout({ children, onSearch }) {
           const id = localStorage.getItem('user_id');
           const nombreEnMochila = localStorage.getItem('user_name');
 
-          // Si hay ID y el nombre es el provisional (el del correo o "Usuario")
-          if (id && (!nombreEnMochila || nombreEnMochila.includes('@') || nombreEnMochila === "Usuario")) {
+          // Solo si el nombre realmente falta o es inválido, hacemos el fetch
+          if (id && (!nombreEnMochila || nombreEnMochila === "null" || nombreEnMochila === "undefined")) {
               try {
-                  // Llamamos a la función que estandarizamos con la URL correcta
                   const usuario = await obtenerDatosPorId(id); 
-                  
                   if (usuario && usuario.nombre) {
                       localStorage.setItem('user_name', usuario.nombre);
-                      // Avisamos al Navbar para que cambie el nombre en tiempo real
                       window.dispatchEvent(new Event('storage'));
                   }
               } catch (e) {
-                  console.error("Error al sincronizar el nombre real:", e);
+                  console.error("Error al sincronizar:", e);
               }
           }
       };
