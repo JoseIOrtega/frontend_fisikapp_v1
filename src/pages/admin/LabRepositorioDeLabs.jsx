@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout"
-import AdminDataTable from "../../components/UI/AdminDataTable"
-import AdminIconButton from "../../components/UI/AdminIconButton";
+import AdminDataTable from "../../components/UI/admin/AdminDataTable"
+import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import { Edit, Eye, Trash2, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import { getLaboratorios } from '../../services/admin/labData';
