@@ -22,9 +22,12 @@ function Login() {
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
 
+<<<<<<< HEAD
         // Limpiamos TODO para empezar de cero
         localStorage.clear(); 
 
+=======
+>>>>>>> Joan
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
             return;
@@ -63,7 +66,11 @@ function Login() {
             }
         } catch (error) {
             console.error("Error en login:", error);
+<<<<<<< HEAD
             showModal('error', 'Error al conectar con el servidor.');
+=======
+            showModal('error', error.message || 'Error al conectar con el servidor.');
+>>>>>>> Joan
         } finally {
             setCargando(false);
         }

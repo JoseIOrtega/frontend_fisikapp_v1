@@ -55,6 +55,7 @@
     font-weight: 600;
     transition: all 0.3s ease;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 /* --- ESTADO ACTIVO (El que se veía oscuro) --- */
@@ -96,6 +97,76 @@
        sino texto blanco con fondo sutil */
     background-color: rgba(255, 255, 255, 0.05);
     color: #FFFFFF;
+}
+
+/* Contenedor del grupo */
+.subMenuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.linkContent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilo para cuando el padre está activo pero el menú cerrado */
+.activeParent {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* La flechita */
+.arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.arrowRotate {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de sub-items con efecto de deslizamiento */
+.subMenuItems {
+    max-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px;
+    gap: 5px;
+    transition: max-height 0.3s ease-out;
+}
+
+.subMenuItems.show {
+    max-height: 200px;
+    margin-bottom: 10px;
+}
+
+/* Estilo de los links hijos */
+.subLink {
+    color: #A3AED0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.subLink:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeSubLink {
+    color: #18ffba;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
 }
 
 .sectionTitle {
