@@ -4,6 +4,9 @@ import AdminLayout from "../../layouts/AdminLayout"
 import AdminCreateButton from "../../components/UI/AdminCreateButton"
 import { FlaskConical, Plus, Target, Key } from 'lucide-react';
 import { saveLaboratorio } from '../../services/admin/labData';
+import ModalCategoria from '../../components/modals/ModalCategoria';
+import ModalObjetivos from '../../components/modals/ModalObjetivos';
+import ModalPalabrasClaves from '../../components/modals/ModalPalabrasClaves';
 import style from './LabConfigurarLabs.module.css'
 
 const defaultForm = {
@@ -23,6 +26,16 @@ function LabConfigurarLabs() {
   const [formData, setFormData] = useState(defaultForm);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Estados para modales
+  const [showModalCategoria, setShowModalCategoria] = useState(false);
+  const [showModalObjetivos, setShowModalObjetivos] = useState(false);
+  const [showModalPalabrasClaves, setShowModalPalabrasClaves] = useState(false);
+
+  // Listas para guardar datos agregados
+  const [categorias, setCategorias] = useState([]);
+  const [objetivos, setObjetivos] = useState([]);
+  const [palabrasClaves, setPalabrasClaves] = useState([]);
 
   useEffect(() => {
     const laboratorio = location.state?.laboratorio;
@@ -105,6 +118,30 @@ function LabConfigurarLabs() {
     }
   };
 
+  // Funciones para modales de Categoría
+  const handleOpenModalCategoria = () => setShowModalCategoria(true);
+  const handleCloseModalCategoria = () => setShowModalCategoria(false);
+  const handleSaveCategoria = (data) => {
+    setCategorias([...categorias, data]);
+    handleCloseModalCategoria();
+  };
+
+  // Funciones para modales de Objetivos
+  const handleOpenModalObjetivos = () => setShowModalObjetivos(true);
+  const handleCloseModalObjetivos = () => setShowModalObjetivos(false);
+  const handleSaveObjetivos = (data) => {
+    setObjetivos([...objetivos, data]);
+    handleCloseModalObjetivos();
+  };
+
+  // Funciones para modales de Palabras Claves
+  const handleOpenModalPalabrasClaves = () => setShowModalPalabrasClaves(true);
+  const handleCloseModalPalabrasClaves = () => setShowModalPalabrasClaves(false);
+  const handleSavePalabrasClaves = (data) => {
+    setPalabrasClaves([...palabrasClaves, data]);
+    handleCloseModalPalabrasClaves();
+  };
+
   return (
     <AdminLayout>
       <div className={style["layout"]}>
@@ -119,7 +156,7 @@ function LabConfigurarLabs() {
           </div>
         )}
 
-        <div>
+        <div className={style.form_bubble}>
           <div className={style.form_container}>
 
             <section className={style.form_section}>
@@ -154,7 +191,7 @@ function LabConfigurarLabs() {
                     type="button"
                     className={style.btn_plus_secondary}
                     title="Crear Nueva Categoría"
-                    onClick={() => {}}
+                    onClick={handleOpenModalCategoria}
                   >
                     <Plus size={18} />
                   </button>
@@ -209,7 +246,7 @@ function LabConfigurarLabs() {
 
                                         className={style.btn_plus_secondary}
 
-                                        onClick={() => {/* Lógica para abrir modal de Objetivos */}}
+                                        onClick={handleOpenModalObjetivos}
 
                                     >
 
@@ -241,7 +278,7 @@ function LabConfigurarLabs() {
 
                                         className={style.btn_plus_secondary}
 
-                                        onClick={() => {/* Lógica para abrir modal de Palabras Clave */}}
+                                        onClick={handleOpenModalPalabrasClaves}
 
                                     >
 
@@ -364,6 +401,24 @@ function LabConfigurarLabs() {
           </div>
         </div>
       </div>
+
+      {/* Modales */}
+      <ModalCategoria 
+        show={showModalCategoria} 
+        onHide={handleCloseModalCategoria}
+        onSave={handleSaveCategoria}
+      />
+      <ModalObjetivos 
+        show={showModalObjetivos} 
+        onHide={handleCloseModalObjetivos}
+        onSave={handleSaveObjetivos}
+      />
+      <ModalPalabrasClaves 
+        show={showModalPalabrasClaves} 
+        onHide={handleCloseModalPalabrasClaves}
+        onSave={handleSavePalabrasClaves}
+      />
+
     </AdminLayout>
   )
 }
