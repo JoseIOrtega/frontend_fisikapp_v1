@@ -42,7 +42,7 @@ function GestionAdmin() {
       // FILTRO CRUCIAL: Solo permitimos roles de gestión en esta vista
       const soloAdmins = usuarios.filter(u => 
         //u.rol === 'administrador' || u.rol === 'superadmin'
-        u.rol === 'administrador' 
+        u.rol === 'admin' 
       );
 
       // Cruzamos los datos con los Logs para obtener la fecha de ingreso

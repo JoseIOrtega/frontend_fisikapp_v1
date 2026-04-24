@@ -13,7 +13,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
-        rol: 'administrador',
+        rol: 'admin',
         clave: generarClave() // Así ya nace con una clave y no necesitas el useEffect inicial
     });
 
