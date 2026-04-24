@@ -2,7 +2,7 @@ import { API_CONFIG } from '../apiConfig';
 
 
 // Para obtener los datos por ID usando la configuración global
-export const obtenerDatosPorId = async (id) => {
+export const getPerfilUse = async (id) => {
     const token = localStorage.getItem('token');
     
     //const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${id}/`;
@@ -12,7 +12,7 @@ export const obtenerDatosPorId = async (id) => {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Token ${token}` // <--- Usamos 'Token' como en tus otros servicios
+            "Authorization": `Bearer ${token}` // <--- Usamos 'Token' como en tus otros servicios
         }
     });
 

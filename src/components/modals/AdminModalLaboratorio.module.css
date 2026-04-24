@@ -1,0 +1,194 @@
+/* Modal Container - Personalización del modal */
+.modalContent :global(.modal-content) {
+    background: var(--blanco-puro);
+    border: 1px solid rgba(57, 173, 215, 0.3);
+    border-radius: var(--radio-card);
+    box-shadow: var(--sombra-pro);
+}
+
+.modalContent :global(.modal-header) {
+    background: var(--color-principal);
+    border-bottom: 1px solid rgba(57, 173, 215, 0.3);
+    border-radius: var(--radio-card) var(--radio-card) 0 0;
+    padding: var(--espacio-lg);
+}
+
+.modalContent :global(.modal-title) {
+    color: var(--blanco-puro);
+    font-size: var(--fuente-subtitulo);
+    font-weight: var(--peso-bold);
+}
+
+.modalContent :global(.btn-close) {
+    background-color: var(--blanco-puro);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.modalContent :global(.btn-close:hover) {
+    opacity: 1;
+}
+
+.modalContent :global(.modal-body) {
+    padding: var(--espacio-lg);
+    background-color: var(--blanco-puro);
+}
+
+.modalContent :global(.modal-footer) {
+    background-color: var(--gris-suave);
+    border-top: 1px solid rgba(57, 173, 215, 0.2);
+    padding: var(--espacio-lg);
+    gap: var(--espacio-md);
+}
+
+/* Personalización de Form Labels */
+.modalContent :global(.form-label) {
+    color: var(--color-principal);
+    font-weight: var(--peso-semi);
+    font-size: var(--fuente-base);
+    margin-bottom: var(--espacio-sm);
+    display: block;
+}
+
+/* Personalización de Form Controls (Inputs) */
+.modalContent :global(.form-control) {
+    background-color: var(--gris-suave);
+    border: 1px solid rgba(20, 32, 80, 0.2);
+    border-radius: var(--radio-input);
+    color: var(--color-principal);
+    font-size: var(--fuente-base);
+    padding: var(--espacio-md);
+    transition: all 0.3s ease;
+}
+
+.modalContent :global(.form-control:focus) {
+    background-color: var(--blanco-puro);
+    border-color: var(--color-acento);
+    box-shadow: 0 0 0 0.2rem rgba(57, 173, 215, 0.25);
+    color: var(--color-principal);
+}
+
+.modalContent :global(.form-control:disabled) {
+    background-color: #e9ecef;
+    border-color: rgba(20, 32, 80, 0.1);
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.modalContent :global(.form-control::placeholder) {
+    color: #999;
+    font-size: var(--fuente-pequena);
+}
+
+/* Personalización de Form Select */
+.modalContent :global(.form-select) {
+    background-color: var(--gris-suave);
+    border: 1px solid rgba(20, 32, 80, 0.2);
+    border-radius: var(--radio-input);
+    color: var(--color-principal);
+    font-size: var(--fuente-base);
+    padding: var(--espacio-md);
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23142050' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--espacio-md) center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+.modalContent :global(.form-select:focus) {
+    background-color: var(--blanco-puro);
+    border-color: var(--color-acento);
+    box-shadow: 0 0 0 0.2rem rgba(57, 173, 215, 0.25);
+    color: var(--color-principal);
+}
+
+.modalContent :global(.form-select:disabled) {
+    background-color: #e9ecef;
+    border-color: rgba(20, 32, 80, 0.1);
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.modalContent :global(.form-select option) {
+    color: var(--color-principal);
+    background-color: var(--blanco-puro);
+}
+
+/* Personalización de Botones */
+.modalContent :global(.btn-primary) {
+    background-color: var(--color-principal);
+    border: none;
+    color: var(--blanco-puro);
+    font-weight: var(--peso-semi);
+    font-size: var(--fuente-base);
+    padding: var(--espacio-sm) var(--espacio-lg);
+    border-radius: var(--radio-boton);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.modalContent :global(.btn-primary:hover) {
+    background-color: #2d89aa;
+    box-shadow: 0 4px 12px rgba(57, 173, 215, 0.4);
+    transform: translateY(-2px);
+}
+
+.modalContent :global(.btn-primary:active) {
+    background-color: #238496;
+    transform: translateY(0);
+}
+
+.modalContent :global(.btn-secondary) {
+    background-color: #6c757d;
+    border: none;
+    color: var(--blanco-puro);
+    font-weight: var(--peso-semi);
+    font-size: var(--fuente-base);
+    padding: var(--espacio-sm) var(--espacio-lg);
+    border-radius: var(--radio-boton);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.modalContent :global(.btn-secondary:hover) {
+    background-color: #5a6268;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.modalContent :global(.btn-secondary:active) {
+    background-color: #545b62;
+    transform: translateY(0);
+}
+
+/* Form Groups - Espaciado */
+.modalContent :global(.form-group) {
+    margin-bottom: var(--espacio-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modalContent :global(.modal-lg) {
+        max-width: 90%;
+    }
+
+    .modalContent :global(.modal-body) {
+        padding: var(--espacio-md);
+    }
+
+    .modalContent :global(.modal-header) {
+        padding: var(--espacio-md);
+    }
+
+    .modalContent :global(.modal-footer) {
+        padding: var(--espacio-md);
+        flex-direction: column;
+    }
+
+    .modalContent :global(.btn) {
+        width: 100%;
+    }
+}

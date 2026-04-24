@@ -31,7 +31,20 @@ export const registerUser = async (datos) => {
         },
         body: JSON.stringify(datos)
     });
-    return response;
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        const claves = Object.keys(result);
+        if (claves.length > 0) {
+            const primerError = result[claves[0]];
+            const mensaje = Array.isArray(primerError) ? primerError[0] : primerError;
+            throw new Error(mensaje);
+        }
+        throw new Error('Error al registrar');
+    }
+
+    return result;
 };
 
 
