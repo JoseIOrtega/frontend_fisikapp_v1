@@ -1,0 +1,147 @@
+/* Modal Container - Personalización del modal */
+.modalContent :global(.modal-content) {
+    background: var(--blanco-puro);
+    border: 1px solid rgba(24, 255, 186, 0.3);
+    border-radius: var(--radio-card);
+    box-shadow: 0 12px 40px rgba(24, 255, 186, 0.1);
+}
+
+.modalContent :global(.modal-header) {
+    background: linear-gradient(135deg, #18ffba 0%, #05CD99 100%);
+    border-bottom: 1px solid rgba(24, 255, 186, 0.2);
+    border-radius: var(--radio-card) var(--radio-card) 0 0;
+    padding: var(--espacio-lg);
+}
+
+.modalContent :global(.modal-title) {
+    color: #1B2559;
+    font-size: var(--fuente-subtitulo);
+    font-weight: var(--peso-bold);
+}
+
+.modalContent :global(.btn-close) {
+    background-color: #1B2559;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.modalContent :global(.btn-close:hover) {
+    opacity: 1;
+}
+
+.modalContent :global(.modal-body) {
+    padding: var(--espacio-lg);
+    background-color: var(--blanco-puro);
+}
+
+.modalContent :global(.modal-footer) {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(24, 255, 186, 0.2);
+    padding: var(--espacio-lg);
+    gap: var(--espacio-md);
+}
+
+/* Personalización de Form Labels */
+.modalContent :global(.form-label) {
+    color: #1B2559;
+    font-weight: var(--peso-semi);
+    font-size: var(--fuente-base);
+    margin-bottom: var(--espacio-sm);
+    display: block;
+}
+
+/* Personalización de Form Controls (Inputs) */
+.modalContent :global(.form-control) {
+    background-color: #F4F7FE;
+    border: 1px solid #E0E5F2;
+    border-radius: var(--radio-input);
+    color: #1B2559;
+    font-size: var(--fuente-base);
+    padding: var(--espacio-md);
+    transition: all 0.3s ease;
+}
+
+.modalContent :global(.form-control:focus) {
+    background-color: var(--blanco-puro);
+    border-color: #18ffba;
+    box-shadow: 0 0 0 0.2rem rgba(24, 255, 186, 0.25);
+    color: #1B2559;
+}
+
+.modalContent :global(.form-control:disabled) {
+    background-color: #e9ecef;
+    border-color: rgba(24, 255, 186, 0.1);
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.modalContent :global(.form-control::placeholder) {
+    color: #A3AED0;
+    font-size: var(--fuente-pequena);
+}
+
+/* Personalización de Form Select */
+.modalContent :global(.form-select) {
+    background-color: #F4F7FE;
+    border: 1px solid #E0E5F2;
+    border-radius: var(--radio-input);
+    color: #1B2559;
+    font-size: var(--fuente-base);
+    padding: var(--espacio-md);
+    transition: all 0.3s ease;
+}
+
+.modalContent :global(.form-select:focus) {
+    background-color: var(--blanco-puro);
+    border-color: #18ffba;
+    box-shadow: 0 0 0 0.2rem rgba(24, 255, 186, 0.25);
+    color: #1B2559;
+}
+
+/* Personalización de Botones */
+.modalContent :global(.btn-primary) {
+    background-color: #18ffba;
+    border-color: #18ffba;
+    color: #1B2559;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modalContent :global(.btn-primary:hover) {
+    background-color: #05CD99;
+    border-color: #05CD99;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(24, 255, 186, 0.3);
+}
+
+.modalContent :global(.btn-secondary) {
+    background-color: #E0E5F2;
+    border-color: #E0E5F2;
+    color: #1B2559;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modalContent :global(.btn-secondary:hover) {
+    background-color: #D0D5E2;
+    border-color: #D0D5E2;
+}
+
+/* Mensajes de error y validación */
+.modalContent :global(.invalid-feedback) {
+    color: #EE5D50;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+
+.modalContent :global(.is-invalid) {
+    border-color: #EE5D50 !important;
+}
+
+.modalContent :global(.text-muted) {
+    color: #A3AED0 !important;
+    font-size: 13px;
+}
