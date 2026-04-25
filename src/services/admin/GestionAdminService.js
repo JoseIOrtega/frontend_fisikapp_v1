@@ -48,7 +48,8 @@ export const crearNuevoAdmin = async (datosAdmin) => {
                 correo: datosAdmin.correo,
                 password: datosAdmin.clave,
                 rol: datosAdmin.rol,
-                estado: true 
+                estado: true,
+                foto: null,
             }),
         });
 
