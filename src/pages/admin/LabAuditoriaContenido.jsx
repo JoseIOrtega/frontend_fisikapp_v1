@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { getLaboratorios } from "../../services/admin/LabAuditoriaContenidoService";
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminCrateButton from "../../components/UI/admin/AdminCreateButton"
 import AdminDataTable from "../../components/UI/admin/AdminDataTable"
@@ -9,9 +9,10 @@ import { getRelativeTime } from '../../utils/dateHelpers';
 import style from './LabAuditoriaContenido.module.css'
 
 
+
+
 function LabAuditoriaContenido() {
-
-
+  const [laboratorios, setLaboratorios] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const columnas = [
@@ -23,49 +24,26 @@ function LabAuditoriaContenido() {
     { label: "Acciones", style: { textAlign: 'center' } }
   ];
 
-const [laboratorios, setLaboratorios] = useState([]);
+    useEffect(() => {
+      fetchLaboratorios();
+    }, []);
 
-useEffect(() => {
   const fetchLaboratorios = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/laboratorios/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MTM5NzU2LCJpYXQiOjE3NzcxMzI1NTYsImp0aSI6IjE4NWNjYjVjNDI1OTRhZWM5ZTAwZjg2ZDAwYjg2Nzg0IiwidXNlcl9pZCI6IjYifQ.6lco2uH0xL2-EyLdvwNSRBwDubyfvpX6LSmmaO-ZxMA`
-        }
-      });
-
-      const data = await response.json();
-      console.log("DATA:", data);
-
-      if (Array.isArray(data)) {
-        setLaboratorios(data);
-      } else {
-        console.error("No es array:", data);
-        setLaboratorios([]);
-      }
-
+      const data = await getLaboratorios();
+      setLaboratorios(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
       setLaboratorios([]);
     }
   };
 
-  fetchLaboratorios();
-}, []);
+
 
 const filteredAdmins = Array.isArray(laboratorios)
-  ? laboratorios.filter((lab) => {
-      const search = searchTerm.toLowerCase();
-
-      return (
-        (lab.titulo_lab || "").toLowerCase().includes(search) ||
-        (String(lab.categoria || "")).toLowerCase().includes(search) ||
-        (String(lab.creador || "")).toLowerCase().includes(search) ||
-        (lab.estado ? "activo" : "inactivo").includes(search)
-      );
-    })
+  ? laboratorios.filter((lab) =>
+      lab.titulo_lab?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   : [];
   
   return (
@@ -81,18 +59,40 @@ const filteredAdmins = Array.isArray(laboratorios)
               data={filteredAdmins}
               renderRow={(laboratorio) => (
                 <tr key={laboratorio.id}>
-                  <td className={style.nombre_laboratorio}>{laboratorio.titulo_lab}</td>
+                  
+                  <td className={style.nombre_laboratorio}>
+                    {laboratorio.titulo_lab}
+                  </td>
+
                   <td>{laboratorio.categoria}</td>
-                  <td><span className={style.creador}>{laboratorio.creador}</span></td>
-                  <td><span className={laboratorio.estado ? style.statusActive : style.statusInactive}>{laboratorio.estado ? "Activo" : "Inactivo"}</span></td>
-                  <td title={new Date(laboratorio.fecha_actualizacion).toLocaleString()} style={{ cursor: 'help' }}>{getRelativeTime(laboratorio.fecha_actualizacion)}</td>
+
+                  <td>
+                    <span className={style.creador}>
+                      {laboratorio.creador}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span className={laboratorio.estado ? style.statusActive : style.statusInactive}>
+                      {laboratorio.estado ? "Activo" : "Inactivo"}
+                    </span>
+                  </td>
+
+                  <td title={new Date(laboratorio.fecha_actualizacion).toLocaleString()}>
+                    {getRelativeTime(laboratorio.fecha_actualizacion)}
+                  </td>
+
                   <td className={style.actionsDetails}>
                     <AdminIconButton icon={Eye} title="ver" type="detail"/>
-                    <AdminIconButton icon={laboratorio.estado ? UserX : UserCheck} type="delete"/>
+                    <AdminIconButton 
+                      icon={laboratorio.estado ? UserX : UserCheck} 
+                      type="delete"
+                    />
                   </td>
+
                 </tr>
               )}
-            ></AdminDataTable>
+            />
         </div>
     </AdminLayout>
   )
