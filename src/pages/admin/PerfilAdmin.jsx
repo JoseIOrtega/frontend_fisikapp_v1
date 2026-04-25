@@ -22,7 +22,12 @@ function PerfilAdmin() {
     });
 
     // 2. Datos de seguridad (ESTE es el que usaremos para los inputs de clave)
-    const [passData, setPassData] = useState({ old_password: '', new_password: '' });
+    // const [passData, setPassData] = useState({ old_password: '', new_password: '' });
+    const [passData, setPassData] = useState({ 
+        old_password: '', 
+        new_password: '', 
+        confirmar_password: '' // <-- Agregamos la confirmacion
+    });
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -54,7 +59,7 @@ function PerfilAdmin() {
         setEditando(false);
         
         // 2. Limpiamos los campos de contraseña para que no se queden escritos
-        setPassData({ old_password: '', new_password: '' });
+        setPassData({ old_password: '', new_password: '', confirm_password: '' });
         
         // 3. Quitamos la previsualización de la foto nueva
         setPreviewImage(null);
@@ -94,6 +99,8 @@ function PerfilAdmin() {
             fechaFormateada !== copiaRespaldo.fecha_nacimiento; // Comparamos con la formateada
 
         const cambioPerfil = hayNuevaFoto || cambioTextoPerfil;
+        // const cambioClave = passData.old_password && passData.new_password;
+        
         const cambioClave = passData.old_password && passData.new_password;
 
         // PARTE 1: Actualizar Perfil y Foto (Solo si detectamos cambios)
@@ -135,6 +142,13 @@ function PerfilAdmin() {
 
         // PARTE 2: Actualizar Contraseña
         if (cambioClave) {
+            // Validación de coincidencia antes de enviar
+            if (passData.new_password !== passData.confirmar_password) {
+                showModal('error', 'La nueva contraseña y la confirmación no coinciden.');
+                return; 
+            }
+            
+            // Si pasan, enviamos el objeto passData completo (que ya tiene las 3 llaves)
             await changePasswordUser(passData);
         }
 
@@ -152,7 +166,7 @@ function PerfilAdmin() {
 
         // Finalizamos el modo edición y limpiamos claves
         setEditando(false);
-        setPassData({ old_password: '', new_password: '' });
+        setPassData({ old_password: '', new_password: '', confirm_password: '' });
 
     }catch (error) {
             // 1. Siempre dejamos el log para aprender a debugear
@@ -162,6 +176,7 @@ function PerfilAdmin() {
             if (error && error.error) {
                 // Aquí entrará tanto "Contraseña actual incorrecta" como errores de la nueva clave
                 showModal('error', error.error);
+                return;
             } 
 
             // A. Error de Identificación (El que viste en consola)
@@ -275,6 +290,16 @@ function PerfilAdmin() {
                                 value={passData.new_password} // <-- Conectado a passData
                                 onChange={handlePassChange}
                                 placeholder="Mínimo 8 caracteres"
+                            />
+
+                            {/* --- NUEVO INPUT DE CONFIRMACIÓN --- */}
+                            <AuthInput 
+                                label="Repetir Nueva Contraseña" 
+                                name="confirmar_password" 
+                                type="password" 
+                                value={passData.confirmar_password}
+                                onChange={handlePassChange}
+                                placeholder="Escribe de nuevo la contraseña"
                             />
                         </div>
                     )}

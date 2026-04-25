@@ -39,25 +39,36 @@ function GestionAdmin() {
         getLoginLogsService(),
       ]);
 
-      // FILTRO CRUCIAL: Solo permitimos roles de gestión en esta vista
-      const soloAdmins = usuarios.filter(u => 
-        //u.rol === 'administrador' || u.rol === 'superadmin'
-        u.rol === 'admin' 
-      );
+      // Imprimimos para verificar en consola (como en tu captura)
+      console.log("Usuarios cargados:", usuarios);
+      console.log("Logs cargados:", logs);
 
-      // Cruzamos los datos con los Logs para obtener la fecha de ingreso
-      const adminsConSuUltimaFecha = soloAdmins.map(admin => {
-        const logsDeEsteAdmin = logs.filter(l => 
-          Number(l.usuario) === Number(admin.id) && l.accion === "Login"
-        );
-        const logsOrdenados = logsDeEsteAdmin.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        return {
-          ...admin,
-          ultimo_ingreso_real: logsOrdenados.length > 0 ? logsOrdenados[0].fecha : null
-        };
+      // 1. Filtramos: Solo 'admin' o 'superadmin' si quieres ver ambos
+      const soloAdmins = usuarios.filter(u => u.rol === 'admin' || u.rol === 'superadmin');
+
+      // ... dentro de tu fetchDatos
+      // 2. CRUZAMOS DATOS
+      const resultadoFinal = soloAdmins.map(admin => {
+          // Buscamos cualquier log que pertenezca al ID de este administrador
+          const todosLosLogsDeEsteAdmin = logs.filter(l => 
+              Number(l.usuario) === Number(admin.id)
+          );
+
+          // Ordenamos por fecha de la más reciente a la más antigua
+          // Usamos el campo 'fecha' que vimos en tus capturas de Swagger
+          const logsOrdenados = todosLosLogsDeEsteAdmin.sort((a, b) => 
+              new Date(b.fecha) - new Date(a.fecha)
+          );
+
+          return {
+              ...admin,
+              // Tomamos la fecha del primer registro (el más actual)
+              ultimo_ingreso_real: logsOrdenados.length > 0 ? logsOrdenados[0].fecha : null
+          };
       });
 
-      setAdmins(adminsConSuUltimaFecha);
+      setAdmins(resultadoFinal);
+
     } catch (error) {
       console.error("Error al cargar:", error);
       showModal('error', 'No se pudieron sincronizar los datos de administración.');

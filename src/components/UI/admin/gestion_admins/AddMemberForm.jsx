@@ -59,6 +59,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
             />
 
             <div className={style.row}>
+                {/* Grupo del Select */}
                 <div className={style.selectGroup}>
                     <label className={style.label}>Rol de usuario</label>
                     <select 
@@ -72,11 +73,13 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
                     </select>
                 </div>
 
+                {/* Grupo de la Contraseña */}
                 <div className={style.passwordGroup}>
                     <AuthInput 
                         label="Contraseña Temporal" 
                         value={formData.clave} 
                         readOnly 
+                        // Si el AuthInput tiene un prop para estilos extra, úsalo para quitarle margenes
                     />
                     <button 
                         type="button" 

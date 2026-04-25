@@ -65,34 +65,8 @@ export const updatePerfilUser = async (dataAEnviar) => {
     }
     return await response.json();
 };
-// export const updatePerfilUser = async (dataAEnviar) => {
-//     const token = localStorage.getItem('token');
-//     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.PERFIL, {
-//         method: "PATCH",
-//         headers: { "Authorization": `Bearer ${token}` }, // Sin Content-Type para FormData
-//         body: dataAEnviar
-//     });
-//     if (!response.ok) throw new Error("Error al actualizar perfil");
-//     return await response.json();
-// };
 
-// Función para el cambio de la contraseña (JSON)
-// export const changePasswordUser = async (passwords) => {
-//     const token = localStorage.getItem('token');
-//     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CHANGE_PASSWORD, {
-//         method: "POST", // Usualmente es POST para cambios de seguridad
-//         headers: { 
-//             "Content-Type": "application/json",
-//             "Authorization": `Bearer ${token}` 
-//         },
-//         body: JSON.stringify(passwords)
-//     });
-//     if (!response.ok) {
-//         const error = await response.json();
-//         throw error; // Lanzamos el error del backend (ej: "Clave actual incorrecta")
-//     }
-//     return await response.json();
-// };
+// Función para cambiar la contraseña
 export const changePasswordUser = async (passwords) => {
     const token = localStorage.getItem('token');
     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CHANGE_PASSWORD, {
