@@ -7,6 +7,7 @@ import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import { FlaskConical, Edit, Eye, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from './LabAuditoriaContenido.module.css'
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -14,6 +15,15 @@ import style from './LabAuditoriaContenido.module.css'
 function LabAuditoriaContenido() {
   const [laboratorios, setLaboratorios] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const toggleEstadoLocal = (id) => {
+  const nuevos = laboratorios.map((lab) =>
+    lab.id === id ? { ...lab, estado: !lab.estado } : lab
+  );
+
+  setLaboratorios(nuevos);
+};
 
   const columnas = [
     { label: "Nombre de Laboratorio" },
@@ -83,11 +93,12 @@ const filteredAdmins = Array.isArray(laboratorios)
                   </td>
 
                   <td className={style.actionsDetails}>
-                    <AdminIconButton icon={Eye} title="ver" type="detail"/>
-                    <AdminIconButton 
-                      icon={laboratorio.estado ? UserX : UserCheck} 
-                      type="delete"
-                    />
+                    <AdminIconButton icon={Eye} title="ver" type="detail" onClick={()=> navigate(`/admin/laboratorios/${laboratorio.id}`)}/>
+                   <AdminIconButton   icon={laboratorio.estado ? UserX : UserCheck}  type="delete"  onClick={() => toggleEstadoLocal(laboratorio.id)}/>
+
+ 
+ 
+
                   </td>
 
                 </tr>
