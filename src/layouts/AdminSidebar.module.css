@@ -1,5 +1,5 @@
 .sidebar {
-    width: 290px;
+    width: 300px;
     height: 100vh;
     background-color: #142050;
     display: flex;
@@ -181,4 +181,86 @@
     padding: 0 20px;
     border-top: 1px solid #f0f2f5;
     padding-top: 20px;
+}
+
+/* Contenedor del grupo */
+.subMenuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.linkContent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilo para cuando el padre está activo pero el menú cerrado */
+.activeParent {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* La flechita */
+.arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.arrowRotate {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de sub-items con efecto de deslizamiento */
+.subMenuItems {
+    max-height: 0;
+    overflow: hidden;
+    /* transition: all 0.3s ease-in-out; */
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px; /* Para que se vea indentado */
+    gap: 5px;
+}
+
+.subMenuItems {
+    transition: max-height 0.3s ease-out;
+}
+
+.subMenuItems.show {
+    max-height: 200px; /* Un valor alto suficiente */
+    margin-bottom: 10px;
+}
+
+/* Estilo de los links hijos */
+.subLink {
+    color: #A3AED0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.subLink:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeSubLink {
+    color: #18ffba; /* Color vibrante para el hijo activo */
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 1028px) {
+    .main-content {
+        height: 100vh;
+        padding: 15px;
+        /* En móvil, a veces el padding del top debe ser mayor por el botón menú */
+        padding-top: 70px; 
+    }
 }

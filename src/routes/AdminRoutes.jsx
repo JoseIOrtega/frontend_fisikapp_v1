@@ -13,9 +13,9 @@ function AdminRoutes() {
   return (
     <Routes>
       <Route path="dashboard" element={<DashboardAdmin />} />
-      <Route path="laboratorio" element={<Navigate to="laboratorio/repositorio_labs" />} />
       <Route path="laboratorio/auditoria_contenido" element={<LabAuditoriaContenido />} />
       <Route path="laboratorio/repositorio_labs" element={<LabRepositorioDeLabs />} />
+      <Route path="laboratorio" element={<Navigate to="laboratorio/repositorio_labs" />} />
       <Route path="laboratorio/repositorio_labs/:id" element={<LabDetalleLaboratorio />} />
       <Route path="laboratorio/configurar_labs" element={<LabConfigurarLabs />} />
       <Route path="usuarios" element={<UsuariosAdmin />} />

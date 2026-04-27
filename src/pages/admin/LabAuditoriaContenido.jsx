@@ -1,7 +1,7 @@
 import AdminLayout from "../../layouts/AdminLayout"
-import AdminCreateButton from "../../components/UI/AdminCreateButton"
-import AdminDataTable from "../../components/UI/AdminDataTable"
-import AdminIconButton from "../../components/UI/AdminIconButton";
+import AdminCrateButton from "../../components/UI/admin/AdminCreateButton"
+import AdminDataTable from "../../components/UI/admin/AdminDataTable"
+import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import { FlaskConical, Edit, Eye, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from './LabAuditoriaContenido.module.css'

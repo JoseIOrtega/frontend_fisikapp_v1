@@ -37,6 +37,30 @@
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
+.headerPerfil {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.rol {
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 16px;
+    letter-spacing: 1px;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
 /* Botón mejorado */
 .btn {
   margin-top: 10px;
@@ -71,7 +95,7 @@
 .btnGuardar {
   margin-top: 15px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #4f46e5, #6366f1); /* azul degradado */
+  background: linear-gradient(135deg, #1d9750, #159c4d); /* azul degradado */
   color: white;
   font-weight: 600;
   font-size: 16px;
@@ -90,4 +114,105 @@
 .btnGuardar:active {
   transform: scale(0.97);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+.btnActualizar {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #38357c, #373877); /* azul degradado */
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btnActualizar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+}
+
+.btnActualizar:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+/* Cuando el input está bloqueado */
+.card input:disabled {
+    background-color: #e2e8f0; /* Un gris más oscuro */
+    color: #64748b;
+    cursor: not-allowed;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Botón cancelar por si se arrepienten */
+.btnCancelar {
+    margin-top: 5px;
+    padding: 10px;
+    background: #949393d5; /* Rojo */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+/* FOTO */
+
+/* PerfilAdmin.module.css */
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+/* PerfilAdmin.module.css */
+
+.avatarContainer {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  padding: 3px;
+  /* Usamos el azul oscuro profundo de tu marca */
+  background: #142050; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profileCircle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f1f5f9;
+  border: 3px solid white; 
+}
+
+.uploadBadge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  /* Este es el azul que usas en los iconos del Sidebar */
+  background: #18ffba; 
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid white;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.uploadBadge:hover {
+  background: #6f6ff5;
+  transform: scale(1.1);
 }

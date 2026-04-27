@@ -1,19 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import style from './AdminLayout.module.css';
 import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
 import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
+// --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
+import { getPerfilUser} from '../../src/services/admin/PerfilService';
 
 function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const location = useLocation();
+
+  const userRole = localStorage.getItem('user_role'); 
+  const esSuperAdmin = userRole === 'superadmin';
 
   // Diccionario de rutas para Fisikapp
   const routeNames = {
     "/admin/dashboard": "Dashboard",
-    "/admin/laboratorio": "Gestión de Laboratorios",
+    "/admin/laboratorio/auditoria_contenido": "Gestión de Laboratorios",
+    "/admin/laboratorio/repositorio_labs": "Gestión de Laboratorios",
+    "/admin/laboratorio/configurar_labs": "Gestión de Laboratorios",
     "/admin/usuarios": "Gestión de Usuarios",
     "/admin/perfil": "Mi Perfil",
     "/admin/gestionadmin": "Gestión de Admins",
@@ -22,6 +28,27 @@ function AdminLayout({ children, onSearch }) {
   // Buscamos el nombre basado en la ruta actual
   const currentTitle = routeNames[location.pathname] || "Panel de Control";
 
+  // Dentro de AdminLayout.jsx o un componente que envuelva el Dashboard
+  useEffect(() => {
+      const sincronizarNombre = async () => {
+          const id = localStorage.getItem('user_id');
+          const nombreEnMochila = localStorage.getItem('user_name');
+
+          // Solo si el nombre realmente falta o es inválido, hacemos el fetch
+          if (id && (!nombreEnMochila || nombreEnMochila === "null" || nombreEnMochila === "undefined")) {
+              try {
+                  const usuario = await obtenerDatosPorId(id); 
+                  if (usuario && usuario.nombre) {
+                      localStorage.setItem('user_name', usuario.nombre);
+                      window.dispatchEvent(new Event('storage'));
+                  }
+              } catch (e) {
+                  console.error("Error al sincronizar:", e);
+              }
+          }
+      };
+      sincronizarNombre();
+  }, []);
   return (
     <div className={style['admin-layout']}>
       {/* 1. Botón Hamburguesa: Solo se verá en móviles */}
@@ -39,7 +66,7 @@ function AdminLayout({ children, onSearch }) {
 
       {/* 3. Sidebar: Le pasamos una clase extra si está abierto */}
       <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
-        <AdminSidebar esSuperAdmin={true} />
+        <AdminSidebar esSuperAdmin={esSuperAdmin}/>
       </div>
 
       <div className={style['main-content']}>

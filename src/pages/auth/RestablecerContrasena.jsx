@@ -1,7 +1,7 @@
 import AuthLayout from "../../layouts/AuthLayout";
-import AuthForm from "../../components/UI/AuthForm";
-import AuthInput from "../../components/UI/AuthInput";
-import AuthButton from "../../components/UI/AuthButton";
+import AuthForm from "../../components/UI/auth/AuthForm";
+import AuthInput from "../../components/UI/auth/AuthInput";
+import AuthButton from "../../components/UI/auth/AuthButton";
 import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
 import style from "./RestablecerContrasena.module.css";

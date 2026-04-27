@@ -207,40 +207,6 @@
     font-size: 14px;
 }
 
-/* Estilos para validación y mensajes */
-.inputError {
-    border-color: #EE5D50 !important;
-}
-
-.errorText {
-    color: #EE5D50;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 4px;
-}
-
-.successMessage {
-    background-color: #10B981;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-align: center;
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .label_with_action {
     display: flex;
     justify-content: space-between;

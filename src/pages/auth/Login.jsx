@@ -1,12 +1,14 @@
 import AuthLayout from "../../layouts/AuthLayout";
-import AuthForm from "../../components/UI/AuthForm";
-import AuthInput from "../../components/UI/AuthInput";
-import AuthTextLink from "../../components/UI/AuthTextLink";
-import AuthButton from "../../components/UI/AuthButton";
+import AuthForm from "../../components/UI/auth/AuthForm";
+import AuthInput from "../../components/UI/auth/AuthInput";
+import AuthTextLink from "../../components/UI/auth/AuthTextLink";
+import AuthButton from "../../components/UI/auth/AuthButton";
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
 import { loginUser } from '../../services/auth/authService';
+import { registrarLogLogin } from '../../services/admin/GestionAdminService';
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
 function Login() {
@@ -14,37 +16,54 @@ function Login() {
     const { showModal } = useModal();
     const [correo, setCorreo] = useState('');
     const [clave, setClave] = useState('');
-    const [cargando, setCargando] = useState(false); // Nuevo: Estado para evitar doble clic
+    const [cargando, setCargando] = useState(false);
+    const [verClave, setVerClave] = useState(false); // Estado para el ojo
 
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
+
+        // Limpiamos TODO para empezar de cero
+        localStorage.clear(); 
 
         if (!correo || !clave) {
             showModal('warning', 'Por favor, completa todos los campos.');
             return;
         }
 
-        setCargando(true); // Desactivamos el botón mientras esperamos
+        setCargando(true);
 
         try {
             const datos = await loginUser(correo, clave);
-            if (datos && datos.access) {
-            
-                localStorage.setItem('token', datos.access);
-                if(datos.refresh) localStorage.setItem('refreshToken', datos.refresh);
+            console.log("DATOS RECIBIDOS:", datos);
 
-                showModal('success', '¡Bienvenido a Fisikapp!');
-                // Pequeña pausa para que el usuario vea el mensaje de éxito
+            if (datos && datos.access && datos.user) {
+                // 1. Guardamos el token
+                localStorage.setItem('token', datos.access);
+                
+                // 2. Guardamos la info del usuario DIRECTAMENTE del objeto 'user'
+                // Ya no necesitamos split('.'), atob(), ni JSON.parse manual.
+                localStorage.setItem('user_id', datos.user.id);
+                localStorage.setItem('user_name', datos.user.nombre);
+                localStorage.setItem('user_role', datos.user.rol);
+
+                // 3. Registrar Log (usando el ID que ya tenemos del objeto user)
+                try {
+                    await registrarLogLogin(datos.user.id);
+                } catch (logError) {
+                    console.error("Error en Log:", logError);
+                }
+
+                // 4. Redirección
                 setTimeout(() => {
                     navigate('/admin');
-                }, 1500);
+                }, 1000);
 
             } else {
-                showModal('error', 'Correo o contraseña incorrectos. Por favor, verifica tus datos.');
+                showModal('error', 'Credenciales incorrectas.');
             }
         } catch (error) {
             console.error("Error en login:", error);
-            showModal('error', error.message || 'Error al conectar con el servidor.');
+            showModal('error', 'Error al conectar con el servidor.');
         } finally {
             setCargando(false);
         }
@@ -59,11 +78,24 @@ function Login() {
             <div className={style.ubicacion}>
                 <AuthForm onSubmit={handleInciarSesionClick}>
                     <AuthInput label="Correo electrónico" type="text" value={correo} onChange={(e) => setCorreo(e.target.value)}  placeholder="correo@ejemplo.com" required />
-                    <AuthInput label="Contraseña" type="password" value={clave} onChange={(e) => setClave(e.target.value)}   placeholder="***********" required />
+                    <AuthInput 
+                        label="Contraseña" 
+                        type={verClave ? "text" : "password"} 
+                        value={clave} 
+                        onChange={(e) => setClave(e.target.value)}  
+                        placeholder="***********" 
+                        required 
+                        // PASAMOS EL ICONO COMO PROP
+                        iconAction={
+                            verClave 
+                                ? <Eye size={20} onClick={() => setVerClave(false)} /> 
+                                : <EyeOff size={20} onClick={() => setVerClave(true)} />
+                        }
+                    ></AuthInput>
                     
                     <AuthTextLink to="recuperar-contrasena">¿Olvidaste tu contraseña?</AuthTextLink>
             
-                    <AuthButton type="submit" disabled={cargando}>{cargando ? 'Entrando...' : 'Inicia sesión'}</AuthButton>
+                    <AuthButton type="submit" disabled={cargando}>{cargando ? 'Inicia sesión' : 'Inicia sesión'}</AuthButton>
                     <AuthButton type="button" onClick={handleRegisterClick} variant="secondary">Regístrate</AuthButton>
                 </AuthForm>
             </div>

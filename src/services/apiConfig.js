@@ -1,15 +1,14 @@
 const BASE_URL = "http://127.0.0.1:8000/api";
+//const BASE_URL = "https://backend-fisikapp.onrender.com";
 
 export const API_CONFIG = {
     BASE_URL,
     getHeaders: () => {
         // Buscamos el token del usuario que guardamos al hacer Login
-        // const token = localStorage.getItem('token'); 
+        const token = localStorage.getItem('token'); 
 
-        // Para realizar pruebas
-        const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc1NTAzNDM2LCJpYXQiOjE3NzU0MTcwMzYsImp0aSI6ImE2ODRiZDllZDI1NjRkZWZhNWJlZDY2MTAyOTc4NTU2IiwidXNlcl9pZCI6Mn0.mzxhtZSBCTfc79dtgoGaEXJf8FezaRtnnx8SO_XFBWM"
         return {
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json", // No lo vamos a usar porque puede interferir con la carga o envio de la foto de perfil
             //"apikey": "token_fijo_del_proyecto", // Este no cambia
             "Authorization": `Bearer ${token}`
         };
@@ -18,14 +17,21 @@ export const API_CONFIG = {
     // Centralizamos todas las Rutas
     ENDPOINTS: {
         AUTH: {
-            LOGIN: `${BASE_URL}/auth/login/`,        // Para Login.jsx
-            REGISTER: `${BASE_URL}/auth/register/`,  // Para RegistrarUsuario.jsx
-            RECOVER: `${BASE_URL}/auth/recover/`,    // Para RecuperarContrasena.jsx
-            RESET: `${BASE_URL}/auth/reset/`,        // Para RestablecerContrasena.jsx
+            LOGIN: `${BASE_URL}/users/login/`,                            // Para Login.jsx
+            REGISTER: `${BASE_URL}/users/register/`,                      // Para RegistrarUsuario.jsx
+            // RECOVER: `${BASE_URL}/auth/recover/`,                      // Para RecuperarContrasena.jsx
+            // RESET: `${BASE_URL}/api/users/restablecer-password/`,      // Para RestablecerContrasena.jsx
         },
 
         ADMIN: {
+            PERFIL:`${BASE_URL}/users/perfil/`,                             // Solo uso exclusivo para perfil  
+            CHANGE_PASSWORD: `${BASE_URL}/users/change-password/`,          // Para cambiar la contraseña en el perfil                 
+            USUARIO_DETALLE: (id) => `${BASE_URL}/users/usuarios/${id}/`,  // Para usuario por id.jsx
+            USUARIOS_BASE: `${BASE_URL}/users/usuarios/`,                  // Para todos los usuarios
+            USUARIOS_ADMIN:`${BASE_URL}/users/crear-admin/`,               // Para usuarios administradores
+            LOGS: `${BASE_URL}/logs/`,
             LABS: `${BASE_URL}/laboratorios`,  // Para LaboratorioAdmin.jsx - corregida según rutas Django
-        }
+        },
+
     }
 };
