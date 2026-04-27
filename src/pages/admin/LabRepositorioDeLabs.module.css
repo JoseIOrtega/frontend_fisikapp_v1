@@ -37,3 +37,12 @@
     gap: 8px;
     justify-content: center;
 }
+
+.filaBloqueada {
+    background-color: #E8E8E8;
+    transition: background-color 0.3s ease;
+}
+
+.filaBloqueada:hover {
+    background-color: #D9D9D9;
+}

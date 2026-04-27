@@ -20,4 +20,25 @@
 .reset { color: #4318FF; }
 .detail { color: #01B9FF; }
 .delete { color: #EE5D50; }
+.blocked { color: #FFFFFF; }
 .default { color: #A3AED0; }
+
+.blockedAnimation {
+    background: #EE5D50 !important;
+    border: 2px solid #FFFFFF !important;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.blockedAnimation:hover {
+    background: #E64540 !important;
+    transform: translateY(-2px);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(238, 93, 80, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(238, 93, 80, 0);
+    }
+}

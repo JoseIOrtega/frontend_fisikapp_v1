@@ -121,6 +121,35 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
     }
 };
 
+// Eliminar un laboratorio
+export const deleteLaboratorioAPI = async (id) => {
+    try {
+        const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}${id}/`, {
+            method: "DELETE",
+            headers: API_CONFIG.getHeaders()
+        });
+
+        console.log("Respuesta del servidor (DELETE):", response.status);
+
+        if (response.ok) {
+            return { success: true, message: "Laboratorio eliminado exitosamente" };
+        } else if (response.status === 401) {
+            return { success: false, error: "No autorizado - token inválido" };
+        } else if (response.status === 404) {
+            return { success: false, error: "Laboratorio no encontrado" };
+        } else {
+            const datos = await response.json().catch(() => ({}));
+            console.error("Error al eliminar laboratorio:", response.status, datos);
+            return { success: false, error: datos };
+        }
+    } catch (error) {
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            return { success: false, error: "Backend no disponible" };
+        }
+        return { success: false, error: "Error de conexión" };
+    }
+};
+
 // Función antigua mantenida por compatibilidad
 export const AdminLab = async (tituloLaboratorio, descripcion, introduxxion, marcoTeorico, categorIA, object, palabrasClave) => {
     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {
