@@ -1,27 +1,5 @@
 import { API_CONFIG } from '../apiConfig';
 
-
-// Para obtener los datos por ID usando la configuración global
-export const getPerfilUse = async (id) => {
-    const token = localStorage.getItem('token');
-    
-    //const url = `${API_CONFIG.ENDPOINTS.ADMIN.PERFIL}${id}/`;
-    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
-
-    const response = await fetch(url, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // <--- Usamos 'Token' como en tus otros servicios
-        }
-    });
-
-    if (!response.ok) throw new Error("No se pudo obtener el usuario por ID");
-
-    return await response.json();
-};
-
-
 // Funcion para traer los datos del usuario y agregarlos a los campos del formulario perfil
 export const getPerfilUser = async () => {
     const token = localStorage.getItem('token');

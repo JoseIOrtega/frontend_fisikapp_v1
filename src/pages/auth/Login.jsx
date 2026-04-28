@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../context/ModalContext'; // 1. Importamos el control remoto
 import { loginUser } from '../../services/auth/authService';
 import { registrarLogLogin } from '../../services/admin/GestionAdminService';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
@@ -18,6 +18,18 @@ function Login() {
     const [clave, setClave] = useState('');
     const [cargando, setCargando] = useState(false);
     const [verClave, setVerClave] = useState(false); // Estado para el ojo
+
+    // --- ESTE ES EL CÓDIGO QUE DEBES AGREGAR ---
+    useEffect(() => {
+        // Al cargar el Login, nos aseguramos de que no haya basura de sesiones viejas
+        // Esto evita que otros componentes intenten usar un token que ya no sirve
+        const tokenExistente = localStorage.getItem('token');
+        
+        if (tokenExistente) {
+            console.log("Sesión antigua detectada, limpiando para evitar errores 403...");
+            localStorage.clear(); 
+        }
+    }, []);
 
     const handleInciarSesionClick = async (e) => {
         if (e) e.preventDefault();
@@ -34,38 +46,32 @@ function Login() {
 
         try {
             const datos = await loginUser(correo, clave);
-            console.log("DATOS RECIBIDOS:", datos);
 
-            if (datos && datos.access && datos.user) {
-                // 1. Guardamos el token
-                localStorage.setItem('token', datos.access);
-                
-                // 2. Guardamos la info del usuario DIRECTAMENTE del objeto 'user'
-                // Ya no necesitamos split('.'), atob(), ni JSON.parse manual.
-                localStorage.setItem('user_id', datos.user.id);
-                localStorage.setItem('user_name', datos.user.nombre);
-                localStorage.setItem('user_role', datos.user.rol);
+            // Si llegamos aquí es porque el backend devolvió 200 OK
+            localStorage.setItem('token', datos.access);
+            localStorage.setItem('user_id', datos.user.id);
+            localStorage.setItem('user_name', datos.user.nombre);
+            localStorage.setItem('user_role', datos.user.rol);
 
-                // 3. Registrar Log (usando el ID que ya tenemos del objeto user)
-                try {
-                    await registrarLogLogin(datos.user.id);
-                } catch (logError) {
-                    console.error("Error en Log:", logError);
-                }
+            await registrarLogLogin(datos.user.id);
 
-                // 4. Redirección
-                setTimeout(() => {
-                    navigate('/admin');
-                }, 1000);
+            setTimeout(() => navigate('/admin'), 1000);
 
-            } else {
-                showModal('error', 'Credenciales incorrectas.');
-            }
         } catch (error) {
-            console.error("Error en login:", error);
-            showModal('error', 'Error al conectar con el servidor.');
-        } finally {
-            setCargando(false);
+
+            if (error.status === 403) {
+                // Aquí es donde capturamos el bloqueo de cuenta inactiva
+                // Usamos error.data.error porque así viene desde el backend
+                const mensaje = error.data?.error || 'Tu cuenta se encuentra inactiva.';
+                showModal('error', mensaje);
+            } else if (error.status === 400) {
+                showModal('error', 'Correo o contraseña incorrectos.');
+            } else if (error.status === 404) {
+                showModal('error', 'Correo o contraseña incorrectos.');
+            } else {
+                // Mensaje amigable para que no se estresen si falla otra cosa
+                showModal('error', 'Hubo un problema al conectar con el servidor.');
+            }
         }
     };
 

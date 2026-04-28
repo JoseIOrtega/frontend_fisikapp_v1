@@ -8,6 +8,7 @@ import { Eye, EyeOff, Camera } from 'lucide-react';
 
 function PerfilAdmin() {
     const { showModal } = useModal();
+    const [loading, setLoading] = useState(true);
     const [editando, setEditando] = useState(false);
     const [verClave, setVerClave] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -31,21 +32,33 @@ function PerfilAdmin() {
 
     useEffect(() => {
         const cargarDatos = async () => {
+            setLoading(true);
             try {
                 const dataObtenida = await getPerfilUser();
 
-                console.log("dataObtenida perfil:", dataObtenida);
                 if (dataObtenida) {
-                    setFormData({ ...dataObtenida });
-                    // Guardamos una copia exacta para usarla si el usuario da a "Cancelar"
-                    setCopiaRespaldo({ ...dataObtenida });
+                    // --- AQUÍ VA EL AJUSTE ---
+                    // Convertimos cualquier 'null' que venga de la base de datos en texto vacío ''
+                    const datosLimpios = {
+                        id: dataObtenida.id || '',
+                        nombre: dataObtenida.nombre || '',
+                        correo: dataObtenida.correo || '',
+                        fecha_nacimiento: dataObtenida.fecha_nacimiento || '',
+                        identificacion: dataObtenida.identificacion || '',
+                        institucion: dataObtenida.institucion || '',
+                        rol: dataObtenida.rol || '',
+                        foto: dataObtenida.foto || null // La foto sí puede ser null para mostrar el avatar por defecto
+                    };
+
+                    setFormData(datosLimpios);
+                    setCopiaRespaldo({ ...datosLimpios });
                 }
-            } catch {
-                showModal('error', 'No se pudieron cargar los datos.');
+            } catch (error) {
+                // Este catch atrapa el error 403 o fallos de red y muestra el modal
+                showModal('error', 'No se pudieron cargar los datos del perfil.');
+            } finally {
+                setLoading(false); // Apagamos el estado de carga pase lo que pase
             }
-            finally {
-            setLoading(false);
-        }
         };
         
         cargarDatos();
@@ -80,99 +93,101 @@ function PerfilAdmin() {
     };
 
     const handleGuardar = async () => {
-    try {
-        // 1. Detectamos qué quiere cambiar el usuario antes de procesar
-        // Revisamos si hay una nueva foto en camino
-        const hayNuevaFoto = formData.foto instanceof File;
+        setLoading(true);
+        try {
+            // 1. Detectamos qué quiere cambiar el usuario antes de procesar
+            // Revisamos si hay una nueva foto en camino
+            const hayNuevaFoto = formData.foto instanceof File;
 
-        // --- ARREGLO DE FECHA ---
-        // Forzamos que la fecha siempre sea YYYY-MM-DD para que Django no se queje
-        const fechaFormateada = formData.fecha_nacimiento ? new Date(formData.fecha_nacimiento).toISOString().split('T')[0] : null;
-        
-        // Revisamos si cambió algún texto comparándolo con nuestro respaldo
-        const cambioTextoPerfil = 
-            formData.nombre !== copiaRespaldo.nombre ||
-            formData.correo !== copiaRespaldo.correo ||
-            formData.identificacion !== copiaRespaldo.identificacion ||
-            formData.institucion !== copiaRespaldo.institucion ||
-            //formData.fecha_nacimiento !== copiaRespaldo.fecha_nacimiento;
-            fechaFormateada !== copiaRespaldo.fecha_nacimiento; // Comparamos con la formateada
-
-        const cambioPerfil = hayNuevaFoto || cambioTextoPerfil;
-        // const cambioClave = passData.old_password && passData.new_password;
-        
-        const cambioClave = passData.old_password && passData.new_password;
-
-        // PARTE 1: Actualizar Perfil y Foto (Solo si detectamos cambios)
-        if (cambioPerfil) {
-            const dataAEnviar = new FormData();
-            dataAEnviar.append('nombre', formData.nombre);
-            dataAEnviar.append('correo', formData.correo);
-            dataAEnviar.append('identificacion', formData.identificacion);
-            dataAEnviar.append('institucion', formData.institucion);
+            // --- ARREGLO DE FECHA ---
+            // Forzamos que la fecha siempre sea YYYY-MM-DD para que Django no se queje
+            const fechaFormateada = formData.fecha_nacimiento ? new Date(formData.fecha_nacimiento).toISOString().split('T')[0] : null;
             
-            // 1. CORRECCIÓN: No envíes formData.fecha_nacimiento arriba, usa SOLO la formateada aquí
-            if (fechaFormateada) {
-                dataAEnviar.append('fecha_nacimiento', fechaFormateada);
+            // Revisamos si cambió algún texto comparándolo con nuestro respaldo
+            const cambioTextoPerfil = 
+                formData.nombre !== copiaRespaldo.nombre ||
+                formData.correo !== copiaRespaldo.correo ||
+                formData.identificacion !== copiaRespaldo.identificacion ||
+                formData.institucion !== copiaRespaldo.institucion ||
+                //formData.fecha_nacimiento !== copiaRespaldo.fecha_nacimiento;
+                fechaFormateada !== copiaRespaldo.fecha_nacimiento; // Comparamos con la formateada
+
+            const cambioPerfil = hayNuevaFoto || cambioTextoPerfil;
+            // const cambioClave = passData.old_password && passData.new_password;
+            
+            const cambioClave = passData.old_password && passData.new_password;
+
+            // PARTE 1: Actualizar Perfil y Foto (Solo si detectamos cambios)
+            if (cambioPerfil) {
+                const dataAEnviar = new FormData();
+                dataAEnviar.append('nombre', formData.nombre);
+                dataAEnviar.append('correo', formData.correo);
+                dataAEnviar.append('identificacion', formData.identificacion);
+                dataAEnviar.append('institucion', formData.institucion);
+                
+                // 1. CORRECCIÓN: No envíes formData.fecha_nacimiento arriba, usa SOLO la formateada aquí
+                if (fechaFormateada) {
+                    dataAEnviar.append('fecha_nacimiento', fechaFormateada);
+                }
+                
+                if (hayNuevaFoto) {
+                    dataAEnviar.append('foto', formData.foto);
+                }
+
+                // 2. Enviamos al servidor
+                await updatePerfilUser(dataAEnviar);
+                
+                // 3. Pedimos los datos actualizados
+                const response = await getPerfilUser();
+                
+                // 4. CORRECCIÓN: Quitamos el setItem extra que tenías abajo y dejamos solo la validación
+                if (response.foto) {
+                    localStorage.setItem('user_photo', response.foto);
+                } else {
+                    localStorage.removeItem('user_photo');
+                }
+
+                // 5. Notificamos y sincronizamos
+                window.dispatchEvent(new Event('userUpdate'));
+                setFormData({ ...response });
+                setCopiaRespaldo({ ...response });
+                setPreviewImage(null); 
             }
-            
-            if (hayNuevaFoto) {
-                dataAEnviar.append('foto', formData.foto);
+
+            // PARTE 2: Actualizar Contraseña
+            if (cambioClave) {
+                // Validación de coincidencia antes de enviar
+                if (passData.new_password !== passData.confirmar_password) {
+                    showModal('error', 'La nueva contraseña y la confirmación no coinciden.');
+                    return; 
+                }
+                
+                // Si pasan, enviamos el objeto passData completo (que ya tiene las 3 llaves)
+                await changePasswordUser(passData);
             }
 
-            // 2. Enviamos al servidor
-            await updatePerfilUser(dataAEnviar);
-            
-            // 3. Pedimos los datos actualizados
-            const response = await getPerfilUser();
-            
-            // 4. CORRECCIÓN: Quitamos el setItem extra que tenías abajo y dejamos solo la validación
-            if (response.foto) {
-                localStorage.setItem('user_photo', response.foto);
+            // --- PARTE 3: MENSAJES PERSONALIZADOS ---
+            if (cambioPerfil && cambioClave) {
+                showModal('success', '¡Perfil y contraseña actualizados!');
+            } else if (cambioClave) {
+                showModal('success', '¡Contraseña actualizada con éxito!');
+            } else if (cambioPerfil) {
+                showModal('success', 'Perfil actualizado con éxito.');
             } else {
-                localStorage.removeItem('user_photo');
+                // Caso donde le dio guardar pero no movió nada
+                showModal('info', 'No se detectaron cambios para guardar.');
             }
 
-            // 5. Notificamos y sincronizamos
-            window.dispatchEvent(new Event('userUpdate'));
-            setFormData({ ...response });
-            setCopiaRespaldo({ ...response });
-            setPreviewImage(null); 
-        }
+            // Finalizamos el modo edición y limpiamos claves
+            setEditando(false);
+            setPassData({ old_password: '', new_password: '', confirm_password: '' });
 
-        // PARTE 2: Actualizar Contraseña
-        if (cambioClave) {
-            // Validación de coincidencia antes de enviar
-            if (passData.new_password !== passData.confirmar_password) {
-                showModal('error', 'La nueva contraseña y la confirmación no coinciden.');
-                return; 
-            }
+        }catch (err) {
+
+            const error = err.data || err; 
+            console.log("Detalle del error procesado:", error);
             
-            // Si pasan, enviamos el objeto passData completo (que ya tiene las 3 llaves)
-            await changePasswordUser(passData);
-        }
-
-        // --- PARTE 3: MENSAJES PERSONALIZADOS ---
-        if (cambioPerfil && cambioClave) {
-            showModal('success', '¡Perfil y contraseña actualizados!');
-        } else if (cambioClave) {
-            showModal('success', '¡Contraseña actualizada con éxito!');
-        } else if (cambioPerfil) {
-            showModal('success', 'Perfil actualizado con éxito.');
-        } else {
-            // Caso donde le dio guardar pero no movió nada
-            showModal('info', 'No se detectaron cambios para guardar.');
-        }
-
-        // Finalizamos el modo edición y limpiamos claves
-        setEditando(false);
-        setPassData({ old_password: '', new_password: '', confirm_password: '' });
-
-    }catch (error) {
-            // 1. Siempre dejamos el log para aprender a debugear
-            console.log("Error recibido del servidor:", error);
-
-            // 2. PRIORIDAD: Si el backend envía una propiedad llamada 'error' (como vimos en consola)
+            // PRIORIDAD: Si el backend envía una propiedad llamada 'error' (como vimos en consola)
             if (error && error.error) {
                 // Aquí entrará tanto "Contraseña actual incorrecta" como errores de la nueva clave
                 showModal('error', error.error);
@@ -206,17 +221,19 @@ function PerfilAdmin() {
                     showModal('error', mensajeOriginal);
                 }
             }
-            // 3. SECUNDARIO: Por si el formato cambia a validación por campos
+            // SECUNDARIO: Por si el formato cambia a validación por campos
             else if (error && error.new_password) {
                 showModal('error', `Nueva clave: ${error.new_password[0]}`);
             }
             else if (error && error.old_password) {
                 showModal('error', `Clave actual: ${error.old_password[0]}`);
             }
-            // 4. FINAL: Mensaje de emergencia si no hay respuesta clara
+            // FINAL: Mensaje de emergencia si no hay respuesta clara
             else {
                 showModal('error', 'No se pudieron guardar los cambios. Inténtalo más tarde.');
             }
+        }finally {
+            setLoading(false); // <--- 2. Lo apagamos pase lo que pase
         }
     };
 
@@ -228,12 +245,31 @@ function PerfilAdmin() {
         }
     };
 
-    
+    if (loading) {
+        // Reemplaza tu bloque "if (loading)" por este:
+        return (
+            <AdminLayout>
+                <div className={style.container}>
+                    {loading ? (
+                        // En lugar de una página blanca, mostramos un mensaje dentro del diseño
+                        <div className={style.skeletonContainer}>
+                            <p>Cargando datos del administrador...</p>
+                        </div>
+                    ) : (
+                        // Aquí va todo tu diseño actual del perfil
+                        <div className={style.profileContent}>
+                            {/* ... (Imagen, Inputs, Botones) ... */}
+                        </div>
+                    )}
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout>
             <div className={style["layout"]}>
-                <h2>Configuración</h2>
+                <h2 className={style.title}>Configuración</h2>
                 <div className={style["headerPerfil"]}>
                     <h3 className={style["rol"]}>{formData.rol ? formData.rol.toUpperCase() : ""}</h3>
                     
@@ -259,8 +295,8 @@ function PerfilAdmin() {
 
                     {/* INPUTS DE DATOS PERSONALES */}
                     <AuthInput label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} disabled={!editando} />
-                    <AuthInput label="Identificación" name="identificacion" value={formData.identificacion} onChange={handleChange} disabled={!editando}/>
-                    <AuthInput label="Correo electrónico" name="correo" value={formData.correo} onChange={handleChange} disabled={!editando}/>
+                    {/*<AuthInput label="Identificación" name="identificacion" value={formData.identificacion} onChange={handleChange} disabled={!editando}/>*/}
+                    {/*<AuthInput label="Correo electrónico" name="correo" value={formData.correo} onChange={handleChange} disabled={!editando}/>*/}
                     <AuthInput label="Fecha de Nacimiento" name="fecha_nacimiento" type="date" value={formData.fecha_nacimiento} onChange={handleChange} disabled={!editando}/>
                     <AuthInput label="Institución / Colegio" name="institucion" value={formData.institucion} onChange={handleChange} disabled={!editando}/>
 
@@ -309,7 +345,13 @@ function PerfilAdmin() {
                             <button className={style["btnActualizar"]} onClick={() => setEditando(true)}>Modificar Datos</button>
                         ) : (
                             <>
-                                <button className={style["btnGuardar"]} onClick={handleGuardar}>Guardar Cambios</button>
+                                <button 
+                                    className={style["btnGuardar"]} 
+                                    onClick={handleGuardar}
+                                    disabled={loading} 
+                                >
+                                    {loading ? "Guardando..." : "Guardar Cambios"} 
+                                </button>
                                 <button 
                                     className={style["btnCancelar"]} 
                                     onClick={handleCancelar}

@@ -10,7 +10,6 @@ export const getLaboratoriosAPI = async () => {
 
         if (response.ok) {
             const datos = await response.json();
-            console.log("Laboratorios obtenidos:", datos);
             return datos;
         } else if (response.status === 401) {
             console.warn("No autorizado - token inválido o expirado");
@@ -37,7 +36,6 @@ export const getLaboratorioByIdAPI = async (id) => {
 
         if (response.ok) {
             const datos = await response.json();
-            console.log("Laboratorio obtenido:", datos);
             return datos;
         } else {
             console.error("Error al obtener laboratorio:", response.status, response.statusText);
@@ -67,7 +65,6 @@ export const createLaboratorioAPI = async (laboratorioData) => {
         });
 
         const datos = await response.json();
-        console.log("Respuesta del servidor:", datos);
 
         if (response.ok) {
             return { success: true, data: datos };
@@ -103,7 +100,6 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
         });
 
         const datos = await response.json();
-        console.log("Respuesta del servidor:", datos);
 
         if (response.ok) {
             return { success: true, data: datos };
@@ -138,7 +134,6 @@ export const AdminLab = async (tituloLaboratorio, descripcion, introduxxion, mar
     });
 
     const datos = await response.json();
-    console.log("Respuesta del servidor:", datos);
 
     if (response.ok) {
         return datos;

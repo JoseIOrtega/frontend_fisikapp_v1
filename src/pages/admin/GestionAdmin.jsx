@@ -9,12 +9,14 @@ import {
     getAdminsService, 
     getLoginLogsService, 
     crearNuevoAdmin,
-    actualizarUsuarioService, // Importamos los nuevos servicios
+    actualizarUsuarioService 
 } from '../../services/admin/GestionAdminService';
 import { useModal } from '../../context/ModalContext';
 import GenericModal from '../../components/modals/GenericModal';
 import AddMemberForm from '../../components/UI/admin/gestion_admins/AddMemberForm';
 import style from './GestionAdmin.module.css';
+import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
+import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
 
 function GestionAdmin() {
   const [admins, setAdmins] = useState([]); 
@@ -24,6 +26,12 @@ function GestionAdmin() {
   const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [erroresBackend, setErroresBackend] = useState({});
+  // Para guardar los datos del admin que elijas editar
+  const [adminSeleccionado, setAdminSeleccionado] = useState(null);
+  // Para mostrar u ocultar el modal
+  const [mostrarModalEdit, setMostrarModalEdit] = useState(false);
+  const [idSeleccionado, setIdSeleccionado] = useState(null);
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   const columnas = [
     {label: "Nombre"}, {label: "Correo"}, {label: "Rol"}, 
@@ -39,12 +47,9 @@ function GestionAdmin() {
         getLoginLogsService(),
       ]);
 
-      // Imprimimos para verificar en consola (como en tu captura)
-      console.log("Usuarios cargados:", usuarios);
-      console.log("Logs cargados:", logs);
-
       // 1. Filtramos: Solo 'admin' o 'superadmin' si quieres ver ambos
-      const soloAdmins = usuarios.filter(u => u.rol === 'admin' || u.rol === 'superadmin');
+      // const soloAdmins = usuarios.filter(u => u.rol === 'admin' || u.rol === 'superadmin');
+      const soloAdmins = usuarios.filter(u => u.rol === 'admin');
 
       // ... dentro de tu fetchDatos
       // 2. CRUZAMOS DATOS
@@ -81,19 +86,23 @@ function GestionAdmin() {
     fetchDatos();
   }, [fetchDatos]);
 
-  // 2. LÓGICA DE ACCIONES (ELIMINAR/ACTIVAR)
+  // 2. LÓGICA DE ACTIVAR/DESACTIVAR (Corregida)
   const handleToggleEstado = async (admin) => {
-    const nuevoEstado = !admin.estado;
-    const accion = nuevoEstado ? "activar" : "desactivar";
-    
-    try {
-        // Llamamos al servicio usando el ID dinámico que configuramos
-        await actualizarUsuarioService(admin.id, { estado: nuevoEstado });
-        showModal('success', `Usuario ${accion}ado correctamente.`);
-        fetchDatos(); // Refrescamos la lista
-    } catch (error) {
-        showModal('error', `No se pudo ${accion} al usuario.`);
-    }
+      // Forzamos la conversión a booleano por si la DB manda 1/0
+      const estadoActual = Boolean(admin.estado); 
+      const nuevoEstado = !estadoActual;
+      
+      try {
+          // Enviamos el booleano real al backend
+          await actualizarUsuarioService(admin.id, { estado: nuevoEstado });
+          
+          showModal('success', `Usuario ${nuevoEstado ? 'activado' : 'desactivado'} correctamente.`);
+          
+          // RECARGA TOTAL para ver el cambio en la tabla
+          await fetchDatos(); 
+      } catch (error) {
+          showModal('error', "No se pudo cambiar el estado del usuario.");
+      }
   };
 
   // 3. FILTRADO PARA LA BARRA DE BÚSQUEDA
@@ -139,6 +148,55 @@ function GestionAdmin() {
       setErroresBackend({});       // Borra los bordes rojos
   };
 
+
+
+
+    // Se activa al presionar el lápiz naranja
+  const handleAbrirEditar = (admin) => {
+      setAdminSeleccionado(admin);
+      setMostrarModalEdit(true);
+  };
+
+  // Se activa al dar cancelar o cerrar en el modal
+  const handleCerrarEditar = () => {
+      setAdminSeleccionado(null);
+      setMostrarModalEdit(false);
+  };
+
+  
+  
+  const handleGuardarCambios = async (datosEditados) => {
+    try {
+        const idUsuario = adminSeleccionado.id;
+        await actualizarUsuarioService(idUsuario, datosEditados);
+
+        // CORRECCIÓN: Usa el nombre exacto de tu estado de React
+        setMostrarModalEdit(false); 
+        
+        await fetchDatos(); // Recarga la tabla para ver el cambio
+        showModal('success', '¡Cambios guardados con éxito!');
+    }catch (error) {
+          const serverError = error.detalles || error; 
+
+          if (serverError && serverError.identificacion) {
+              let msgId = Array.isArray(serverError.identificacion) ? serverError.identificacion[0] : serverError.identificacion;
+              showModal('error', msgId.includes("already exists") ? 'Esta identificación ya está registrada.' : msgId);
+          }
+          else if (serverError && serverError.correo) {
+              let mensajeOriginal = Array.isArray(serverError.correo) ? serverError.correo[0] : serverError.correo;
+              showModal('error', mensajeOriginal.includes("already exists") ? 'Este correo ya existe.' : mensajeOriginal);
+          }
+          else {
+              showModal('error', 'No se pudieron guardar los cambios.');
+          }
+      }
+  };
+
+  const abrirModal = (id) => {
+      setIdSeleccionado(id);
+      setModalAbierto(true);
+  };
+
   return (
     <AdminLayout onSearch={setSearchTerm}>
       <div className={style.layout}>
@@ -175,9 +233,19 @@ function GestionAdmin() {
               </td>
 
               <td className={style.actionsCell}>
-                <AdminIconButton icon={Edit} type="edit" title="Editar datos" />
-                <AdminIconButton icon={Key} type="reset" title="Cambiar clave" />
-                <AdminIconButton icon={Eye} type="detail" title="Ver detalles" />
+                <AdminIconButton 
+                    icon={Edit} 
+                    type="edit" 
+                    title="Editar datos" 
+                    onClick={() => handleAbrirEditar(admin)}
+                />
+                {/*<AdminIconButton icon={Key} type="reset" title="Cambiar clave" />*/}
+                <AdminIconButton 
+                    icon={Eye} 
+                    type="detail" 
+                    title="Ver detalles" 
+                    onClick={() => abrirModal(admin.id)} // <--- CONEXIÓN AQUÍ
+                />
                 
                 {/* Botón dinámico para activar/desactivar */}
                 <AdminIconButton 
@@ -196,14 +264,33 @@ function GestionAdmin() {
         isOpen={mostrarModalCrear} 
         onClose={cerrarModalYLimpiar} // <--- Cambiado aquí
         title="Registro de Administrador"
-    >
+      >
         <AddMemberForm 
             onSave={handleGuardarNuevoAdmin} 
             errores={erroresBackend}
             onCancel={cerrarModalYLimpiar} // <--- Cambiado aquí
             cargando={guardando} 
         />
-    </GenericModal>  
+      </GenericModal>  
+
+      {mostrarModalEdit && (
+        <ModalEditarAdmin 
+          usuario={adminSeleccionado} 
+          onClose={handleCerrarEditar} 
+          onSave={handleGuardarCambios} 
+        />
+      )}
+
+      <ModalVerAdmin 
+          id={idSeleccionado} 
+          isOpen={modalAbierto} 
+          
+          onClose={() => {
+              setModalAbierto(false);
+              setIdSeleccionado(null); // Limpiamos el ID al cerrar
+          }}
+          titulo="Perfil de Administrador"
+      />
 
     </AdminLayout>
   );
