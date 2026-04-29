@@ -93,7 +93,7 @@ const filteredAdmins = Array.isArray(laboratorios)
                   </td>
 
                   <td className={style.actionsDetails}>
-                    <AdminIconButton icon={Eye} title="ver" type="detail" onClick={()=> navigate(`/admin/laboratorios/${laboratorio.id}`)}/>
+                    <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => navigate(`/admin/laboratorio/auditoria_contenido/${laboratorio.id}`)}/>
                    <AdminIconButton   icon={laboratorio.estado ? UserX : UserCheck}  type="delete"  onClick={() => toggleEstadoLocal(laboratorio.id)}/>
 
  

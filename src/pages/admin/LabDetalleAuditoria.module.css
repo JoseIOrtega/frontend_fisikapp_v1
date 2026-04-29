@@ -1,3 +1,31 @@
 .container {
+  padding: 20px 40px;
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
   padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: 500;
+  color: #555;
 }
