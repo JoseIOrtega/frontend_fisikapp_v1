@@ -1,12 +1,21 @@
 .layout {
-    padding: 20px;
+    /* Quitamos el padding lateral para que el color pegue con el Sidebar */
+    padding: 0; 
+    background-color: #f0f2f5; 
+    min-height: 100vh;
+}
+/* Creamos un contenedor interno para que el contenido no pegue al borde */
+.contentWrapper {
+    padding: 24px;
 }
 
 .headerSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-top: 25px;    /* <-- Aumenta este valor para separar del navbar */
+    margin-bottom: 30px; /* Espacio antes de la tabla */
+    padding: 0 4px;      /* Pequeño ajuste lateral para que no pegue a los bordes */
 }
 
 .title {
@@ -16,38 +25,78 @@
     margin: 0;
 }
 
-/* Estilos específicos para el contenido de las celdas de ESTA página */
+/* GRUPO DE BOTONES */
+.buttonsGroup {
+    display: flex;
+    gap: 15px;
+}
+
+/* Ajuste para que el botón de CSV sea "secundario" pero elegante */
+.btnCSV {
+    background-color: #4E31FF !important; /* El morado/azul vibrante que usas en el perfil */
+    transition: all 0.2s ease;
+}
+
+.btnCSV:hover {
+    background-color: #3f22eb !important;
+    transform: translateY(-2px);
+}
+
+/* ESTILOS DE LA TABLA */
 .nameText { 
     font-weight: 700; 
     color: #2B3674; 
 }
 
-.roleBadge {
-    background: #F4F7FE;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #2B3674;
+/* Badges con colores según el rol para mayor claridad visual */
+.roleDocente {
+    background: #E9E7FF;
+    color: #4318FF;
+    padding: 6px 14px;
+    border-radius: 20px; /* Estilo píldora para que se vea más moderno */
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.roleEstudiante {
+    background: #E2F5FF;
+    color: #00B5FF;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .statusActive {
-    color: #05CD99;
-    background: rgba(5, 205, 153, 0.1);
-    padding: 5px 12px;
-    border-radius: 10px;
+    color: #05CD99; /* Verde éxito */
+    background: #E6FCF5;
+    padding: 4px 10px;
+    border-radius: 8px;
     font-weight: 700;
+    font-size: 13px;
 }
 
 .statusInactive {
-    color: #EE5D50;
-    background: rgba(238, 93, 80, 0.1);
-    padding: 5px 12px;
-    border-radius: 10px;
+    color: #EE5D50; /* Rojo error */
+    background: #FFF5F5;
+    padding: 4px 10px;
+    border-radius: 8px;
     font-weight: 700;
+    font-size: 13px;
 }
 
 .actionsCell {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     justify-content: center;
+}
+
+/* Contenedor de carga */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    color: #A3AED0;
+    font-weight: 500;
 }

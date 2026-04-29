@@ -1,24 +1,39 @@
-import { useState} from 'react';
+import { useState, useEffect } from 'react'; // Agregamos useEffect
 import { RefreshCcw } from 'lucide-react';
 import AuthInput from "../../auth/AuthInput";
 import AuthButton from "../../auth/AuthButton";
 import style from './AddMemberForm.module.css';
 
-// 1. LA FUNCIÓN VA AFUERA (así no marca error de referencia)
 const generarClave = () => `Fisikapp_${Math.random().toString(36).substring(2, 8)}`;
 
-function AddMemberForm({ onSave, onCancel, cargando, errores }) {
+function AddMemberForm({ onSave, onCancel, cargando, errores, esGestionUsuarios = false }) {
     
-    // 2. ESTADO INICIAL: Llamamos a la función aquí mismo
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
-        rol: 'administrador',
-        clave: generarClave() // Así ya nace con una clave y no necesitas el useEffect inicial
+        rol: esGestionUsuarios ? 'estudiante' : 'admin',
+        clave: generarClave()
     });
 
-    
-    // ya inicializamos la clave arriba.
+    // FUERZA EL ROL CORRECTO: 
+    // Si la prop cambia o el componente se monta, nos aseguramos de que el rol coincida
+    useEffect(() => {
+        if (esGestionUsuarios) {
+            setFormData(prev => ({ ...prev, rol: 'estudiante' }));
+        } else {
+            setFormData(prev => ({ ...prev, rol: 'admin' }));
+        }
+    }, [esGestionUsuarios]);
+
+    const opcionesRoles = esGestionUsuarios 
+        ? [
+            { value: "profesor", label: "Docente" },
+            { value: "estudiante", label: "Estudiante" }
+          ]
+        : [
+            { value: "admin", label: "Administrador" },
+            { value: "superadmin", label: "Super Administrador" }
+          ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -36,8 +51,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
 
     return (
         <form onSubmit={handleSubmit} className={style.form}>
-            {/* ... todo tu JSX igual ... */}
-             <AuthInput 
+            <AuthInput 
                 label="Nombre completo" 
                 name="nombre"
                 value={formData.nombre} 
@@ -53,7 +67,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
                 type="email" 
                 value={formData.correo} 
                 onChange={handleChange} 
-                placeholder="admin@fisikapp.com" 
+                placeholder="usuario@fisikapp.com" 
                 required 
                 error={errores?.correo}
             />
@@ -67,8 +81,11 @@ function AddMemberForm({ onSave, onCancel, cargando, errores }) {
                         value={formData.rol} 
                         onChange={handleChange}
                     >
-                        <option value="admin">Administrador</option>
-                        <option value="superadmin">Superadmin</option>
+                        {opcionesRoles.map((opcion) => (
+                            <option key={opcion.value} value={opcion.value}>
+                                {opcion.label}
+                            </option>
+                        ))}
                     </select>
                 </div>
 

@@ -26,7 +26,6 @@ export async function getLaboratorios() {
         introduccion: item.introduccion || "",
         marco_teorico: item.marco_teorico || ""
       }));
-      console.log("Datos obtenidos del backend:", transformedData);
       return transformedData;
     }
   } catch (error) {
@@ -50,7 +49,6 @@ export async function saveLaboratorio(laboratorio) {
     }
 
     if (result.success) {
-      console.log("Laboratorio guardado en backend exitosamente");
       backendSuccess = true;
     } else {
       console.warn("Error al guardar en backend:", result.error);
@@ -64,12 +62,6 @@ export async function saveLaboratorio(laboratorio) {
   const updated = labs.map((item) => item.id === laboratorio.id ? { ...item, ...laboratorio } : item);
   const newLabs = updated.some((item) => item.id === laboratorio.id) ? updated : [...labs, laboratorio];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newLabs));
-
-  if (backendSuccess) {
-    console.log("Guardado exitoso en backend y localStorage");
-  } else {
-    console.log("Guardado en localStorage (backend no disponible)");
-  }
 
   return newLabs;
 }

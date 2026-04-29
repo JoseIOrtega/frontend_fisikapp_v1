@@ -49,7 +49,7 @@ export const crearNuevoAdmin = async (datosAdmin) => {
                 password: datosAdmin.clave,
                 rol: datosAdmin.rol,
                 estado: true,
-                foto: null,
+                foto: null // IMPORTANTE: Envíalo como null explícito si es nuevo 
             }),
         });
 
@@ -101,7 +101,9 @@ export const actualizarUsuarioService = async (id, datosActualizados) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.detail || "No se pudo actualizar el usuario");
+            throw errorData;
+            // throw new Error(errorData.detail || "No se pudo actualizar el usuario");
+            // // En lugar de lanzar un Error genérico, lanzamos el JSON del backend 
         }
         return await response.json();
     } catch (error) {
@@ -110,23 +112,31 @@ export const actualizarUsuarioService = async (id, datosActualizados) => {
     }
 };
 
-// 5. Eliminar usuario (DELETE usando ID)
-export const eliminarUsuarioService = async (id) => {
-    try {
-        const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
-        
-        const response = await fetch(url, {
-            method: "DELETE",
-            headers: API_CONFIG.getHeaders(),
-        });
+//5. Nueva función para ver detalles de OTROS usuarios
+export const getUsuarioDetalle = async (id) => {
+    const token = localStorage.getItem('token');
+    // Usamos el endpoint que recibe ID que ya tienes en tu config
+    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
 
-        if (!response.ok) throw new Error("No se pudo eliminar el usuario");
-        
-        return true; // Éxito
-    } catch (error) {
-        console.error("Error en eliminarUsuarioService:", error);
-        throw error;
+    const response = await fetch(url, { 
+        method: "GET",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) throw new Error("No se pudo obtener el detalle del usuario.");
+
+    const data = await response.json();
+
+    // Reutilizamos tu lógica de la foto para que no salga rota
+    if (data.foto && typeof data.foto === 'string' && !data.foto.startsWith('http')) {
+        const baseUrl = API_CONFIG.BASE_URL.replace('/api', ''); 
+        data.foto = `${baseUrl}${data.foto}`; 
     }
+
+    return data;
 };
 
 // 6. Registrar Log de Login (Ajustado a tu Swagger)

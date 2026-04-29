@@ -8,19 +8,28 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    align-items: flex-end;
+    align-items: flex-start; /* Cambia de flex-end a flex-start */
 }
 
-.selectGroup {
+/* 1. Limpiamos los contenedores para que nazcan en la misma línea */
+.selectGroup, .passwordGroup {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    margin-top: 0; /* Asegúrate de que no haya margen arriba */
 }
 
+/* Si el AuthInput tiene un margen que no puedes quitar, 
+   dale el mismo margen al selectGroup para nivelar */
+.selectGroup {
+    margin-top: 2px; /* Ajusta este número (pueden ser 2px o 4px) hasta que los labels se vean en línea */
+}
+
+/* 2. Unificamos el espacio entre el texto y la caja */
 .label {
     font-size: 0.875rem;
     font-weight: 500;
     color: #4a5568;
+    margin-bottom: 8px; /* Este es el "aire" que separa el texto de la caja */
 }
 
 .select {
@@ -39,9 +48,8 @@
 }
 
 .passwordGroup {
-    position: relative;
-    display: flex;
-    align-items: center;
+    margin-top: 2px;
+    position: relative; /* Para que el botón de regenerar flote bien */
 }
 
 /* Ajuste para que el input de contraseña no choque con el botón */
@@ -49,20 +57,28 @@
     padding-right: 45px;
 }
 
+.passwordGroup label {
+    margin-bottom: 8px !important;
+}
+
+/* 3. Ajustamos el botón de regenerar */
 .btnRegenerate {
     position: absolute;
     right: 10px;
-    bottom: 12px;
+    /* En lugar de bottom, usa top para centrarlo exacto en la caja */
+    top: 36px; 
     background: none;
     border: none;
-    color: #718096;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
 }
 
 .btnRegenerate:hover {
     color: #3182ce;
-    transform: rotate(180deg);
 }
 
 .infoText {

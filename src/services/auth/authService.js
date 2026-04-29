@@ -19,6 +19,14 @@ export const loginUser = async (correo, clave) => {
 
     if (response.ok) {
         return datos; 
+    } else {
+        // --- ESTO ES LO NUEVO ---
+        // Creamos un objeto de error que contenga el status y los datos
+        const errorPersonalizado = {
+            status: response.status,
+            data: datos
+        };
+        throw errorPersonalizado; // Lanzamos el error para que caiga en el 'catch'
     }
 };
 

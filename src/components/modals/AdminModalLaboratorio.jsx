@@ -46,11 +46,9 @@ function ExampleModal({ show, onHide, categorias = [] }) {
       } else {
         // Agregar la nueva categoría a la lista
         setCategoriasLocal([...categoriasLocal, formData.nuevaCategoria]);
-        console.log("Nueva categoría agregada:", formData.nuevaCategoria);
       }
     }
 
-    console.log("Datos del formulario:", formData);
     // Aquí puedes agregar la lógica para guardar el laboratorio
     setFormData({ nombre: "", categoria: "", nuevaCategoria: "" });
     onHide();
