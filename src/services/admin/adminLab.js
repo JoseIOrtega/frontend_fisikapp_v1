@@ -54,7 +54,10 @@ export const createLaboratorioAPI = async (laboratorioData) => {
     try {
         const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {
             method: "POST",
-            headers: API_CONFIG.getHeaders(),
+            headers: {
+                ...API_CONFIG.getHeaders(),
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 titulo_lab: laboratorioData.nombre_de_laboratorio,
                 resumen: laboratorioData.resumen,
@@ -90,7 +93,10 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
     try {
         const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}${id}/`, {
             method: "PUT",
-            headers: API_CONFIG.getHeaders(),
+            headers: {
+                ...API_CONFIG.getHeaders(),
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 titulo_lab: laboratorioData.nombre_de_laboratorio,
                 resumen: laboratorioData.resumen,
@@ -111,6 +117,37 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
             return { success: false, error: "No autorizado - token inválido" };
         } else {
             console.error("Error al actualizar laboratorio:", response.status, datos);
+            return { success: false, error: datos };
+        }
+    } catch (error) {
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            return { success: false, error: "Backend no disponible" };
+        }
+        return { success: false, error: "Error de conexión" };
+    }
+};
+
+// Actualizar parcialmente un laboratorio (PATCH)
+export const patchLaboratorioAPI = async (id, laboratoriopatch) => {
+    try {
+        const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}${id}/`, {
+            method: "PATCH",
+            headers: {
+                ...API_CONFIG.getHeaders(),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(laboratoriopatch)
+        });
+
+        const datos = await response.json();
+        console.log("Respuesta del servidor PATCH:", datos);
+
+        if (response.ok) {
+            return { success: true, data: datos };
+        } else if (response.status === 401) {
+            return { success: false, error: "No autorizado - token inválido" };
+        } else {
+            console.error("Error al actualizar parcialmente laboratorio:", response.status, datos);
             return { success: false, error: datos };
         }
     } catch (error) {
@@ -270,7 +307,7 @@ export async function saveLaboratorio(laboratorio) {
 
     try {
         let result;
-        if (laboratorio.id && laboratorio.id > 5) { // IDs del backend
+        if (laboratorio.id) {
             result = await updateLaboratorioAPI(laboratorio.id, laboratorio);
         } else {
             result = await createLaboratorioAPI(laboratorio);

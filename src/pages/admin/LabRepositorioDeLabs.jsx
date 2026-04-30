@@ -7,7 +7,7 @@ import { Edit, Eye, Trash2, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import { 
   getLaboratorios, 
-  saveLaboratorio, 
+  patchLaboratorioAPI, 
   deleteLaboratorioAPI 
 } from '../../services/admin/adminLab';
 import style from './LabRepositorioDeLabs.module.css'
@@ -71,14 +71,14 @@ function LabRepositorioDeLabs() {
         [laboratorio.id]: esBloqueado
       }));
 
-      // Preparar datos actualizados
-      const laboratorioActualizado = {
-        ...laboratorio,
-        estado: nuevoEstado
-      };
+      // Guardar solo el campo de estado en backend
+      const resultado = await patchLaboratorioAPI(laboratorio.id, {
+        estado: nuevoEstado === "Activo"
+      });
 
-      // Guardar cambios en backend
-      await saveLaboratorio(laboratorioActualizado);
+      if (!resultado?.success) {
+        throw new Error(resultado?.error || "Error al actualizar el laboratorio");
+      }
 
       // Actualizar en la lista visual
       setLaboratorios(prevLabs =>
