@@ -224,14 +224,115 @@ function UsuariosAdmin() {
       setErroresBackend({});
   };
 
+
+
+
+  const handleSubirCSV = (event) => {
+      const archivo = event.target.files[0];
+      
+      if (archivo) {
+          console.log("--- Iniciando lectura de CSV ---");
+          Papa.parse(archivo, {
+              header: true,
+              skipEmptyLines: true,
+              dynamicTyping: true,
+              complete: async (results) => {
+                  const usuariosCargados = results.data;
+                  
+                  // DIAGNÓSTICO 1: Ver qué leyó el programa
+                  console.log("Datos detectados por PapaParse:", usuariosCargados);
+
+                  if (usuariosCargados.length === 0) {
+                      showModal('error', 'El archivo parece estar vacío.');
+                      return;
+                  }
+
+                  setGuardando(true);
+                  let erroresEncontrados = [];
+
+                  try {
+                      for (const [index, fila] of usuariosCargados.entries()) {
+                          // DIAGNÓSTICO 2: Ver cada fila antes de enviarla
+                          console.log(`Procesando fila ${index + 1}:`, fila);
+
+                          const datosUsuario = {
+                              nombre: fila.nombre?.toString().trim(),
+                              correo: fila.correo?.toString().trim(),
+                              rol: fila.rol?.toString().toLowerCase().trim() || 'estudiante',
+                              identificacion: String(fila.identificacion || '').trim(),
+                              institucion: fila.institucion?.toString().trim() || 'Fisikapp',
+                              
+                              // UNIMOS AMBOS CAMPOS: Aseguramos que el tipo de documento vaya en MAYÚSCULAS
+                              // Esto generará algo como "TI10295740"
+                              password: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`,
+                              clave: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`
+                          };
+
+                          if (datosUsuario.nombre && datosUsuario.correo) {
+                              try {
+                                  await crearNuevoUsuarioDocente(datosUsuario);
+                                  console.log(`✅ Usuario ${datosUsuario.correo} creado.`);
+                              } catch (err) {
+                                // Si el error tiene detalles (como los que configuramos en el Service)
+                                const mensajeDetallado = err.detalles 
+                                    ? JSON.stringify(err.detalles) 
+                                    : err.message;
+
+                                console.error(`❌ Error en fila ${index + 1} (${datosUsuario.correo}):`, mensajeDetallado);
+                                erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeDetallado}`);
+                              }
+                          } else {
+                              console.warn(`⚠️ Fila ${index + 1} saltada por datos incompletos.`);
+                          }
+                      }
+
+                      if (erroresEncontrados.length > 0) {
+                          showModal('error', `Se cargaron algunos, pero hubo ${erroresEncontrados.length} errores. Revisa la consola (F12).`);
+                      } else {
+                          showModal('success', '¡Todos los usuarios han sido cargados con éxito!');
+                      }
+                      
+                      fetchDatos();
+                  } catch (error) {
+                      console.error("Error crítico en el proceso:", error);
+                      showModal('error', 'Error crítico al procesar el archivo.');
+                  } finally {
+                      setGuardando(false);
+                      event.target.value = ''; 
+                  }
+              }
+          });
+      }
+  };
+
   return (
     <AdminLayout onSearch={setSearchTerm}>
       <div className={style.layout}>
         <div className={style.headerSection}>
           <h2 className={style.title}>Administración de usuarios</h2>
           <div className={style.buttonsGroup}>
-            <AdminCreateButton icon={FileUp} text="Cargar CSV" style={{ backgroundColor: '#4f46e5' }} /> 
-            <AdminCreateButton icon={UserPlus} text="Añadir Usuario" onClick={() => setMostrarModalCrear(true)}/>
+              {/* Input oculto que se activa por código */}
+              <input 
+                  type="file" 
+                  accept=".csv" 
+                  id="csvInput" 
+                  style={{ display: 'none' }} 
+                  onChange={handleSubirCSV} 
+              />
+              
+              <AdminCreateButton 
+                  icon={FileUp} 
+                  text="Cargar CSV" 
+                  style={{ backgroundColor: '#4f46e5' }} 
+                  onClick={() => document.getElementById('csvInput').click()} 
+                  disabled={guardando} // Evitamos doble clic si está procesando
+              /> 
+
+              <AdminCreateButton 
+                  icon={UserPlus} 
+                  text="Añadir Usuario" 
+                  onClick={() => setMostrarModalCrear(true)}
+              />
           </div>
         </div>
 

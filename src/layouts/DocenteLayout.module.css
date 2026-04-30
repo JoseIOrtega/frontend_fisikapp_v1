@@ -1,0 +1,68 @@
+.admin-layout {
+    display: flex;
+    height: 100vh; /* El layout siempre mide el alto de la pantalla */
+    width: 100%;
+    /* CLAVE: El fondo de toda la zona derecha debe estar aquí o en el main-content */
+    background-color: #F0F2F5; 
+    overflow: hidden; /* Evita scroll doble */
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    
+    /* Mantenemos estas para el scroll interno */
+    height: 100vh; 
+    overflow-y: auto; 
+    
+    background-color: #F0F2F5; /* Aseguramos el color aquí también */
+    transition: all 0.3s ease;
+}
+
+
+/* --- BOTÓN MÓVIL --- */
+.mobileBtn {
+    display: none; /* Oculto en PC */
+    position: fixed;
+    top: 25px;
+    left: 20px;
+    z-index: 2000;
+    background: #1B2559;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* --- RESPONSIVO PARA TABLETS Y MÓVILES --- */
+@media (max-width: 1028px) {
+    .mobileBtn {
+        display: block; /* Aparece en pantallas pequeñas */
+    }
+
+    .sidebarWrapper {
+        position: fixed;
+        left: -300px; /* Escondido a la izquierda */
+        top: 0;
+        z-index: 1500;
+        transition: 0.3s ease;
+    }
+
+    .sidebarWrapper.show {
+        left: 0; /* Entra a la pantalla */
+    }
+
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1400;
+    }
+
+    .main-content {
+        padding: 15px; /* Menos espacio en móvil */
+    }
+}

@@ -5,7 +5,7 @@ import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
 import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
 // --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
-import { getPerfilUser} from '../../src/services/admin/PerfilService';
+import { getPerfilUser} from '../services/admin/PerfilService';
 
 function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

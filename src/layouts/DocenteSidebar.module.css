@@ -1,0 +1,266 @@
+.sidebar {
+    width: 300px;
+    height: 100vh;
+    background-color: #142050;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 0;
+    border-right: 1px solid #f0f2f5;
+    position: sticky;
+    top: 0;
+}
+
+.brandContainer {
+    display: flex;
+    flex-direction: column; /* Uno sobre otro como en la imagen */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.logoWrapper {
+    width: 180px; /* Ajusta según el tamaño de tu logo */
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoImg {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.navigation {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    color: #A3AED0; 
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* --- ESTADO ACTIVO (El que se veía oscuro) --- */
+.activeLink {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    
+    /* CAMBIO CLAVE: Color blanco para que resalte sobre el fondo azul oscuro */
+    color: #FFFFFF !important; 
+    
+    text-decoration: none;
+    font-weight: 700;
+    position: relative;
+    
+    /* Un fondo sutil para que se sienta seleccionado */
+    background-color: rgba(255, 255, 255, 0.1); 
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+/* La rayita indicadora a la derecha */
+.activeLink::after {
+    content: "";
+    position: absolute;
+    right: 5px; /* Ajustado para que se vea dentro del padding */
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    background-color: #18ffba; /* Morado/Azul vibrante */
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px rgba(24, 255, 178, 0.5); /* Brillo neón */
+}
+
+/* --- HOVER (Cuando pasas el mouse) --- */
+.link:hover {
+    /* En fondo oscuro, el hover NO debe ser blanco con texto azul, 
+       sino texto blanco con fondo sutil */
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+}
+
+/* Contenedor del grupo */
+.subMenuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.linkContent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilo para cuando el padre está activo pero el menú cerrado */
+.activeParent {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* La flechita */
+.arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.arrowRotate {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de sub-items con efecto de deslizamiento */
+.subMenuItems {
+    max-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px;
+    gap: 5px;
+    transition: max-height 0.3s ease-out;
+}
+
+.subMenuItems.show {
+    max-height: 200px;
+    margin-bottom: 10px;
+}
+
+/* Estilo de los links hijos */
+.subLink {
+    color: #A3AED0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.subLink:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeSubLink {
+    color: #18ffba;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+.sectionTitle {
+    font-size: 12px;
+    color: #A3AED0;
+    font-weight: 800;
+    margin: 10px 0 10px 15px;
+    letter-spacing: 0.5px;
+}
+
+.footer {
+    padding: 0 20px;
+    border-top: 1px solid #f0f2f5;
+    padding-top: 20px;
+}
+
+/* Contenedor del grupo */
+.subMenuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.linkContent {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Estilo para cuando el padre está activo pero el menú cerrado */
+.activeParent {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* La flechita */
+.arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.arrowRotate {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de sub-items con efecto de deslizamiento */
+.subMenuItems {
+    max-height: 0;
+    overflow: hidden;
+    /* transition: all 0.3s ease-in-out; */
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px; /* Para que se vea indentado */
+    gap: 5px;
+}
+
+.subMenuItems {
+    transition: max-height 0.3s ease-out;
+}
+
+.subMenuItems.show {
+    max-height: 200px; /* Un valor alto suficiente */
+    margin-bottom: 10px;
+}
+
+/* Estilo de los links hijos */
+.subLink {
+    color: #A3AED0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.subLink:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeSubLink {
+    color: #18ffba; /* Color vibrante para el hijo activo */
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 15px;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 1028px) {
+    .main-content {
+        height: 100vh;
+        padding: 15px;
+        /* En móvil, a veces el padding del top debe ser mayor por el botón menú */
+        padding-top: 70px; 
+    }
+}
