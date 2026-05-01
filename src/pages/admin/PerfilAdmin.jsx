@@ -185,7 +185,7 @@ function PerfilAdmin() {
         }catch (err) {
 
             const error = err.data || err; 
-            console.log("Detalle del error procesado:", error);
+            //console.log("Detalle del error procesado:", error);
             
             // PRIORIDAD: Si el backend envía una propiedad llamada 'error' (como vimos en consola)
             if (error && error.error) {

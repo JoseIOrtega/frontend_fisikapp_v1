@@ -12,6 +12,7 @@ import { crearNuevoUsuarioDocente } from '../../services/admin/UsuariosService';
 import { actualizarUsuarioService } from '../../services/admin/UsuariosService';
 import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
 import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
+import ModalCargaCSVAdmin from '../../components/modals/ModalCargaCSVAdmin';
 import GenericModal from "../../components/modals/GenericModal";
 import AddMemberForm from "../../components/UI/admin/gestion_admins/AddMemberForm"
 
@@ -39,6 +40,7 @@ function UsuariosAdmin() {
   const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [erroresBackend, setErroresBackend] = useState({});
+  const [mostrarModalCSV, setMostrarModalCSV] = useState(false);
 
   // 1. OBTENER Y FILTRAR DATOS (Igual que en GestionAdmin)
   const fetchDatos = useCallback(async () => {
@@ -182,7 +184,7 @@ function UsuariosAdmin() {
   const handleGuardarNuevoUsuario = async (datosNuevoUsuario) => {
     setErroresBackend({}); 
     setGuardando(true);
-    console.log("Datos que salen del formulario:", datosNuevoUsuario);
+    //console.log("Datos que salen del formulario:", datosNuevoUsuario);
     try {
         // --- SEGURO ANTI-ADMIN ---
         // Si por alguna razón el formulario envió "admin", aquí lo corregimos 
@@ -225,45 +227,58 @@ function UsuariosAdmin() {
   };
 
 
-
-
   const handleSubirCSV = (event) => {
       const archivo = event.target.files[0];
-      
+
       if (archivo) {
-          console.log("--- Iniciando lectura de CSV ---");
           Papa.parse(archivo, {
               header: true,
               skipEmptyLines: true,
               dynamicTyping: true,
               complete: async (results) => {
-                  const usuariosCargados = results.data;
-                  
-                  // DIAGNÓSTICO 1: Ver qué leyó el programa
-                  console.log("Datos detectados por PapaParse:", usuariosCargados);
+                  const usuariosBrutos = results.data;
+
+                  // 1. Filtrar ejemplos
+                  const usuariosCargados = usuariosBrutos.filter(fila => {
+                      const correo = fila.correo?.toString().toLowerCase().trim();
+                      return correo !== "docente@ejemplo.com" && correo !== "estudiante@ejemplo.com";
+                  });
 
                   if (usuariosCargados.length === 0) {
-                      showModal('error', 'El archivo parece estar vacío.');
+                      showModal('error', 'El archivo no contiene datos válidos para registrar.');
                       return;
+                  }
+
+                  // 2. Validación de duplicados en el mismo archivo (Evita peticiones innecesarias)
+                  const correosEnArchivo = new Set();
+                  const idsEnArchivo = new Set();
+                  for (const fila of usuariosCargados) {
+                      const correo = fila.correo?.toString().toLowerCase().trim();
+                      const id = String(fila.identificacion || '').trim();
+
+                      if (correosEnArchivo.has(correo)) {
+                          showModal('error', `El archivo contiene el correo repetido: ${correo}`);
+                          return;
+                      }
+                      if (idsEnArchivo.has(id)) {
+                          showModal('error', `El archivo contiene la identificación repetida: ${id}`);
+                          return;
+                      }
+                      correosEnArchivo.add(correo);
+                      idsEnArchivo.add(id);
                   }
 
                   setGuardando(true);
                   let erroresEncontrados = [];
 
                   try {
-                      for (const [index, fila] of usuariosCargados.entries()) {
-                          // DIAGNÓSTICO 2: Ver cada fila antes de enviarla
-                          console.log(`Procesando fila ${index + 1}:`, fila);
-
+                      for (const fila of usuariosCargados) {
                           const datosUsuario = {
                               nombre: fila.nombre?.toString().trim(),
                               correo: fila.correo?.toString().trim(),
                               rol: fila.rol?.toString().toLowerCase().trim() || 'estudiante',
                               identificacion: String(fila.identificacion || '').trim(),
                               institucion: fila.institucion?.toString().trim() || 'Fisikapp',
-                              
-                              // UNIMOS AMBOS CAMPOS: Aseguramos que el tipo de documento vaya en MAYÚSCULAS
-                              // Esto generará algo como "TI10295740"
                               password: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`,
                               clave: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`
                           };
@@ -271,31 +286,29 @@ function UsuariosAdmin() {
                           if (datosUsuario.nombre && datosUsuario.correo) {
                               try {
                                   await crearNuevoUsuarioDocente(datosUsuario);
-                                  console.log(`✅ Usuario ${datosUsuario.correo} creado.`);
                               } catch (err) {
-                                // Si el error tiene detalles (como los que configuramos en el Service)
-                                const mensajeDetallado = err.detalles 
-                                    ? JSON.stringify(err.detalles) 
-                                    : err.message;
-
-                                console.error(`❌ Error en fila ${index + 1} (${datosUsuario.correo}):`, mensajeDetallado);
-                                erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeDetallado}`);
+                                  // Capturamos el mensaje de error real del backend (ej: "Correo ya registrado")
+                                  const mensajeError = err.detalles?.message || err.message || "Error desconocido";
+                                  erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeError}`);
                               }
-                          } else {
-                              console.warn(`⚠️ Fila ${index + 1} saltada por datos incompletos.`);
                           }
                       }
 
+                      // 3. Respuesta final al usuario sin mencionar la consola
                       if (erroresEncontrados.length > 0) {
-                          showModal('error', `Se cargaron algunos, pero hubo ${erroresEncontrados.length} errores. Revisa la consola (F12).`);
+                          // Si hay muchos errores, mostramos el primero de forma clara
+                          const resumenErrores = erroresEncontrados.length === 1 
+                              ? `Error: ${erroresEncontrados[0]}`
+                              : `${erroresEncontrados[0]} (y ${erroresEncontrados.length - 1} errores más).`;
+                          
+                          showModal('error', `No se pudieron cargar todos los usuarios. ${resumenErrores}`);
                       } else {
-                          showModal('success', '¡Todos los usuarios han sido cargados con éxito!');
+                          showModal('success', '¡Excelente! Todos los usuarios han sido registrados correctamente.');
                       }
                       
                       fetchDatos();
                   } catch (error) {
-                      console.error("Error crítico en el proceso:", error);
-                      showModal('error', 'Error crítico al procesar el archivo.');
+                      showModal('error', 'Hubo un fallo crítico al procesar el archivo. Inténtalo de nuevo.');
                   } finally {
                       setGuardando(false);
                       event.target.value = ''; 
@@ -304,6 +317,8 @@ function UsuariosAdmin() {
           });
       }
   };
+
+  
 
   return (
     <AdminLayout onSearch={setSearchTerm}>
@@ -323,10 +338,9 @@ function UsuariosAdmin() {
               <AdminCreateButton 
                   icon={FileUp} 
                   text="Cargar CSV" 
-                  style={{ backgroundColor: '#4f46e5' }} 
-                  onClick={() => document.getElementById('csvInput').click()} 
-                  disabled={guardando} // Evitamos doble clic si está procesando
-              /> 
+                  onClick={() => setMostrarModalCSV(true)} 
+                  disabled={guardando}
+              />
 
               <AdminCreateButton 
                   icon={UserPlus} 
@@ -400,6 +414,14 @@ function UsuariosAdmin() {
           onClose={handleCerrarVer} 
           titulo="Información del Usuario"
       />
+
+      <ModalCargaCSVAdmin 
+          isOpen={mostrarModalCSV}
+          onClose={() => setMostrarModalCSV(false)}
+          onArchivoSeleccionado={handleSubirCSV} 
+          cargando={guardando}
+      />
+
       <GenericModal 
           isOpen={mostrarModalCrear} 
           onClose={cerrarModalYLimpiar} 
