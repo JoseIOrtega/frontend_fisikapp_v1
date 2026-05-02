@@ -8,7 +8,7 @@ import { getRelativeTime } from '../../utils/dateHelpers';
 import { getUsuarios } from "../../services/admin/UsuariosService"; 
 // Importamos el servicio de logs que ya existe
 import { getLoginLogsService } from "../../services/admin/UsuariosService";
-import { crearNuevoUsuarioDocente } from '../../services/admin/UsuariosService';
+import { crearNuevoUsuario } from '../../services/admin/UsuariosService';
 import { actualizarUsuarioService } from '../../services/admin/UsuariosService';
 import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
 import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
@@ -184,27 +184,28 @@ function UsuariosAdmin() {
   const handleGuardarNuevoUsuario = async (datosNuevoUsuario) => {
     setErroresBackend({}); 
     setGuardando(true);
-    //console.log("Datos que salen del formulario:", datosNuevoUsuario);
+
     try {
-        // --- SEGURO ANTI-ADMIN ---
-        // Si por alguna razón el formulario envió "admin", aquí lo corregimos 
-        // basándonos en lo que el usuario seleccionó o forzando un rol académico.
+        // --- SEGURO ANTI-ADMIN Y VALIDACIÓN DE ROL ---
         const datosFinales = {
             ...datosNuevoUsuario,
-            // Si el rol es admin o está vacío, lo forzamos a estudiante por seguridad
+            // Si por error llega 'admin' o el campo está vacío, 
+            // forzamos 'estudiante' ya que estamos en gestión académica.
             rol: (datosNuevoUsuario.rol === 'admin' || !datosNuevoUsuario.rol) 
                  ? 'estudiante' 
                  : datosNuevoUsuario.rol 
         };
 
-        await crearNuevoUsuarioDocente(datosFinales); // Enviamos los datos corregidos
+        // Llamada al servicio de UsuariosService
+        await crearNuevoUsuario(datosFinales); 
         
         showModal('success', '¡El nuevo usuario ha sido registrado y se le ha enviado su acceso!');
         cerrarModalYLimpiar();
-        fetchDatos(); 
+        fetchDatos(); // Recarga la tabla para ver al nuevo integrante
     } catch (error) {
           if (error.detalles) {
-              setErroresBackend(error.detalles); // Muestra los bordes rojos en los campos fallidos
+              // Esto activará los bordes rojos en AddMemberForm
+              setErroresBackend(error.detalles); 
               showModal('error', 'Por favor, corrige los errores resaltados.');
           } else {
               showModal('error', error.message || 'No se pudo completar el registro.');
@@ -226,96 +227,93 @@ function UsuariosAdmin() {
       setErroresBackend({});
   };
 
-
   const handleSubirCSV = (event) => {
-      const archivo = event.target.files[0];
+    const archivo = event.target.files[0];
 
-      if (archivo) {
-          Papa.parse(archivo, {
-              header: true,
-              skipEmptyLines: true,
-              dynamicTyping: true,
-              complete: async (results) => {
-                  const usuariosBrutos = results.data;
+    if (archivo) {
+      Papa.parse(archivo, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+        complete: async (results) => {
+          const usuariosBrutos = results.data;
 
-                  // 1. Filtrar ejemplos
-                  const usuariosCargados = usuariosBrutos.filter(fila => {
-                      const correo = fila.correo?.toString().toLowerCase().trim();
-                      return correo !== "docente@ejemplo.com" && correo !== "estudiante@ejemplo.com";
-                  });
-
-                  if (usuariosCargados.length === 0) {
-                      showModal('error', 'El archivo no contiene datos válidos para registrar.');
-                      return;
-                  }
-
-                  // 2. Validación de duplicados en el mismo archivo (Evita peticiones innecesarias)
-                  const correosEnArchivo = new Set();
-                  const idsEnArchivo = new Set();
-                  for (const fila of usuariosCargados) {
-                      const correo = fila.correo?.toString().toLowerCase().trim();
-                      const id = String(fila.identificacion || '').trim();
-
-                      if (correosEnArchivo.has(correo)) {
-                          showModal('error', `El archivo contiene el correo repetido: ${correo}`);
-                          return;
-                      }
-                      if (idsEnArchivo.has(id)) {
-                          showModal('error', `El archivo contiene la identificación repetida: ${id}`);
-                          return;
-                      }
-                      correosEnArchivo.add(correo);
-                      idsEnArchivo.add(id);
-                  }
-
-                  setGuardando(true);
-                  let erroresEncontrados = [];
-
-                  try {
-                      for (const fila of usuariosCargados) {
-                          const datosUsuario = {
-                              nombre: fila.nombre?.toString().trim(),
-                              correo: fila.correo?.toString().trim(),
-                              rol: fila.rol?.toString().toLowerCase().trim() || 'estudiante',
-                              identificacion: String(fila.identificacion || '').trim(),
-                              institucion: fila.institucion?.toString().trim() || 'Fisikapp',
-                              password: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`,
-                              clave: `${String(fila.tipo_documento || '').toUpperCase().trim()}${String(fila.identificacion || '').trim()}`
-                          };
-
-                          if (datosUsuario.nombre && datosUsuario.correo) {
-                              try {
-                                  await crearNuevoUsuarioDocente(datosUsuario);
-                              } catch (err) {
-                                  // Capturamos el mensaje de error real del backend (ej: "Correo ya registrado")
-                                  const mensajeError = err.detalles?.message || err.message || "Error desconocido";
-                                  erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeError}`);
-                              }
-                          }
-                      }
-
-                      // 3. Respuesta final al usuario sin mencionar la consola
-                      if (erroresEncontrados.length > 0) {
-                          // Si hay muchos errores, mostramos el primero de forma clara
-                          const resumenErrores = erroresEncontrados.length === 1 
-                              ? `Error: ${erroresEncontrados[0]}`
-                              : `${erroresEncontrados[0]} (y ${erroresEncontrados.length - 1} errores más).`;
-                          
-                          showModal('error', `No se pudieron cargar todos los usuarios. ${resumenErrores}`);
-                      } else {
-                          showModal('success', '¡Excelente! Todos los usuarios han sido registrados correctamente.');
-                      }
-                      
-                      fetchDatos();
-                  } catch (error) {
-                      showModal('error', 'Hubo un fallo crítico al procesar el archivo. Inténtalo de nuevo.');
-                  } finally {
-                      setGuardando(false);
-                      event.target.value = ''; 
-                  }
-              }
+          // 1. Filtrar solo filas con correo y omitir la fila de ejemplo del profesor
+          const usuariosCargados = usuariosBrutos.filter(fila => {
+            const correo = fila.correo?.toString().toLowerCase().trim();
+            return correo && correo !== "profesor@ejemplo.com";
           });
-      }
+
+          if (usuariosCargados.length === 0) {
+            showModal('error', 'El archivo no contiene datos válidos de docentes para registrar.');
+            return;
+          }
+
+          // 2. Validación de duplicados en el archivo
+          const correosEnArchivo = new Set();
+          const idsEnArchivo = new Set();
+          
+          for (const fila of usuariosCargados) {
+            const correo = fila.correo?.toString().toLowerCase().trim();
+            const id = String(fila.identificacion || '').trim();
+
+            if (correosEnArchivo.has(correo)) {
+              showModal('error', `El correo está repetido en el archivo: ${correo}`);
+              return;
+            }
+            if (idsEnArchivo.has(id)) {
+              showModal('error', `La identificación está repetida en el archivo: ${id}`);
+              return;
+            }
+            correosEnArchivo.add(correo);
+            idsEnArchivo.add(id);
+          }
+
+          setGuardando(true);
+          let erroresEncontrados = [];
+
+          try {
+            for (const fila of usuariosCargados) {
+              // Construimos el objeto forzando el rol 'profesor'
+              const datosUsuario = {
+                nombre: fila.nombre?.toString().trim(),
+                correo: fila.correo?.toString().trim(),
+                identificacion: String(fila.identificacion || '').trim(),
+                institucion: fila.institucion?.toString().trim() || 'Fisikapp',
+                rol: 'profesor' 
+              };
+
+              if (datosUsuario.nombre && datosUsuario.correo) {
+                try {
+                  await crearNuevoUsuario(datosUsuario);
+                } catch (err) {
+                  const mensajeError = err.detalles?.correo || err.detalles?.identificacion || err.message || "Error";
+                  erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeError}`);
+                }
+              }
+            }
+
+            // 3. Respuesta final enfocada solo en docentes
+            if (erroresEncontrados.length > 0) {
+              const resumen = erroresEncontrados.length === 1 
+                ? `Error: ${erroresEncontrados[0]}`
+                : `${erroresEncontrados[0]} (y ${erroresEncontrados.length - 1} errores más).`;
+              
+              showModal('error', `Carga terminada con observaciones: ${resumen}`);
+            } else {
+              showModal('success', '¡Excelente! Todos los docentes han sido registrados exitosamente.');
+            }
+            
+            fetchDatos();
+          } catch (error) {
+            showModal('error', 'Hubo un fallo crítico al procesar el archivo de docentes.');
+          } finally {
+            setGuardando(false);
+            event.target.value = ''; 
+          }
+        }
+      });
+    }
   };
 
   
@@ -359,7 +357,7 @@ function UsuariosAdmin() {
               <td>{usuario.correo}</td>
               <td>
                 <span className={usuario.rol.toLowerCase() === "profesor" ? style.roleDocente : style.roleEstudiante}>
-                  {usuario.rol.toLowerCase() === "profesor" ? "Docente" : "Estudiante"}
+                  {usuario.rol.toLowerCase() === "profesor" ? "Profesor" : "Estudiante"}
                 </span>
               </td>
 

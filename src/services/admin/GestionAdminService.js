@@ -37,41 +37,35 @@ export const getLoginLogsService = async () => {
 // 3. Crear nuevo administrador (POST a la base)
 export const crearNuevoAdmin = async (datosAdmin) => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_ADMIN, {
+        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CREAR_ADMIN, {
             method: "POST",
             headers: {
                 ...API_CONFIG.getHeaders(),
-                "Content-Type": "application/json" // Necesario para que el backend lea el JSON
+                "Content-Type": "application/json"
             },
+            // PURIFICADO: Solo enviamos nombre y correo. 
+            // El backend genera la clave y envía el correo.
             body: JSON.stringify({
                 nombre: datosAdmin.nombre,
-                correo: datosAdmin.correo,
-                password: datosAdmin.clave,
-                rol: datosAdmin.rol,
-                estado: true,
-                foto: null // IMPORTANTE: Envíalo como null explícito si es nuevo 
+                correo: datosAdmin.correo
             }),
         });
 
         if (!response.ok) {
             const errorData = await response.json();
             
-            // 1. Diccionario de traducciones para campos específicos
             const traducciones = {
                 "users with this correo already exists.": "Este correo electrónico ya está registrado en el sistema.",
                 "This field is required.": "Este campo es obligatorio.",
                 "Enter a valid email address.": "Ingresa un correo electrónico válido."
             };
 
-            // 2. Revisamos si el error de 'correo' necesita traducción
             if (errorData.correo) {
-                // Mapeamos los mensajes de inglés a español
                 errorData.correo = errorData.correo.map(msg => traducciones[msg] || msg);
             }
 
-            // 3. Lanzamos el error con los datos ya traducidos
             const errorCustom = new Error("Error de validación");
-            errorCustom.detalles = errorData; 
+            errorCustom.detalles = errorData;
             throw errorCustom;
         }
 

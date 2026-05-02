@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/*" element={<AuthRoutes />} />
           <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/docente/*" element={<DocenteRoutes />} />
+          <Route path="/profesor/*" element={<DocenteRoutes />} />
         </Routes>
       </ModalProvider>
     </BrowserRouter>

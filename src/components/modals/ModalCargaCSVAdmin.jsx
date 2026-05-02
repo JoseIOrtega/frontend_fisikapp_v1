@@ -5,31 +5,26 @@ import style from './ModalCargaCSVAdmin.module.css';
 function ModalCargaCSVAdmin({ isOpen, onClose, onArchivoSeleccionado, cargando }) {
   if (!isOpen) return null;
 
-    const descargarPlantilla = () => {
-        // 1. Instrucción para que Excel abra en columnas automáticamente
-        const indicadorExcel = "sep=,\n"; 
-        
-        // 2. Encabezados (deben coincidir con tu lógica de PapaParse)
-        const encabezados = "nombre,correo,rol,tipo_documento,identificacion,institucion\n";
-        
-        // 3. Ejemplos claros para los dos roles principales
-        const ejemploDocente = "Nombre Docente,docente@ejemplo.com,profesor,CC,00000001,Fisikapp\n";
-        const ejemploEstudiante = "Nombre Estudiante,estudiante@ejemplo.com,estudiante,TI,00000002,Fisikapp";
-        
-        // Unimos todo en un solo string
-        const contenidoCompleto = indicadorExcel + encabezados + ejemploDocente + ejemploEstudiante;
-        
-        // Creación y descarga del archivo
-        const blob = new Blob([contenidoCompleto], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "plantilla_usuarios_fisikapp.csv");
-        link.click();
-        
-        // Liberamos memoria
-        URL.revokeObjectURL(url);
-    };
+const descargarPlantilla = () => {
+    const indicadorExcel = "sep=,\n"; 
+    
+    // Solo pedimos lo básico. El rol lo asignamos nosotros internamente.
+    const encabezados = "nombre,correo\n";
+    
+    // Ejemplos solo de docentes
+    const ejemplo1 = "Profesor ,profesor@ejemplo.com\n";
+    
+    
+    const contenidoCompleto = indicadorExcel + encabezados + ejemplo1;
+    
+    const blob = new Blob([contenidoCompleto], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "plantilla_docentes_fisikapp.csv");
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className={style.overlay}>
@@ -48,7 +43,7 @@ function ModalCargaCSVAdmin({ isOpen, onClose, onArchivoSeleccionado, cargando }
         {/* Cuerpo */}
         <div className={style.body}>
           <p className={style.description}>
-            Sigue estos pasos para registrar a tus estudiantes y docentes de forma masiva.
+            Sigue estos pasos para registrar a tus estudiantes y profesores de forma masiva.
           </p>
 
           <div className={style.stepsGrid}>
