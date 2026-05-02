@@ -53,7 +53,7 @@ function Login() {
             localStorage.setItem('user_name', datos.user.nombre);
             localStorage.setItem('user_role', datos.user.rol);
 
-            await registrarLogLogin(datos.user.id);
+           // await registrarLogLogin(datos.user.id);
 
             setTimeout(() => navigate('/admin'), 1000);
 
