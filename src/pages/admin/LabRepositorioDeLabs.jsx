@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminDataTable from "../../components/UI/admin/AdminDataTable"
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import { Edit, Eye, Trash2, UserX, UserCheck } from 'lucide-react';
+import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import { 
   getLaboratorios, 
@@ -15,9 +15,45 @@ import style from './LabRepositorioDeLabs.module.css'
 function LabRepositorioDeLabs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [laboratorios, setLaboratorios] = useState([]);
-  const [laboratoriosBloqueados, setLaboratoriosBloqueados] = useState({});
   const [loading, setLoading] = useState(true);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'info',
+    message: '',
+    isConfirm: false,
+    onConfirm: null,
+    confirmText: 'Confirmar',
+    cancelText: 'Cancelar',
+  });
   const navigate = useNavigate();
+
+  const showModal = (type, message) => {
+    setModalConfig({
+      isOpen: true,
+      type,
+      message,
+      isConfirm: false,
+      onConfirm: null,
+      confirmText: 'Aceptar',
+      cancelText: 'Cancelar',
+    });
+  };
+
+  const showConfirm = (type, message, onConfirm, confirmText = 'Eliminar', cancelText = 'Cancelar') => {
+    setModalConfig({
+      isOpen: true,
+      type,
+      message,
+      isConfirm: true,
+      onConfirm,
+      confirmText,
+      cancelText,
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false, isConfirm: false, onConfirm: null }));
+  };
 
   useEffect(() => {
     const loadLaboratorios = async () => {
@@ -62,15 +98,8 @@ function LabRepositorioDeLabs() {
 
   const handleToggleBloqueo = async (laboratorio) => {
     const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
-    const esBloqueado = !laboratoriosBloqueados[laboratorio.id];
 
     try {
-      // Actualizar estado visual inmediatamente
-      setLaboratoriosBloqueados(prev => ({
-        ...prev,
-        [laboratorio.id]: esBloqueado
-      }));
-
       // Guardar solo el campo de estado en backend
       const resultado = await patchLaboratorioAPI(laboratorio.id, {
         estado: nuevoEstado === "Activo"
@@ -92,51 +121,40 @@ function LabRepositorioDeLabs() {
       console.log(`Laboratorio ${laboratorio.nombre_de_laboratorio} actualizado a estado: ${nuevoEstado}`);
     } catch (error) {
       console.error("Error al actualizar laboratorio:", error);
-      alert("Error al actualizar el laboratorio. Por favor, intenta de nuevo.");
-      
-      // Revertir cambios visuales
-      setLaboratoriosBloqueados(prev => ({
-        ...prev,
-        [laboratorio.id]: !esBloqueado
-      }));
+      showModal('error', "Error al actualizar el laboratorio. Por favor, intenta de nuevo.");
     }
   };
 
-  const handleDelete = async (laboratorio) => {
-    // Confirmar la eliminación
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar el laboratorio "${laboratorio.nombre_de_laboratorio}"?`)) {
-      return;
-    }
+  const handleDelete = (laboratorio) => {
+    showConfirm(
+      'warning',
+      `¿Estás seguro de que deseas eliminar el laboratorio "${laboratorio.nombre_de_laboratorio}"?`,
+      async () => {
+        try {
+          const resultado = await deleteLaboratorioAPI(laboratorio.id);
 
-    try {
-      // Intentar eliminar del backend
-      const resultado = await deleteLaboratorioAPI(laboratorio.id);
+          if (resultado.success) {
+            console.log("Laboratorio eliminado del backend exitosamente");
+          } else {
+            console.warn("Error al eliminar del backend:", resultado.error);
+            showModal('error', "Error al eliminar el laboratorio del servidor. " + (resultado.error?.detail || "Intenta de nuevo."));
+            return;
+          }
 
-      if (resultado.success) {
-        console.log("Laboratorio eliminado del backend exitosamente");
-      } else {
-        console.warn("Error al eliminar del backend:", resultado.error);
-        alert("Error al eliminar el laboratorio del servidor. " + (resultado.error?.detail || "Intenta de nuevo."));
-        return;
-      }
+          setLaboratorios(prevLabs =>
+            prevLabs.filter(lab => lab.id !== laboratorio.id)
+          );
 
-      // Eliminar de la lista visible
-      setLaboratorios(prevLabs =>
-        prevLabs.filter(lab => lab.id !== laboratorio.id)
-      );
-
-      // Limpiar estado de bloqueado si existía
-      setLaboratoriosBloqueados(prev => {
-        const newState = { ...prev };
-        delete newState[laboratorio.id];
-        return newState;
-      });
-
-      console.log("Laboratorio eliminado exitosamente");
-    } catch (error) {
-      console.error("Error al eliminar laboratorio:", error);
-      alert("Error al eliminar el laboratorio. Por favor, intenta de nuevo.");
-    }
+          closeModal();
+          console.log("Laboratorio eliminado exitosamente");
+        } catch (error) {
+          console.error("Error al eliminar laboratorio:", error);
+          showModal('error', "Error al eliminar el laboratorio. Por favor, intenta de nuevo.");
+        }
+      },
+      'Eliminar',
+      'Cancelar'
+    );
   };
 
   return (
@@ -158,7 +176,7 @@ function LabRepositorioDeLabs() {
             columns={columnas}
             data={filteredLaboratorios}
             renderRow={(laboratorio) => (
-              <tr key={laboratorio.id} className={laboratoriosBloqueados[laboratorio.id] ? style.filaBloqueada : ""}>
+              <tr key={laboratorio.id}>
                 <td className={style.nombre_laboratorio}>{laboratorio.nombre_de_laboratorio}</td>
                 <td>{laboratorio.categoria}</td>
                 <td><span className={laboratorio.estado === "Activo" ? style.statusActive : style.statusInactive}>{laboratorio.estado}</span></td>
@@ -169,9 +187,9 @@ function LabRepositorioDeLabs() {
                   <AdminIconButton 
                     icon={laboratorio.estado === "Activo" ? UserX : UserCheck} 
                     title="bloquear" 
-                    type={laboratoriosBloqueados[laboratorio.id] ? "blocked" : "delete"}
+                    type={laboratorio.estado === "Inactivo" ? "blocked" : "delete"}
                     onClick={() => handleToggleBloqueo(laboratorio)}
-                    isBlocked={laboratoriosBloqueados[laboratorio.id]}
+                    isBlocked={laboratorio.estado === "Inactivo"}
                   />
                   <AdminIconButton icon={Trash2} title="Eliminar" type="delete" onClick={() => handleDelete(laboratorio)} />
                 </td>
@@ -180,6 +198,52 @@ function LabRepositorioDeLabs() {
           ></AdminDataTable>
         )}
       </div>
+
+      {modalConfig.isOpen && (
+        <div className={style.overlay} onClick={closeModal}>
+          <div className={style.modal} onClick={(e) => e.stopPropagation()}>
+            <button className={style.closeBtn} onClick={closeModal}>
+              <X size={20} />
+            </button>
+
+            <div className={style.iconContainer}>{
+              {
+                success: <CheckCircle color="#05cd99" size={50} />,
+                error: <XCircle color="#EE5D50" size={50} />,
+                warning: <AlertTriangle color="#FFBC11" size={50} />,
+                info: <Info color="#422AFB" size={50} />
+              }[modalConfig.type] || <Info color="#422AFB" size={50} />
+            }</div>
+
+            <h3 className={style.title}>
+              {
+                {
+                  success: '¡Ok!',
+                  error: 'Hubo un error',
+                  warning: 'Atención',
+                  info: 'Información'
+                }[modalConfig.type] || 'Información'
+              }
+            </h3>
+            <p className={style.message}>{modalConfig.message}</p>
+
+            {modalConfig.isConfirm ? (
+              <div className={style.buttonContainer}>
+                <button className={`${style.actionBtn} ${style.cancelBtn}`} onClick={closeModal}>
+                  {modalConfig.cancelText}
+                </button>
+                <button className={`${style.actionBtn} ${style.confirmBtn}`} onClick={modalConfig.onConfirm}>
+                  {modalConfig.confirmText}
+                </button>
+              </div>
+            ) : (
+              <button className={style.actionBtn} onClick={closeModal}>
+                Aceptar
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }
