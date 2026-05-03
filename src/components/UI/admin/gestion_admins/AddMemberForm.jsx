@@ -68,7 +68,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores, esGestionUsuarios 
             </div>
 
             <p className={style.infoText}>
-                * La contraseña inicial será el número de identificación del docente.
+                * La contraseña inicial será enviada al correo registrado.
             </p>
 
             <div className={style.actions}>

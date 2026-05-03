@@ -43,7 +43,7 @@ const descargarPlantilla = () => {
         {/* Cuerpo */}
         <div className={style.body}>
           <p className={style.description}>
-            Sigue estos pasos para registrar a tus estudiantes y profesores de forma masiva.
+            Sigue estos pasos para registrar a los profesores de forma masiva.
           </p>
 
           <div className={style.stepsGrid}>
