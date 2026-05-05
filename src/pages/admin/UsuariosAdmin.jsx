@@ -21,6 +21,8 @@ import { useModal } from '../../context/ModalContext'; // Importante para las al
 import style from "./UsuariosAdmin.module.css";
 import Papa from 'papaparse';
 
+import PaginationControls from '../../components/UI/paginacion/PaginationControls'
+
 
 function UsuariosAdmin() {
   const [usuarios, setUsuarios] = useState([]);
@@ -42,53 +44,52 @@ function UsuariosAdmin() {
   const [erroresBackend, setErroresBackend] = useState({});
   const [mostrarModalCSV, setMostrarModalCSV] = useState(false);
 
+  const [paginaActual, setPaginaActual] = useState(1); // Empezamos en la página 1
+  const [totalPaginas, setTotalPaginas] = useState(1); // Para saber el límite
+
   // 1. OBTENER Y FILTRAR DATOS (Igual que en GestionAdmin)
+// 1. Asegúrate de incluir 'busqueda' en las dependencias de useCallback
   const fetchDatos = useCallback(async () => {
     try {
       setcargando(true);
-      // 1. Traemos ambos datos al tiempo
+      
+      // 2. Pasamos la página Y el término de búsqueda al servicio
       const [data, logs] = await Promise.all([
-        getUsuarios(),
+        getUsuarios(paginaActual, searchTerm), 
         getLoginLogsService()
       ]);
       
-      // 2. Filtramos los roles académicos
-      const filtrados = data.filter(u => 
-        u.rol.toLowerCase() === "profesor" || u.rol.toLowerCase() === "estudiante"
-      );
+      const listaUsuarios = data.results || [];
+      const listaLogs = logs.results || logs;
 
-      // 3. Cruzamos los datos (Lógica idéntica a GestionAdmin)
-      const resultado = filtrados.map(usuario => {
-        // Buscamos los logs de este usuario específico
-        const logsDeEsteUsuario = logs.filter(l => 
-          Number(l.usuario) === Number(usuario.id)
-        );
+      if (data.count) {
+        setTotalPaginas(Math.ceil(data.count / 10));
+      }
 
-        // Ordenamos para que el primero sea el más nuevo
-        const logsOrdenados = logsDeEsteUsuario.sort((a, b) => 
-          new Date(b.fecha) - new Date(a.fecha)
-        );
-
+      // El mapeo de logs se mantiene igual...
+      const resultado = listaUsuarios.map(usuario => {
+        const logsDeEsteUsuario = Array.isArray(listaLogs) 
+          ? listaLogs.filter(l => Number(l.usuario) === Number(usuario.id))
+          : [];
         return {
           ...usuario,
-          estado: Boolean(usuario.estado), // Manteniendo lo que ya hicimos
-          // Si tiene logs, tomamos la fecha del primero, si no, null
-          ultimo_ingreso_real: logsOrdenados.length > 0 ? logsOrdenados[0].fecha : null
+          estado: Boolean(usuario.estado),
+          ultimo_ingreso_real: logsDeEsteUsuario.length > 0 ? logsDeEsteUsuario[0].fecha : null
         };
       });
 
       setUsuarios(resultado); 
     } catch (error) {
-      console.error("Error al sincronizar logs:", error);
-      showModal('error', 'No se pudo sincronizar el historial de ingresos.');
+      console.error("Error:", error);
+      showModal('error', 'Error al buscar datos.');
     } finally {
       setcargando(false);
     }
-  }, [showModal]);
+  }, [paginaActual, searchTerm, showModal]);
 
   useEffect(() => {
     fetchDatos();
-  }, [fetchDatos]);
+  }, [fetchDatos]); // Esto disparará la carga cada vez que cambies de página
 
   // Se activa al presionar el lápiz naranja
   const handleAbrirEditar = (usuario) => {
@@ -173,13 +174,13 @@ function UsuariosAdmin() {
       }
   };
 
-  if (cargando) {
-      return (
-          <AdminLayout onSearch={setSearchTerm}>
-              <div className={style.cargandoContainer}><p>Sincronizando con el servidor...</p></div>
-          </AdminLayout>
-      );
-  }
+  // if (cargando) {
+  //     return (
+  //         <AdminLayout onSearch={setSearchTerm}>
+  //             <div className={style.cargandoContainer}><p>Sincronizando con el servidor...</p></div>
+  //         </AdminLayout>
+  //     );
+  // }
 
   const handleGuardarNuevoUsuario = async (datosNuevoUsuario) => {
     setErroresBackend({}); 
@@ -215,11 +216,10 @@ function UsuariosAdmin() {
       }
   };
 
-
-  const filteredUsuarios = usuarios.filter((u) =>
-    u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.correo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleBusqueda = (valor) => { // Recibe el string directamente, no el evento 'e'
+    setSearchTerm(valor);
+    setPaginaActual(1); 
+  };
 
   // Función para cerrar el modal y limpiar alertas previas
   const cerrarModalYLimpiar = () => {
@@ -319,8 +319,14 @@ function UsuariosAdmin() {
   
 
   return (
-    <AdminLayout onSearch={setSearchTerm}>
+    <AdminLayout onSearch={handleBusqueda}>
       <div className={style.layout}>
+        {/* Muestra un indicador visual pero NO quites el layout */}
+        {cargando && (
+          <div className={style.overlayCarga}>
+            <span>Sincronizando con el servidor...</span>
+          </div>
+        )}
         <div className={style.headerSection}>
           <h2 className={style.title}>Administración de usuarios</h2>
           <div className={style.buttonsGroup}>
@@ -350,7 +356,7 @@ function UsuariosAdmin() {
 
         <AdminDataTable 
           columns={columnas} 
-          data={filteredUsuarios}
+          data={usuarios}
           renderRow={(usuario) => (
             <tr key={usuario.id}>
               <td className={style.nameText}>{usuario.nombre}</td>
@@ -397,6 +403,13 @@ function UsuariosAdmin() {
               </td>
             </tr>
           )}
+        />
+        {/* Al final de tu HTML, donde pusimos los controles */}
+        <PaginationControls 
+          paginaActual={paginaActual}
+          totalPaginas={totalPaginas} 
+          // Cuando el usuario toca un número o flecha, se ejecuta esto:
+          onPaginaChange={(nueva) => setPaginaActual(nueva)} 
         />
       </div>
       {mostrarModalEdit && (

@@ -18,17 +18,22 @@ import style from './GestionAdmin.module.css';
 import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
 import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
 
+import PaginationControls from '../../components/UI/paginacion/PaginationControls'
+
 function GestionAdmin() {
   const [admins, setAdmins] = useState([]); 
   const [searchTerm, setSearchTerm] = useState("");
   const [cargando, setCargando] = useState(true);
   const { showModal } = useModal();
+
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+
   const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [erroresBackend, setErroresBackend] = useState({});
-  // Para guardar los datos del admin que elijas editar
   const [adminSeleccionado, setAdminSeleccionado] = useState(null);
-  // Para mostrar u ocultar el modal
   const [mostrarModalEdit, setMostrarModalEdit] = useState(false);
   const [idSeleccionado, setIdSeleccionado] = useState(null);
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -38,28 +43,32 @@ function GestionAdmin() {
     {label: "Estado"}, {label: "Último Ingreso"}, {label: "Acciones"}
   ];
 
-  // 1. OBTENER Y FILTRAR DATOS
+  // 1. OBTENER DATOS DESDE EL SERVIDOR (Con búsqueda y página)
   const fetchDatos = useCallback(async () => {
     try {
-      const [usuarios, logs] = await Promise.all([
-        getAdminsService(),
+      setCargando(true);
+      // Pasamos los parámetros al servicio (ajustado en el paso anterior)
+      const [data, logsData] = await Promise.all([
+        getAdminsService(paginaActual, searchTerm),
         getLoginLogsService(),
       ]);
 
-      const soloAdmins = usuarios.filter(u => u.rol === 'admin');
+      const listaAdmins = data.results || [];
+      const logs = logsData.results || logsData;
 
-      const resultadoFinal = soloAdmins.map(admin => {
-          const todosLosLogsDeEsteAdmin = logs.filter(l => 
-              Number(l.usuario) === Number(admin.id)
-          );
+      if (data.count) {
+        setTotalPaginas(Math.ceil(data.count / 10));
+      }
 
-          const logsOrdenados = todosLosLogsDeEsteAdmin.sort((a, b) => 
-              new Date(b.fecha) - new Date(a.fecha)
-          );
+      const resultadoFinal = listaAdmins.map(admin => {
+          const logsDeEsteAdmin = Array.isArray(logs) 
+              ? logs.filter(l => Number(l.usuario) === Number(admin.id))
+              : [];
 
           return {
               ...admin,
-              ultimo_ingreso_real: logsOrdenados.length > 0 ? logsOrdenados[0].fecha : null
+              estado: Boolean(admin.estado),
+              ultimo_ingreso_real: logsDeEsteAdmin.length > 0 ? logsDeEsteAdmin[0].fecha : null
           };
       });
 
@@ -67,11 +76,11 @@ function GestionAdmin() {
 
     } catch (error) {
       console.error("Error al cargar:", error);
-      showModal('error', 'No se pudieron sincronizar los datos de administración.');
+      showModal('error', 'No se pudieron sincronizar los datos.');
     } finally {
       setCargando(false);
     }
-  }, [showModal]);
+  }, [paginaActual, searchTerm, showModal]);
 
   useEffect(() => {
     fetchDatos();
@@ -95,12 +104,6 @@ function GestionAdmin() {
           showModal('error', "No se pudo cambiar el estado del usuario.");
       }
   };
-
-  // 3. FILTRADO PARA LA BARRA DE BÚSQUEDA
-  const filteredAdmins = admins.filter(admin => 
-    admin.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    admin.correo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // 4. GUARDAR NUEVO ADMIN (PURIFICADO)
   const handleGuardarNuevoAdmin = async (datosNuevoAdmin) => {
@@ -127,13 +130,13 @@ function GestionAdmin() {
       }
   };
 
-  if (cargando) {
-      return (
-          <AdminLayout onSearch={setSearchTerm}>
-              <div className={style.loadingContainer}><p>Sincronizando con el servidor...</p></div>
-          </AdminLayout>
-      );
-  }
+  // if (cargando) {
+  //     return (
+  //         <AdminLayout onSearch={setSearchTerm}>
+  //             <div className={style.loadingContainer}><p>Sincronizando con el servidor...</p></div>
+  //         </AdminLayout>
+  //     );
+  // }
 
   const cerrarModalYLimpiar = () => {
       setMostrarModalCrear(false); // Cierra el modal
@@ -189,9 +192,22 @@ function GestionAdmin() {
       setModalAbierto(true);
   };
 
+  // 2. MANEJO DE BÚSQUEDA (Sincronizado con AdminLayout)
+  const handleBusqueda = (valor) => {
+    setSearchTerm(valor);
+    setPaginaActual(1); // Siempre volver a la página 1 al buscar
+  };
+
+
   return (
-    <AdminLayout onSearch={setSearchTerm}>
+    <AdminLayout onSearch={handleBusqueda}>
       <div className={style.layout}>
+        {/* Overlay de carga para que no se pierda el buscador */}
+        {cargando && (
+          <div className={style.overlayCarga}>
+            <span>Sincronizando con el servidor...</span>
+          </div>
+        )}
         <div className={style.headerSection}>
           <h2 className={style.title}>Gestión de Personal</h2>
           <AdminCreateButton 
@@ -203,7 +219,7 @@ function GestionAdmin() {
 
         <AdminDataTable 
           columns={columnas} 
-          data={filteredAdmins} 
+          data={admins} 
           renderRow={(admin) => (
             <tr key={admin.id}>
               <td className={style.nameText}>{admin.nombre}</td>
@@ -282,6 +298,12 @@ function GestionAdmin() {
               setIdSeleccionado(null); // Limpiamos el ID al cerrar
           }}
           titulo="Perfil de Administrador"
+      />
+      {/* Paginación similar a UsuariosAdmin */}
+      <PaginationControls 
+        paginaActual={paginaActual}
+        totalPaginas={totalPaginas} 
+        onPaginaChange={(nueva) => setPaginaActual(nueva)} 
       />
 
     </AdminLayout>

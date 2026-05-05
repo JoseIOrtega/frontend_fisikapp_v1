@@ -1,15 +1,24 @@
 import { API_CONFIG } from '../apiConfig';
 
 // 1. Obtener todos los usuarios
-export const getAdminsService = async () => {
+export const getAdminsService = async (pagina = 1, termino = "") => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE, {
+        // 1. Construimos la URL. 
+        // Agregamos &rol=admin&rol=superadmin para que el backend traiga ambos
+        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=admin`;
+        
+        // 2. Si el usuario escribió algo en el buscador, lo sumamos
+        if (termino) {
+            url += `&search=${encodeURIComponent(termino)}`;
+        }
+        
+        const response = await fetch(url, {
             method: "GET",
             headers: API_CONFIG.getHeaders(),
         });
 
         if (!response.ok) {
-            throw new Error("No se pudo obtener la lista de usuarios del servidor");
+            throw new Error("No se pudo obtener la lista de administradores");
         }
 
         return await response.json();

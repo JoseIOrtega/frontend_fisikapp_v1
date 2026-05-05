@@ -4,11 +4,20 @@ import { API_CONFIG } from "../../services/apiConfig";
  * Obtiene la lista completa de usuarios (Estudiantes y Profesores)
  * @returns {Promise<Array>} Lista de usuarios desde la base de datos
  */
-export const getUsuarios = async () => {
+// Añadimos 'pagina' como argumento, con valor por defecto 1
+export const getUsuarios = async (pagina = 1, termino = "") => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE, {
+        // Construimos la URL base con la página y el filtro de rol
+        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=profesor`;
+        
+        // Si hay un término de búsqueda, lo concatenamos usando &search=
+        if (termino) {
+            url += `&search=${encodeURIComponent(termino)}`;
+        }
+        
+        const response = await fetch(url, {
             method: "GET",
-            headers: API_CONFIG.getHeaders(), // Incluye el Token de autorización
+            headers: API_CONFIG.getHeaders(), 
         });
 
         if (!response.ok) {
