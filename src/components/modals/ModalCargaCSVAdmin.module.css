@@ -84,7 +84,7 @@
 
 .stepsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr; /* Dos columnas por defecto */
   gap: 2rem;
 }
 
@@ -181,4 +181,36 @@
   border-color: #edf2f7;
   cursor: not-allowed;
   transform: none;
+}
+
+/* --- AJUSTE PARA MÓVIL --- */
+@media (max-width: 600px) {
+  .stepsGrid {
+    grid-template-columns: 1fr; /* Cambia a una sola columna */
+    gap: 1.5rem;
+  }
+
+  .modalContainer {
+    max-height: 90vh; /* Evita que el modal sea más alto que la pantalla */
+    overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+  }
+
+  .body {
+    padding: 1.5rem; /* Reducimos un poco el padding interno */
+  }
+
+  .header {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .stepCard {
+    padding: 1.5rem 1rem; /* Padding más compacto */
+  }
+
+  .description {
+    margin-bottom: 1.5rem; /* Menos espacio para no empujar todo hacia abajo */
+    font-size: 0.9rem;
+  }
 }

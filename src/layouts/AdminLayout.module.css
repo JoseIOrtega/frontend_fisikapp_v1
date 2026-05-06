@@ -11,16 +11,19 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px 30px;
-    
-    /* Mantenemos estas para el scroll interno */
     height: 100vh; 
-    overflow-y: auto; 
-    
-    background-color: #F0F2F5; /* Aseguramos el color aquí también */
-    transition: all 0.3s ease;
+    overflow: hidden;
+    background-color: #F0F2F5;
+    /* Aplicamos el padding AQUÍ para todo el bloque derecho */
+    /* Bajamos el padding superior de 20px a 15px o 10px */
+    padding: 15px 30px 20px 30px
 }
 
+/* Eliminamos los paddings individuales que creamos antes para que no se sumen */
+.navbar-container {
+    width: 100%;
+    margin-bottom: 5px;
+}
 
 /* --- BOTÓN MÓVIL --- */
 .mobileBtn {
@@ -35,6 +38,30 @@
     padding: 8px;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    /* CAMBIO CLAVE: Cambiamos hidden por auto */
+    /* Esto permite que páginas largas (Perfil) tengan scroll, 
+       pero no afecta a la tabla de Usuarios porque ella controla su propio scroll interno */
+    overflow-y: auto; 
+    
+    padding: 0;
+    background-color: #F0F2F5;
+}
+
+/* Opcional: Haz que el scroll se vea más limpio (estilo minimalista) */
+.info::-webkit-scrollbar {
+    width: 6px;
+}
+
+.info::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
 }
 
 /* --- RESPONSIVO PARA TABLETS Y MÓVILES --- */
@@ -63,6 +90,14 @@
     }
 
     .main-content {
-        padding: 15px; /* Menos espacio en móvil */
+        padding: 15px; /* Margen uniforme en móvil */
+    }
+    
+    .navbar-container {
+        margin-bottom: 15px;
+    }
+
+    .info {
+        padding: 10px; /* Menos espacio en móvil para ganar milímetros */
     }
 }

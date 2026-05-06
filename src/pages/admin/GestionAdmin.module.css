@@ -1,5 +1,28 @@
 .layout {
-    padding: 20px;
+    width: 100%;
+    height: 100%; /* CAMBIO CLAVE: Ya no uses 100vh, usa 100% */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.contentWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Permite que el contenedor se encoja si es necesario */
+}
+
+.tableContainer {
+    flex: 1;
+    overflow: auto; /* Aquí es donde vivirán los dos scrolls */
+    min-height: 0;
+}
+
+.paginationContainer {
+    flex-shrink: 0;
+    padding: 10px 0;
+    background: #f0f2f5;
 }
 
 .headerSection {
@@ -52,6 +75,43 @@
     justify-content: center;
 }
 
+/* Contenedor de carga */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    color: #A3AED0;
+    font-weight: 500;
+}
+
 .overlayCarga{
     color: #3e4866;
+}
+
+/* Contenedor de la celda */
+.userCell {
+    padding: 12px 20px;
+}
+
+.userInfoContainer {
+    display: flex;
+    flex-direction: column; /* Apila el nombre arriba y el correo abajo */
+    align-items: flex-start; /* Los alinea a la izquierda */
+    gap: 4px; /* Un pequeño espacio de separación entre ambos */
+}
+
+/* Estilo del Nombre */
+.nameText {
+    font-weight: 700;
+    color: #2B3674;
+    font-size: 16px;
+    white-space: nowrap; /* Evita que el nombre se parta en dos líneas */
+}
+
+/* Estilo del Correo */
+.emailText {
+    font-weight: 400;
+    color: #A3AED0; /* Un gris más suave para que no compita con el nombre */
+    font-size: 15px;
 }
