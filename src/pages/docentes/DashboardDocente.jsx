@@ -5,7 +5,7 @@ function DashboardDocente() {
   return (
     <DocenteLayout>
         <div className={style["layout"]}>
-            <h2>Dashboard Docente</h2>
+            <h2>Dashboard Profesor</h2>
         </div>
     </DocenteLayout>
   )

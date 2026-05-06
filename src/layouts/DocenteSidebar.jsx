@@ -17,16 +17,16 @@ function DocenteSidebar() {
             <nav className={style.navigation}>
                 {/* DASHBOARD */}
                 <NavLink 
-                    to="/docente/dashboard" 
+                    to="/profesor/dashboard" 
                     end 
                     className={({isActive}) => isActive ? style.activeLink : style.link}
                 >
                     <Home size={20} /> <span>Dashboard</span>
                 </NavLink>
 
-                {/*LABORATORIOS CREADOS POR EL DOCENTE USANDO LA ESTRUCTURA del lab creado por el admin*/}
+                {/*LABORATORIOS CREADOS POR EL PROFESOR USANDO LA ESTRUCTURA del lab creado por el admin*/}
                 <NavLink 
-                    to="/docente/mis-laboratorios" 
+                    to="/profesor/mis-laboratorios" 
                     className={({isActive}) => isActive ? style.activeLink : style.link}
                 >
                     <FlaskConical size={20} /> <span>Mis Laboratorios</span>
@@ -34,15 +34,15 @@ function DocenteSidebar() {
 
                 {/* LOS ESTUDIANTES QUE SE UNEN A UN LABORATORIO ESPECIFICO*/}
                 <NavLink 
-                    to="/docente/mis-estudiantes" 
+                    to="/profesor/mis-estudiantes" 
                     className={({isActive}) => isActive ? style.activeLink : style.link}
                 >
                     <Users size={20} /> <span>Mis Estudiantes</span>
                 </NavLink>
 
-                {/* PERFIL DOCENTE */}
+                {/* PERFIL PROFESOR */}
                 <NavLink 
-                    to="/docente/perfil" 
+                    to="/profesor/perfil" 
                     className={({isActive}) => isActive ? style.activeLink : style.link}
                 >
                     <UserPen size={20} /> <span>Perfil</span>
@@ -50,7 +50,7 @@ function DocenteSidebar() {
             </nav>
 
             <div className={style.footer}>
-                <NavLink to="/docente/configuracion" className={style.link}>
+                <NavLink to="/profesor/configuracion" className={style.link}>
                     <Settings size={20} /> <span>Configuración</span>
                 </NavLink>
             </div>

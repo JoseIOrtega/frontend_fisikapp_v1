@@ -1,47 +1,27 @@
-import { useState, useEffect } from 'react'; // Agregamos useEffect
-import { RefreshCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import AuthInput from "../../auth/AuthInput";
 import AuthButton from "../../auth/AuthButton";
 import style from './AddMemberForm.module.css';
-
-const generarClave = () => `Fisikapp_${Math.random().toString(36).substring(2, 8)}`;
 
 function AddMemberForm({ onSave, onCancel, cargando, errores, esGestionUsuarios = false }) {
     
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
-        rol: esGestionUsuarios ? 'estudiante' : 'admin',
-        clave: generarClave()
+        institucion: 'Fisikapp', // Nuevo
+        rol: esGestionUsuarios ? 'profesor' : 'admin', 
     });
 
-    // FUERZA EL ROL CORRECTO: 
-    // Si la prop cambia o el componente se monta, nos aseguramos de que el rol coincida
     useEffect(() => {
-        if (esGestionUsuarios) {
-            setFormData(prev => ({ ...prev, rol: 'estudiante' }));
-        } else {
-            setFormData(prev => ({ ...prev, rol: 'admin' }));
-        }
+        setFormData(prev => ({
+            ...prev,
+            rol: esGestionUsuarios ? 'profesor' : 'admin'
+        }));
     }, [esGestionUsuarios]);
-
-    const opcionesRoles = esGestionUsuarios 
-        ? [
-            { value: "profesor", label: "Docente" },
-            { value: "estudiante", label: "Estudiante" }
-          ]
-        : [
-            { value: "admin", label: "Administrador" },
-            { value: "superadmin", label: "Super Administrador" }
-          ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleRegenerar = () => {
-        setFormData(prev => ({ ...prev, clave: generarClave() }));
     };
 
     const handleSubmit = (e) => {
@@ -73,41 +53,22 @@ function AddMemberForm({ onSave, onCancel, cargando, errores, esGestionUsuarios 
             />
 
             <div className={style.row}>
-                <div className={style.selectGroup}>
-                    <label className={style.label}>Rol de usuario</label>
-                    <select 
-                        name="rol"
-                        className={`${style.select} ${errores?.rol ? style.selectError : ''}`}
-                        value={formData.rol} 
-                        onChange={handleChange}
-                    >
-                        {opcionesRoles.map((opcion) => (
-                            <option key={opcion.value} value={opcion.value}>
-                                {opcion.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className={style.passwordGroup}>
-                    <AuthInput 
-                        label="Contraseña Temporal" 
-                        value={formData.clave} 
-                        readOnly 
+                <div className={style.selectGroup} style={{ width: '100%' }}> 
+                    <label className={style.label}>Rol de usuario asignado</label>
+                    <input 
+                        type="text"
+                        className={style.select} // Usamos la misma clase para mantener el diseño
+                        value={esGestionUsuarios ? 'Profesor' : 'Administrador'} 
+                        readOnly // Solo lectura
+                        disabled // Para que se vea con el estilo de bloqueado
                     />
-                    <button 
-                        type="button" 
-                        onClick={handleRegenerar} 
-                        className={style.btnRegenerate}
-                        title="Generar otra clave"
-                    >
-                        <RefreshCcw size={18} />
-                    </button>
+                    {/* Mantenemos el valor real en un input oculto para el formulario si es necesario */}
+                    <input type="hidden" name="rol" value={formData.rol} />
                 </div>
             </div>
 
             <p className={style.infoText}>
-                * Se enviará un correo automático con estas credenciales.
+                * La contraseña inicial será enviada al correo registrado.
             </p>
 
             <div className={style.actions}>
@@ -115,7 +76,7 @@ function AddMemberForm({ onSave, onCancel, cargando, errores, esGestionUsuarios 
                     Cancelar
                 </AuthButton>
                 <AuthButton type="submit" disabled={cargando}>
-                    {cargando ? 'Guardando...' : 'Crear y Enviar'}
+                    {cargando ? 'Guardando...' : 'Añadir miembro'}
                 </AuthButton>
             </div>
         </form>

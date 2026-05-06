@@ -10,14 +10,14 @@ function DocenteLayout({ children, onSearch }) {
   const location = useLocation();
 
   const routeNames = {
-    "/docente/dashboard": "Dashboard",
-    "/docente/mis-laboratorios": "Mis Laboratorios",
-    "/docente/mis-estudiantes": "Gestión de Estudiantes",
-    "/docente/perfil": "Mi Perfil",
-    "/docente/configuracion": "Configuración"
+    "/profesor/dashboard": "Dashboard",
+    "/profesor/mis-laboratorios": "Mis Laboratorios",
+    "/profesor/mis-estudiantes": "Gestión de Estudiantes",
+    "/profesor/perfil": "Mi Perfil",
+    "/profesor/configuracion": "Configuración"
   };
 
-  const currentTitle = routeNames[location.pathname] || "Panel Docente";
+  const currentTitle = routeNames[location.pathname] || "Panel Profesor";
 
   return (
     <div className={style['admin-layout']}>
@@ -29,7 +29,7 @@ function DocenteLayout({ children, onSearch }) {
         {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Sidebar del Docente */}
+      {/* Sidebar del Profesor */}
       <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
         <DocenteSidebar />
       </div>

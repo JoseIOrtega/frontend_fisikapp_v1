@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { Search } from 'lucide-react';
 import style from './AdminSearchBar.module.css';
 
-function AdminSearchBar({ placeholder = "Buscador..." }) {
-  const [searchText, setSearchText] = useState('');
-
+// Agregamos la prop onSearch
+function AdminSearchBar({ onSearch, placeholder = "Buscador..." }) {
   return (
     <div className={style.searchContainer}>
       <Search size={20} className={style.searchIcon} />
@@ -12,8 +10,7 @@ function AdminSearchBar({ placeholder = "Buscador..." }) {
         type="text" 
         placeholder={placeholder} 
         className={style.searchInput} 
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
+        onChange={(e) => onSearch && onSearch(e.target.value)} 
       />
     </div>
   );
