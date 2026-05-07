@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'; 
-import AdminLayout from "../../layouts/AdminLayout";
-import style from './PerfilAdmin.module.css';
+import DocenteLayout from "../../layouts/DocenteLayout";
+import style from './PerfilDocente.module.css';
 import AuthInput from "../../components/UI/auth/AuthInput";
 import { useModal } from '../../context/ModalContext';
 import { getPerfilUser, updatePerfilUser, changePasswordUser } from '../../services/admin/PerfilService';
 import { Eye, EyeOff, Camera } from 'lucide-react';
 
-function PerfilAdmin() {
+function PerfilDocente() {
     const { showModal } = useModal();
     const [loading, setLoading] = useState(true);
     const [editando, setEditando] = useState(false);
@@ -248,12 +248,12 @@ function PerfilAdmin() {
     if (loading) {
         // Reemplaza tu bloque "if (loading)" por este:
         return (
-            <AdminLayout>
+            <DocenteLayout>
                 <div className={style.container}>
                     {loading ? (
                         // En lugar de una página blanca, mostramos un mensaje dentro del diseño
                         <div className={style.skeletonContainer}>
-                            <p>Cargando datos del administrador...</p>
+                            <p>Cargando datos del docente...</p>
                         </div>
                     ) : (
                         // Aquí va todo tu diseño actual del perfil
@@ -262,12 +262,12 @@ function PerfilAdmin() {
                         </div>
                     )}
                 </div>
-            </AdminLayout>
+            </DocenteLayout>
         );
     }
 
     return (
-        <AdminLayout>
+        <DocenteLayout>
             <div className={style["layout"]}>
                 <h2 className={style.title}>Configuración</h2>
                 <div className={style["headerPerfil"]}>
@@ -363,8 +363,8 @@ function PerfilAdmin() {
                     </div>
                 </div>
             </div>
-        </AdminLayout>
+        </DocenteLayout>
     );
 }
 
-export default PerfilAdmin;
+export default PerfilDocente;

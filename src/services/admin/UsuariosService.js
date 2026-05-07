@@ -1,14 +1,23 @@
 import { API_CONFIG } from "../../services/apiConfig";
 
 /**
- * Obtiene la lista completa de usuarios (Estudiantes y Docentes)
+ * Obtiene la lista completa de usuarios (Estudiantes y Profesores)
  * @returns {Promise<Array>} Lista de usuarios desde la base de datos
  */
-export const getUsuarios = async () => {
+// Añadimos 'pagina' como argumento, con valor por defecto 1
+export const getUsuarios = async (pagina = 1, termino = "") => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE, {
+        // Construimos la URL base con la página y el filtro de rol
+        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=profesor`;
+        
+        // Si hay un término de búsqueda, lo concatenamos usando &search=
+        if (termino) {
+            url += `&search=${encodeURIComponent(termino)}`;
+        }
+        
+        const response = await fetch(url, {
             method: "GET",
-            headers: API_CONFIG.getHeaders(), // Incluye el Token de autorización
+            headers: API_CONFIG.getHeaders(), 
         });
 
         if (!response.ok) {
@@ -94,42 +103,37 @@ export const getUsuarioDetalle = async (id) => {
 };
 
 
-// 5. Crear nuevo administrador (POST a la base)
-export const crearNuevoUsuarioDocente = async (datosUsuario) => {
+// 5. Crear nuevo usuario profesor o estudiante
+export const crearNuevoUsuario = async (datosUsuario) => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE, {
+        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CREAR_PROFESOR_ESTUDIANTE, {
             method: "POST",
             headers: {
                 ...API_CONFIG.getHeaders(),
-                "Content-Type": "application/json" // Necesario para que el backend lea el JSON
+                "Content-Type": "application/json"
             },
+            // PURIFICADO: Solo enviamos nombre y correo.
+            // Se asume que el backend asignará el rol 'profesor' por defecto 
+            // o lo gestionará internamente al usar este endpoint.
             body: JSON.stringify({
                 nombre: datosUsuario.nombre,
-                correo: datosUsuario.correo,
-                password: datosUsuario.clave,
-                rol: datosUsuario.rol,
-                estado: true,
-                foto: null // IMPORTANTE: Envíalo como null explícito si es nuevo 
+                correo: datosUsuario.correo
             }),
         });
 
         if (!response.ok) {
             const errorData = await response.json();
             
-            // 1. Diccionario de traducciones para campos específicos
             const traducciones = {
                 "users with this correo already exists.": "Este correo electrónico ya está registrado en el sistema.",
                 "This field is required.": "Este campo es obligatorio.",
                 "Enter a valid email address.": "Ingresa un correo electrónico válido."
             };
 
-            // 2. Revisamos si el error de 'correo' necesita traducción
             if (errorData.correo) {
-                // Mapeamos los mensajes de inglés a español
                 errorData.correo = errorData.correo.map(msg => traducciones[msg] || msg);
             }
 
-            // 3. Lanzamos el error con los datos ya traducidos
             const errorCustom = new Error("Error de validación");
             errorCustom.detalles = errorData; 
             throw errorCustom;
@@ -137,7 +141,7 @@ export const crearNuevoUsuarioDocente = async (datosUsuario) => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error en crearNuevoAdmin:", error);
+        console.error("Error en crearNuevoUsuario:", error);
         throw error;
     }
 };

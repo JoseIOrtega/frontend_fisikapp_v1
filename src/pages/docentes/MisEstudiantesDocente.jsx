@@ -1,14 +1,14 @@
 import DocenteLayout from '../../layouts/DocenteLayout'
-import style from './DashboardDocente.module.css'
+import style from './MisEstudiantesDocente.module.css'
 
-function DashboardDocente() {
+function MisEstudiantesDocente() {
   return (
     <DocenteLayout>
         <div className={style["layout"]}>
-            <h2>Dashboard Profesor</h2>
+            <h2>Mis Estudiantes</h2>
         </div>
     </DocenteLayout>
   )
 }
 
-export default DashboardDocente
+export default MisEstudiantesDocente

@@ -1,0 +1,91 @@
+.admin-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    background-color: #F0F2F5; /* Fondo general de la app */
+    overflow: hidden; /* Evita que el body tenga scroll doble */
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    /* Alineación perfecta: coincide con el Navbar y las tablas */
+    padding: 15px 30px 20px 30px;
+}
+
+.navbar-container {
+    width: 100%;
+    margin-bottom: 5px; /* Espacio mínimo para que no se vea "separado" */
+}
+
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* Scroll inteligente: solo se activa si el contenido (como Perfil) es largo */
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* --- ESTILOS DEL SCROLLBAR (Minimalista) --- */
+.info::-webkit-scrollbar {
+    width: 6px;
+}
+
+.info::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+/* --- DISEÑO MÓVIL (Responsivo) --- */
+.mobileBtn {
+    display: none; /* Escondido en PC */
+    position: fixed;
+    top: 25px;
+    left: 20px;
+    z-index: 2000;
+    background: #1B2559;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 1028px) {
+    .mobileBtn {
+        display: block;
+    }
+
+    .sidebarWrapper {
+        position: fixed;
+        left: -300px; /* Oculto por defecto */
+        top: 0;
+        z-index: 1500;
+        transition: 0.3s ease;
+    }
+
+    .sidebarWrapper.show {
+        left: 0; /* Aparece al dar click */
+    }
+
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        z-index: 1400;
+    }
+
+    .main-content {
+        padding: 15px; /* Menos espacio en móvil */
+    }
+
+    .navbar-container {
+        margin-bottom: 15px;
+    }
+}

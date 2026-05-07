@@ -26,7 +26,7 @@ function Login() {
         const tokenExistente = localStorage.getItem('token');
         
         if (tokenExistente) {
-            console.log("Sesión antigua detectada, limpiando para evitar errores 403...");
+            //console.log("Sesión antigua detectada, limpiando para evitar errores 403...");
             localStorage.clear(); 
         }
     }, []);

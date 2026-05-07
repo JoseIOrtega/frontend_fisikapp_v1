@@ -1,0 +1,40 @@
+/* PaginationControls.module.css */
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Espacio entre botones y texto */
+  margin-top: 25px;
+  padding: 10px;
+  font-family: sans-serif;
+}
+
+.paginationButton {
+  padding: 8px 16px;
+  border: 1px solid #007bff;
+  background-color: #ffffff;
+  color: #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Estilo para cuando el botón no se puede usar */
+.paginationButton:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.paginationInfo {
+  font-size: 14px;
+  color: #555;
+  font-weight: bold;
+}
