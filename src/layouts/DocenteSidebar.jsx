@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import imgLogo from "../assets/images/Logo.png";
-import style from './AdminSidebar.module.css'; // Reutilizamos el MISMO CSS
+import style from './AdminSidebar.module.css'; 
 import { 
-  Home, FlaskConical, Users, UserPen, Settings 
+  Home, FlaskConical, Users, ClipboardList, UserPen, Settings 
 } from 'lucide-react'; 
 
 function DocenteSidebar() {
@@ -15,36 +15,28 @@ function DocenteSidebar() {
             </div>
 
             <nav className={style.navigation}>
-                {/* DASHBOARD */}
-                <NavLink 
-                    to="/profesor/dashboard" 
-                    end 
-                    className={({isActive}) => isActive ? style.activeLink : style.link}
-                >
+                {/* 1. DASHBOARD */}
+                <NavLink to="/profesor/dashboard" end className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <Home size={20} /> <span>Dashboard</span>
                 </NavLink>
 
-                {/*LABORATORIOS CREADOS POR EL PROFESOR USANDO LA ESTRUCTURA del lab creado por el admin*/}
-                <NavLink 
-                    to="/profesor/mis-laboratorios" 
-                    className={({isActive}) => isActive ? style.activeLink : style.link}
-                >
+                {/* 2. MIS LABORATORIOS */}
+                <NavLink to="/profesor/mis-laboratorios" className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <FlaskConical size={20} /> <span>Mis Laboratorios</span>
                 </NavLink>
 
-                {/* LOS ESTUDIANTES QUE SE UNEN A UN LABORATORIO ESPECIFICO*/}
-                <NavLink 
-                    to="/profesor/mis-estudiantes" 
-                    className={({isActive}) => isActive ? style.activeLink : style.link}
-                >
+                {/* 3. MIS ESTUDIANTES (Filtrados por laboratorio seleccionado) */}
+                <NavLink to="/profesor/mis-estudiantes" className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <Users size={20} /> <span>Mis Estudiantes</span>
                 </NavLink>
 
-                {/* PERFIL PROFESOR */}
-                <NavLink 
-                    to="/profesor/perfil" 
-                    className={({isActive}) => isActive ? style.activeLink : style.link}
-                >
+                {/* 4. HISTORIAL DE REPORTES (Al final del flujo de trabajo) */}
+                <NavLink to="/profesor/reportes" className={({isActive}) => isActive ? style.activeLink : style.link}>
+                    <ClipboardList size={20} /> <span>Historial de Reportes</span>
+                </NavLink>
+
+                {/* PERFIL */}
+                <NavLink to="/profesor/perfil" className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <UserPen size={20} /> <span>Perfil</span>
                 </NavLink>
             </nav>

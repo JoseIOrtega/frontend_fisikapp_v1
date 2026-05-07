@@ -39,7 +39,7 @@ function GestionAdmin() {
   const [modalAbierto, setModalAbierto] = useState(false);
 
   const columnas = [
-    {label: "Nombre"}, {label: "Correo"}, {label: "Rol"}, 
+    {label: "Nombre"}, {label: "Rol"}, 
     {label: "Estado"}, {label: "Último Ingreso"}, {label: "Acciones"}
   ];
 
@@ -202,70 +202,85 @@ function GestionAdmin() {
   return (
     <AdminLayout onSearch={handleBusqueda}>
       <div className={style.layout}>
-        {/* Overlay de carga para que no se pierda el buscador */}
-        {cargando && (
-          <div className={style.overlayCarga}>
-            <span>Sincronizando con el servidor...</span>
-          </div>
-        )}
-        <div className={style.headerSection}>
-          <h2 className={style.title}>Gestión de Personal</h2>
-          <AdminCreateButton 
-                icon={UserPlus} 
-                text="Añadir Miembro" 
-                onClick={() => setMostrarModalCrear(true)} 
-          />
-        </div>
-
-        <AdminDataTable 
-          columns={columnas} 
-          data={admins} 
-          renderRow={(admin) => (
-            <tr key={admin.id}>
-              <td className={style.nameText}>{admin.nombre}</td>
-              <td>{admin.correo}</td>
-              <td>
-                <span className={`${style.roleBadge} ${admin.rol === 'superadmin' ? style.super : ''}`}>
-                    {admin.rol}
-                </span>
-              </td>
-              
-              <td>
-                <span className={admin.estado ? style.statusActive : style.statusInactive}>
-                  {admin.estado ? "Activo" : "Inactivo"}
-                </span>
-              </td>
-
-              <td title={admin.ultimo_ingreso_real ? new Date(admin.ultimo_ingreso_real).toLocaleString() : "Sin registros"}>
-                {admin.ultimo_ingreso_real ? getRelativeTime(admin.ultimo_ingreso_real) : "Nunca"}
-              </td>
-
-              <td className={style.actionsCell}>
-                <AdminIconButton 
-                    icon={Edit} 
-                    type="edit" 
-                    title="Editar datos" 
-                    onClick={() => handleAbrirEditar(admin)}
-                />
-                {/*<AdminIconButton icon={Key} type="reset" title="Cambiar clave" />*/}
-                <AdminIconButton 
-                    icon={Eye} 
-                    type="detail" 
-                    title="Ver detalles" 
-                    onClick={() => abrirModal(admin.id)} // <--- CONEXIÓN AQUÍ
-                />
-                
-                {/* Botón dinámico para activar/desactivar */}
-                <AdminIconButton 
-                  icon={admin.estado ? UserX : UserCheck} 
-                  type={admin.estado ? "delete" : "success"} 
-                  onClick={() => handleToggleEstado(admin)}
-                  title={admin.estado ? "Desactivar" : "Activar"}
-                />
-              </td>
-            </tr>
+        <div className={style.contentWrapper}>
+          {/* Overlay de carga para que no se pierda el buscador */}
+          {cargando && (
+            <div className={style.overlayCarga}>
+              <span>Sincronizando con el servidor...</span>
+            </div>
           )}
-        />
+          <div className={style.headerSection}>
+            <h2 className={style.title}>Gestión de Personal</h2>
+            <AdminCreateButton 
+                  icon={UserPlus} 
+                  text="Añadir Miembro" 
+                  onClick={() => setMostrarModalCrear(true)} 
+            />
+          </div>
+
+          <AdminDataTable 
+            columns={columnas} 
+            data={admins} 
+            renderRow={(admin) => (
+              <tr key={admin.id}>
+                <td className={style.userCell}>
+                  <div className={style.userInfoContainer}>
+                    <span className={style.nameText}>{admin.nombre}</span>
+                    <span className={style.emailText}>{admin.correo}</span>
+                  </div>
+                </td>
+                <td>
+                  <span className={`${style.roleBadge} ${admin.rol === 'superadmin' ? style.super : ''}`}>
+                      {admin.rol}
+                  </span>
+                </td>
+                
+                <td>
+                  <span className={admin.estado ? style.statusActive : style.statusInactive}>
+                    {admin.estado ? "Activo" : "Inactivo"}
+                  </span>
+                </td>
+
+                <td title={admin.ultimo_ingreso_real ? new Date(admin.ultimo_ingreso_real).toLocaleString() : "Sin registros"}>
+                  {admin.ultimo_ingreso_real ? getRelativeTime(admin.ultimo_ingreso_real) : "Nunca"}
+                </td>
+
+                <td className={style.actionsCell}>
+                  <AdminIconButton 
+                      icon={Edit} 
+                      type="edit" 
+                      title="Editar datos" 
+                      onClick={() => handleAbrirEditar(admin)}
+                  />
+                  {/*<AdminIconButton icon={Key} type="reset" title="Cambiar clave" />*/}
+                  <AdminIconButton 
+                      icon={Eye} 
+                      type="detail" 
+                      title="Ver detalles" 
+                      onClick={() => abrirModal(admin.id)} // <--- CONEXIÓN AQUÍ
+                  />
+                  
+                  {/* Botón dinámico para activar/desactivar */}
+                  <AdminIconButton 
+                    icon={admin.estado ? UserX : UserCheck} 
+                    type={admin.estado ? "delete" : "success"} 
+                    onClick={() => handleToggleEstado(admin)}
+                    title={admin.estado ? "Desactivar" : "Activar"}
+                  />
+                </td>
+              </tr>
+            )}
+          />
+          {/* Paginación similar a UsuariosAdmin */}
+          <footer className={style.paginationContainer}>
+            <PaginationControls 
+              paginaActual={paginaActual}
+              totalPaginas={totalPaginas} 
+              // Cuando el usuario toca un número o flecha, se ejecuta esto:
+              onPaginaChange={(nueva) => setPaginaActual(nueva)} 
+            />
+          </footer>
+        </div>
       </div>
 
       <GenericModal 
@@ -299,12 +314,7 @@ function GestionAdmin() {
           }}
           titulo="Perfil de Administrador"
       />
-      {/* Paginación similar a UsuariosAdmin */}
-      <PaginationControls 
-        paginaActual={paginaActual}
-        totalPaginas={totalPaginas} 
-        onPaginaChange={(nueva) => setPaginaActual(nueva)} 
-      />
+      
 
     </AdminLayout>
   );

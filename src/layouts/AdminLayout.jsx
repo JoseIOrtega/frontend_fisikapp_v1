@@ -1,20 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import style from './AdminLayout.module.css';
 import AdminSidebar from './AdminSidebar';
 import AdminNavbar from './AdminNavbar';
-import { Menu, X } from 'lucide-react'; // Iconos para el botón móvil
-// --- ESTA ES LA LÍNEA QUE DEBES AGREGAR ---
-import { getPerfilUser} from '../services/admin/PerfilService';
+import { Menu, X } from 'lucide-react';
 
 function AdminLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
-  const userRole = localStorage.getItem('user_role'); 
-  const esSuperAdmin = userRole === 'superadmin';
-
-  // Diccionario de rutas para Fisikapp
+  // Diccionario de rutas
   const routeNames = {
     "/admin/dashboard": "Dashboard",
     "/admin/laboratorio/auditoria_contenido": "Gestión de Laboratorios",
@@ -25,33 +20,12 @@ function AdminLayout({ children, onSearch }) {
     "/admin/gestionadmin": "Gestión de Admins",
     "/admin/configuracion":"Panel de Control",
   };
-  // Buscamos el nombre basado en la ruta actual
+
   const currentTitle = routeNames[location.pathname] || "Panel de Control";
 
-  // Dentro de AdminLayout.jsx o un componente que envuelva el Dashboard
-  useEffect(() => {
-      const sincronizarNombre = async () => {
-          const id = localStorage.getItem('user_id');
-          const nombreEnMochila = localStorage.getItem('user_name');
-
-          // Solo si el nombre realmente falta o es inválido, hacemos el fetch
-          if (id && (!nombreEnMochila || nombreEnMochila === "null" || nombreEnMochila === "undefined")) {
-              try {
-                  const usuario = await obtenerDatosPorId(id); 
-                  if (usuario && usuario.nombre) {
-                      localStorage.setItem('user_name', usuario.nombre);
-                      window.dispatchEvent(new Event('storage'));
-                  }
-              } catch (e) {
-                  console.error("Error al sincronizar:", e);
-              }
-          }
-      };
-      sincronizarNombre();
-  }, []);
   return (
     <div className={style['admin-layout']}>
-      {/* 1. Botón Hamburguesa: Solo se verá en móviles */}
+      {/* Botón móvil */}
       <button 
         className={style.mobileBtn} 
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -59,19 +33,21 @@ function AdminLayout({ children, onSearch }) {
         {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* 2. Overlay: Oscurece el fondo al abrir el menú en móvil */}
+      {/* Overlay móvil */}
       {isSidebarOpen && (
         <div className={style.overlay} onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      {/* 3. Sidebar: Le pasamos una clase extra si está abierto */}
+      {/* Sidebar */}
       <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
-        <AdminSidebar esSuperAdmin={esSuperAdmin}/>
+        {/* Aquí puedes pasar el rol directo del localStorage si el Sidebar lo necesita */}
+        <AdminSidebar esSuperAdmin={localStorage.getItem('user_role') === 'superadmin'}/>
       </div>
 
       <div className={style['main-content']}>
-        {/* 4. Navbar: Ahora le pasamos el título */}
-        <AdminNavbar pageTitle={currentTitle} onSearch={onSearch}/>
+        <div className={style['navbar-container']}>
+          <AdminNavbar pageTitle={currentTitle} onSearch={onSearch}/>
+        </div>
         <div className={style['info']}>
           {children}
         </div>

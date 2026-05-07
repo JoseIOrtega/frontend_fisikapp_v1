@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import AdminDataTable from "../../components/UI/admin/AdminDataTable";
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
@@ -35,7 +35,7 @@ function UsuariosAdmin() {
   const [modalVerAbierto, setModalVerAbierto] = useState(false);
 
   const columnas = [
-    { label: "Nombre" }, { label: "Correo" }, { label: "Rol" },
+    { label: "Nombre" }, { label: "Rol" },
     { label: "Estado" }, { label: "Último ingreso" }, { label: "Acciones" }
   ];
 
@@ -46,6 +46,8 @@ function UsuariosAdmin() {
 
   const [paginaActual, setPaginaActual] = useState(1); // Empezamos en la página 1
   const [totalPaginas, setTotalPaginas] = useState(1); // Para saber el límite
+
+  const scrollRef = useRef(null); // 2. Crea la referencia
 
   // 1. OBTENER Y FILTRAR DATOS (Igual que en GestionAdmin)
 // 1. Asegúrate de incluir 'busqueda' en las dependencias de useCallback
@@ -89,6 +91,12 @@ function UsuariosAdmin() {
 
   useEffect(() => {
     fetchDatos();
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth' // O 'auto' si prefieres que sea instantáneo
+      });
+    }
   }, [fetchDatos]); // Esto disparará la carga cada vez que cambies de página
 
   // Se activa al presionar el lápiz naranja
@@ -321,96 +329,108 @@ function UsuariosAdmin() {
   return (
     <AdminLayout onSearch={handleBusqueda}>
       <div className={style.layout}>
-        {/* Muestra un indicador visual pero NO quites el layout */}
-        {cargando && (
-          <div className={style.overlayCarga}>
-            <span>Sincronizando con el servidor...</span>
-          </div>
-        )}
-        <div className={style.headerSection}>
-          <h2 className={style.title}>Administración de usuarios</h2>
-          <div className={style.buttonsGroup}>
-              {/* Input oculto que se activa por código */}
-              <input 
-                  type="file" 
-                  accept=".csv" 
-                  id="csvInput" 
-                  style={{ display: 'none' }} 
-                  onChange={handleSubirCSV} 
-              />
-              
-              <AdminCreateButton 
-                  icon={FileUp} 
-                  text="Cargar CSV" 
-                  onClick={() => setMostrarModalCSV(true)} 
-                  disabled={guardando}
-              />
-
-              <AdminCreateButton 
-                  icon={UserPlus} 
-                  text="Añadir Usuario" 
-                  onClick={() => setMostrarModalCrear(true)}
-              />
-          </div>
-        </div>
-
-        <AdminDataTable 
-          columns={columnas} 
-          data={usuarios}
-          renderRow={(usuario) => (
-            <tr key={usuario.id}>
-              <td className={style.nameText}>{usuario.nombre}</td>
-              <td>{usuario.correo}</td>
-              <td>
-                <span className={usuario.rol.toLowerCase() === "profesor" ? style.roleDocente : style.roleEstudiante}>
-                  {usuario.rol.toLowerCase() === "profesor" ? "Profesor" : "Estudiante"}
-                </span>
-              </td>
-
-              {/* LÓGICA DE ESTADO: Idéntica a GestionAdmin */}
-              <td>
-                <span className={usuario.estado ? style.statusActive : style.statusInactive}>
-                  {usuario.estado ? "Activo" : "Inactivo"}
-                </span>
-              </td>
-
-              {/* En el renderRow de tu AdminDataTable */}
-              <td title={usuario.ultimo_ingreso_real ? new Date(usuario.ultimo_ingreso_real).toLocaleString() : "Sin ingresos"}>
-                {usuario.ultimo_ingreso_real ? getRelativeTime(usuario.ultimo_ingreso_real) : "Nunca"}
-              </td>
-
-              <td className={style.actionsCell}>
-                <AdminIconButton 
-                  icon={Edit} 
-                  type="edit" 
-                  title="Editar" 
-                  onClick={() => handleAbrirEditar(usuario)} // <--- Conexión aquí
+        <div className={style.contentWrapper}>
+          {/* Muestra un indicador visual pero NO quites el layout */}
+          {cargando && (
+            <div className={style.overlayCarga}>
+              <span>Sincronizando con el servidor...</span>
+            </div>
+          )}
+          <div className={style.headerSection}>
+            <h2 className={style.title}>Administración de usuarios</h2>
+            <div className={style.buttonsGroup}>
+                {/* Input oculto que se activa por código */}
+                <input 
+                    type="file" 
+                    accept=".csv" 
+                    id="csvInput" 
+                    style={{ display: 'none' }} 
+                    onChange={handleSubirCSV} 
                 />
                 
-                <AdminIconButton 
-                    icon={Eye} 
-                    type="detail" 
-                    title="Ver detalles" 
-                    onClick={() => handleAbrirVer(usuario.id)} // <--- Conectado aquí
+                <AdminCreateButton 
+                    icon={FileUp} 
+                    text="Cargar CSV" 
+                    onClick={() => setMostrarModalCSV(true)} 
+                    disabled={guardando}
                 />
 
-                <AdminIconButton 
-                  icon={usuario.estado ? UserX : UserCheck} 
-                  type={usuario.estado ? "delete" : "success"} 
-                  title={usuario.estado ? "Desactivar" : "Activar"} 
-                  onClick={() => handleToggleEstado(usuario)} // <--- Conexión aquí
+                <AdminCreateButton 
+                    icon={UserPlus} 
+                    text="Añadir Usuario" 
+                    onClick={() => setMostrarModalCrear(true)}
                 />
-              </td>
-            </tr>
-          )}
-        />
-        {/* Al final de tu HTML, donde pusimos los controles */}
-        <PaginationControls 
-          paginaActual={paginaActual}
-          totalPaginas={totalPaginas} 
-          // Cuando el usuario toca un número o flecha, se ejecuta esto:
-          onPaginaChange={(nueva) => setPaginaActual(nueva)} 
-        />
+            </div>
+          </div>
+
+          {/* La tabla ahora tiene su propio scroll independiente */}
+          <div className={style.tableContainer} ref={scrollRef}>
+            <AdminDataTable 
+              columns={columnas} 
+              data={usuarios}
+              renderRow={(usuario) => (
+                <tr key={usuario.id}>
+                  <td className={style.userCell}>
+                    <div className={style.userInfoContainer}>
+                      <span className={style.nameText}>{usuario.nombre}</span>
+                      <span className={style.emailText}>{usuario.correo}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={usuario.rol.toLowerCase() === "profesor" ? style.roleDocente : style.roleEstudiante}>
+                      {usuario.rol.toLowerCase() === "profesor" ? "Profesor" : "Estudiante"}
+                    </span>
+                  </td>
+
+                  {/* LÓGICA DE ESTADO: Idéntica a GestionAdmin */}
+                  <td>
+                    <span className={usuario.estado ? style.statusActive : style.statusInactive}>
+                      {usuario.estado ? "Activo" : "Inactivo"}
+                    </span>
+                  </td>
+
+                  {/* En el renderRow de tu AdminDataTable */}
+                  <td title={usuario.ultimo_ingreso_real ? new Date(usuario.ultimo_ingreso_real).toLocaleString() : "Sin ingresos"}>
+                    {usuario.ultimo_ingreso_real ? getRelativeTime(usuario.ultimo_ingreso_real) : "Nunca"}
+                  </td>
+
+                  <td className={style.actionsCell}>
+                    <AdminIconButton 
+                      icon={Edit} 
+                      type="edit" 
+                      title="Editar" 
+                      onClick={() => handleAbrirEditar(usuario)} // <--- Conexión aquí
+                    />
+                    
+                    <AdminIconButton 
+                        icon={Eye} 
+                        type="detail" 
+                        title="Ver detalles" 
+                        onClick={() => handleAbrirVer(usuario.id)} // <--- Conectado aquí
+                    />
+
+                    <AdminIconButton 
+                      icon={usuario.estado ? UserX : UserCheck} 
+                      type={usuario.estado ? "delete" : "success"} 
+                      title={usuario.estado ? "Desactivar" : "Activar"} 
+                      onClick={() => handleToggleEstado(usuario)} // <--- Conexión aquí
+                    />
+                  </td>
+                </tr>
+              )}
+            />
+          </div>
+          
+          {/* La paginación siempre estará visible al final del contenedor layout */}
+          <footer className={style.paginationContainer}>
+            <PaginationControls 
+              paginaActual={paginaActual}
+              totalPaginas={totalPaginas} 
+              // Cuando el usuario toca un número o flecha, se ejecuta esto:
+              onPaginaChange={(nueva) => setPaginaActual(nueva)} 
+            />
+          </footer>
+        </div>
       </div>
       {mostrarModalEdit && (
         <ModalEditarAdmin 
