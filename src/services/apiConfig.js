@@ -34,6 +34,24 @@ export const API_CONFIG = {
 
             LOGS: `${BASE_URL}/logs/`,
             LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
+
+            CATEGORIAS: {
+                LIST: `${BASE_URL}/categorias/`, 
+                CREATE: `${BASE_URL}/categorias/`,
+            },
+            OBJETIVOS: {
+                LIST: `${BASE_URL}/objetivos/`,
+                CREATE: `${BASE_URL}/objetivos/`,
+            },
+            PALABRAS_CLAVE: {
+                LIST: `${BASE_URL}/palabras-clave/`,
+                CREATE: `${BASE_URL}/palabras-clave/`,
+            },
+            LABORATORIOS: {
+                LIST: `${BASE_URL}/laboratorios/`,
+                CREATE: `${BASE_URL}/laboratorios/`,
+            }
+
         },
 
 
