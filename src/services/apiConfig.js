@@ -36,5 +36,7 @@ export const API_CONFIG = {
             LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
         },
 
+
+
     }
 };
