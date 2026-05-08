@@ -47,15 +47,30 @@ function Login() {
         try {
             const datos = await loginUser(correo, clave);
 
-            // Si llegamos aquí es porque el backend devolvió 200 OK
+            // Guardamos la información en el almacenamiento local
             localStorage.setItem('token', datos.access);
             localStorage.setItem('user_id', datos.user.id);
             localStorage.setItem('user_name', datos.user.nombre);
             localStorage.setItem('user_role', datos.user.rol);
 
+            // Registramos el ingreso en los logs
             await registrarLogLogin(datos.user.id);
 
-            setTimeout(() => navigate('/admin'), 1000);
+            // --- NUEVA LÓGICA DE REDIRECCIÓN POR ROL ---
+            const rol = datos.user.rol.toLowerCase();
+
+            setTimeout(() => {
+                if (rol === 'superadmin' || rol === 'administrador' || rol === 'admin') {
+                    // Si es personal administrativo, va al panel de administración
+                    navigate('/admin');
+                } else if (rol === 'profesor') {
+                    // Si es docente, va a su panel específico
+                    navigate('/profesor');
+                } else {
+                    // Cualquier otro rol (como estudiante) va a la vista general o de exploración
+                    navigate('/explorar');
+                }
+            }, 1000);
 
         } catch (error) {
 
