@@ -285,3 +285,70 @@
         grid-template-columns: 1fr;
     }
 }
+
+/*opcional modal*/
+
+.modal_form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.5rem;
+}
+
+.modal_field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal_field label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.modal_actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn_cancelar {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn_guardar_modal {
+  background: #007bff; /* Ajusta al color primario de tu App */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.grid_campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 30px 0;
+}
+
+.subtitulo {
+  color: #1e3a8a; /* Azul oscuro */
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  border-left: 4px solid #10b981; /* Línea verde de tu diseño */
+  padding-left: 10px;
+}
