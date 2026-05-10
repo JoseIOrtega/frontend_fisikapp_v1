@@ -1,3 +1,4 @@
+import { useAuth } from '../../context/AuthContext'; // Ajusta la ruta a tu carpeta de context
 import AuthLayout from "../../layouts/AuthLayout";
 import AuthForm from "../../components/UI/auth/AuthForm";
 import AuthInput from "../../components/UI/auth/AuthInput";
@@ -12,6 +13,7 @@ import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos
 import style from './Login.module.css';
 
 function Login() {
+    const { login } = useAuth();
     const navigate = useNavigate();
     const { showModal } = useModal();
     const [correo, setCorreo] = useState('');
@@ -47,11 +49,15 @@ function Login() {
         try {
             const datos = await loginUser(correo, clave);
 
-            // Guardamos la información en el almacenamiento local
+            // 1. Guardamos la información en el almacenamiento local
             localStorage.setItem('token', datos.access);
             localStorage.setItem('user_id', datos.user.id);
             localStorage.setItem('user_name', datos.user.nombre);
             localStorage.setItem('user_role', datos.user.rol);
+
+            // 2. AVISAMOS AL CONTEXTO (Esto es lo que te faltaba)
+            // Esto actualiza el estado global 'usuario' y permite el paso en RutaProtegida
+            login(datos.user);
 
             // Registramos el ingreso en los logs
             await registrarLogLogin(datos.user.id);

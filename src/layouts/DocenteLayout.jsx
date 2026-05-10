@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import style from './DocenteLayout.module.css'; 
 import DocenteSidebar from './DocenteSidebar';
-import AdminNavbar from './AdminNavbar'; 
+import DocenteNavbar from './DocenteNavbar'; 
 import { Menu, X } from 'lucide-react';
 
 function DocenteLayout({ children, onSearch }) {
@@ -44,7 +44,7 @@ function DocenteLayout({ children, onSearch }) {
       <div className={style['main-content']}>
         {/* Contenedor del Navbar: corregido para evitar anchos raros */}
         <div className={style['navbar-container']}>
-          <AdminNavbar pageTitle={currentTitle} onSearch={onSearch}/>
+          <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
         </div>
         
         {/* Contenedor con scroll inteligente para que Perfil no se corte */}
