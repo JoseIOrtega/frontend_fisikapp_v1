@@ -23,3 +23,13 @@
 .detail { color: #01B9FF; }
 .delete { color: #EE5D50; }
 .default { color: #A3AED0; }
+
+
+.disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(100%); /* Esto lo pone gris total */
+  pointer-events: none; /* Evita cualquier interacción */
+  /* Agrega esta línea clave: */
+  pointer-events: auto !important;
+}

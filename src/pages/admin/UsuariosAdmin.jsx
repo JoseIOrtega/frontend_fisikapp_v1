@@ -398,8 +398,10 @@ function UsuariosAdmin() {
                     <AdminIconButton 
                       icon={Edit} 
                       type="edit" 
-                      title="Editar" 
-                      onClick={() => handleAbrirEditar(usuario)} // <--- Conexión aquí
+                      title={!usuario.estado ? "Debe activar al usuario para editar" : "Editar"} 
+                      onClick={() => handleAbrirEditar(usuario)}
+                      // ¡Ahora esta prop sí funcionará!
+                      disabled={!usuario.estado} 
                     />
                     
                     <AdminIconButton 

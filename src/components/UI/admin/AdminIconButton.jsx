@@ -1,18 +1,22 @@
 import style from './AdminIconButton.module.css';
 
-// Importante: La "I" de Icon debe ser mayúscula aquí
-function AdminIconButton({ icon: Icon, onClick, title, type = 'default' }) {
-  // Verificación de seguridad
+// Agregamos 'disabled' y 'style' a las props recibidas
+function AdminIconButton({ icon: Icon, onClick, title, type = 'default', disabled, style: customStyle }) {
+  
   if (!Icon) return null;
 
   return (
     <button 
-      className={`${style.iconBtn} ${style[type]}`} 
-      onClick={onClick} 
+      // Si está disabled, le añadimos una clase de CSS para ponerlo gris
+      className={`${style.iconBtn} ${style[type]} ${disabled ? style.disabled : ''}`} 
+      // Si está disabled, el clic no hace nada
+      onClick={disabled ? (e) => e.preventDefault() : onClick} 
       title={title}
       type="button"
+      // Aplicamos los estilos que mandamos desde afuera (como la opacidad)
+      style={customStyle}
+      disabled={disabled}
     >
-      {/* Aquí React lo dibuja porque empieza con Mayúscula */}
       <Icon size={18} />
     </button>
   );
