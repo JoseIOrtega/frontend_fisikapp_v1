@@ -247,10 +247,12 @@ function GestionAdmin() {
 
                 <td className={style.actionsCell}>
                   <AdminIconButton 
-                      icon={Edit} 
-                      type="edit" 
-                      title="Editar datos" 
-                      onClick={() => handleAbrirEditar(admin)}
+                    icon={Edit} 
+                    type="edit" 
+                    title={!admin.estado ? "Debe activar al usuario para editar" : "Editar"} 
+                    onClick={() => handleAbrirEditar(admin)}
+                    // ¡Ahora esta prop sí funcionará!
+                    disabled={!admin.estado} 
                   />
                   {/*<AdminIconButton icon={Key} type="reset" title="Cambiar clave" />*/}
                   <AdminIconButton 
