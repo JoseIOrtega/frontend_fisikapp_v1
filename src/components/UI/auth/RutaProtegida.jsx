@@ -6,7 +6,7 @@ const RutaProtegida = ({ children, rolesPermitidos }) => {
 
     console.log("Estado actual:", { usuario, cargando }); // Mira esto en la consola
 
-    if (cargando) return <p>Cargando sesión...</p>;
+    if (cargando) return null;
 
     if (!usuario) {
         console.log("No hay usuario, redirigiendo a /");
