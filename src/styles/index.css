@@ -56,7 +56,7 @@ a {
 
 /* 5. SCROLLBAR ESPACIAL: Un detalle pro para que combine con los átomos */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -64,7 +64,7 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-acento); /* El azul claro de tus átomos */
+    background: var(--color-barra-scroll); /* El azul claro de tus átomos */
     border-radius: 10px;
 }
 
