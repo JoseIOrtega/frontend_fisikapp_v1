@@ -153,3 +153,67 @@
   from { opacity: 0; transform: scale(0.9) translateY(20px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ==========================================================================
+   NUEVAS LÍNEAS PARA LA PAGINACIÓN
+   ========================================================================== */
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 10px 0;
+}
+
+.pageNumbers {
+    display: flex;
+    gap: 8px;
+}
+
+.paginationBtn, .pageBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border: 1px solid #E0E5F2;
+    color: #707EAE;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.paginationBtn {
+    width: 40px;
+    height: 40px;
+}
+
+.pageBtn {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+}
+
+/* Efecto al pasar el mouse */
+.paginationBtn:hover:not(:disabled), 
+.pageBtn:hover:not(.activePage) {
+    background: #F4F7FE;
+    color: #422AFB;
+    border-color: #422AFB;
+}
+
+/* Estilo para la página donde estás ubicado */
+.activePage {
+    background-color: #422AFB !important;
+    color: #FFFFFF !important;
+    border-color: #422AFB !important;
+    box-shadow: 0px 4px 12px rgba(66, 42, 251, 0.2);
+}
+
+.paginationBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #F4F7FE;
+}

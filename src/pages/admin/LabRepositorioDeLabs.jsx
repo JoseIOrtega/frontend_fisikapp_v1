@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminDataTable from "../../components/UI/admin/AdminDataTable"
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import { 
   getLaboratorios, 
@@ -16,6 +16,11 @@ function LabRepositorioDeLabs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [laboratorios, setLaboratorios] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // --- ESTADO DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; 
+
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     type: 'info',
@@ -25,7 +30,13 @@ function LabRepositorioDeLabs() {
     confirmText: 'Confirmar',
     cancelText: 'Cancelar',
   });
+
   const navigate = useNavigate();
+
+  // Resetear a pág 1 cuando se busca
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const showModal = (type, message) => {
     setModalConfig({
@@ -86,6 +97,14 @@ function LabRepositorioDeLabs() {
     new Date(laboratorio.fecha_creacion).toLocaleString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // --- LÓGICA DE CÁLCULO DE PAGINACIÓN ---
+  const totalPages = Math.ceil(filteredLaboratorios.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredLaboratorios.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   const handleEdit = (laboratorio) => {
     navigate("/admin/laboratorio/configurar_labs", {
       state: { laboratorio }
@@ -98,30 +117,16 @@ function LabRepositorioDeLabs() {
 
   const handleToggleBloqueo = async (laboratorio) => {
     const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
-
     try {
-      // Guardar solo el campo de estado en backend
       const resultado = await patchLaboratorioAPI(laboratorio.id, {
         estado: nuevoEstado === "Activo"
       });
-
-      if (!resultado?.success) {
-        throw new Error(resultado?.error || "Error al actualizar el laboratorio");
-      }
-
-      // Actualizar en la lista visual
+      if (!resultado?.success) throw new Error(resultado?.error || "Error");
       setLaboratorios(prevLabs =>
-        prevLabs.map(lab =>
-          lab.id === laboratorio.id
-            ? { ...lab, estado: nuevoEstado }
-            : lab
-        )
+        prevLabs.map(lab => lab.id === laboratorio.id ? { ...lab, estado: nuevoEstado } : lab)
       );
-
-      console.log(`Laboratorio ${laboratorio.nombre_de_laboratorio} actualizado a estado: ${nuevoEstado}`);
     } catch (error) {
-      console.error("Error al actualizar laboratorio:", error);
-      showModal('error', "Error al actualizar el laboratorio. Por favor, intenta de nuevo.");
+      showModal('error', "No se pudo actualizar el estado.");
     }
   };
 
@@ -134,26 +139,16 @@ function LabRepositorioDeLabs() {
           const resultado = await deleteLaboratorioAPI(laboratorio.id);
 
           if (resultado.success) {
-            console.log("Laboratorio eliminado del backend exitosamente");
+            setLaboratorios(prevLabs => prevLabs.filter(lab => lab.id !== laboratorio.id));
+            closeModal();
           } else {
-            console.warn("Error al eliminar del backend:", resultado.error);
-            showModal('error', "Error al eliminar el laboratorio del servidor. " + (resultado.error?.detail || "Intenta de nuevo."));
-            return;
+            // Aquí capturamos el error 500 del backend
+            showModal('error', "Error del servidor (500). Es posible que el laboratorio tenga datos vinculados y no pueda eliminarse.");
           }
-
-          setLaboratorios(prevLabs =>
-            prevLabs.filter(lab => lab.id !== laboratorio.id)
-          );
-
-          closeModal();
-          console.log("Laboratorio eliminado exitosamente");
         } catch (error) {
-          console.error("Error al eliminar laboratorio:", error);
-          showModal('error', "Error al eliminar el laboratorio. Por favor, intenta de nuevo.");
+          showModal('error', "Error al eliminar el laboratorio.");
         }
-      },
-      'Eliminar',
-      'Cancelar'
+      }
     );
   };
 
@@ -162,7 +157,7 @@ function LabRepositorioDeLabs() {
       <div className={style["layout"]}>
         <div className={style["seccion_del_header"]}>
           <h2 className={style.titulo_header_laboratorio}>Repositorio de Laboratorios</h2>
-          {loading && <span style={{ marginLeft: '10px', color: '#999' }}>Cargando...</span>}
+          {loading && <span className={style.loadingText}>Cargando...</span>}
         </div>
 
         {laboratorios.length === 0 && !loading && (
@@ -172,9 +167,10 @@ function LabRepositorioDeLabs() {
         )}
 
         {laboratorios.length > 0 && (
+          <>
           <AdminDataTable
             columns={columnas}
-            data={filteredLaboratorios}
+            data={currentItems} // CORRECCIÓN: Usar currentItems para que la paginación funcione
             renderRow={(laboratorio) => (
               <tr key={laboratorio.id}>
                 <td className={style.nombre_laboratorio}>{laboratorio.nombre_de_laboratorio}</td>
@@ -195,57 +191,73 @@ function LabRepositorioDeLabs() {
                 </td>
               </tr>
             )}
-          ></AdminDataTable>
+          />
+
+          {/* --- BLOQUE DE PAGINACIÓN --- */}
+          {totalPages > 1 && (
+            <div className={style.paginationContainer}>
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === 1}
+                onClick={() => paginate(currentPage - 1)}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              <div className={style.pageNumbers}>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => paginate(i + 1)}
+                    className={`${style.pageBtn} ${currentPage === i + 1 ? style.activePage : ''}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === totalPages}
+                onClick={() => paginate(currentPage + 1)}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+          </>
         )}
       </div>
 
       {modalConfig.isOpen && (
         <div className={style.overlay} onClick={closeModal}>
           <div className={style.modal} onClick={(e) => e.stopPropagation()}>
-            <button className={style.closeBtn} onClick={closeModal}>
-              <X size={20} />
-            </button>
-
-            <div className={style.iconContainer}>{
-              {
+            <button className={style.closeBtn} onClick={closeModal}><X size={20} /></button>
+            <div className={style.iconContainer}>
+              {{
                 success: <CheckCircle color="#05cd99" size={50} />,
                 error: <XCircle color="#EE5D50" size={50} />,
                 warning: <AlertTriangle color="#FFBC11" size={50} />,
                 info: <Info color="#422AFB" size={50} />
-              }[modalConfig.type] || <Info color="#422AFB" size={50} />
-            }</div>
-
+              }[modalConfig.type] || <Info color="#422AFB" size={50} />}
+            </div>
             <h3 className={style.title}>
-              {
-                {
-                  success: '¡Ok!',
-                  error: 'Hubo un error',
-                  warning: 'Atención',
-                  info: 'Información'
-                }[modalConfig.type] || 'Información'
-              }
+              {{ success: '¡Ok!', error: 'Hubo un error', warning: 'Atención', info: 'Información' }[modalConfig.type] || 'Información'}
             </h3>
             <p className={style.message}>{modalConfig.message}</p>
-
             {modalConfig.isConfirm ? (
               <div className={style.buttonContainer}>
-                <button className={`${style.actionBtn} ${style.cancelBtn}`} onClick={closeModal}>
-                  {modalConfig.cancelText}
-                </button>
-                <button className={`${style.actionBtn} ${style.confirmBtn}`} onClick={modalConfig.onConfirm}>
-                  {modalConfig.confirmText}
-                </button>
+                <button className={`${style.actionBtn} ${style.cancelBtn}`} onClick={closeModal}>{modalConfig.cancelText}</button>
+                <button className={`${style.actionBtn} ${style.confirmBtn}`} onClick={modalConfig.onConfirm}>{modalConfig.confirmText}</button>
               </div>
             ) : (
-              <button className={style.actionBtn} onClick={closeModal}>
-                Aceptar
-              </button>
+              <button className={style.actionBtn} onClick={closeModal}>Aceptar</button>
             )}
           </div>
         </div>
       )}
     </AdminLayout>
-  )
+  );
 }
 
-export default LabRepositorioDeLabs;;
+export default LabRepositorioDeLabs;
