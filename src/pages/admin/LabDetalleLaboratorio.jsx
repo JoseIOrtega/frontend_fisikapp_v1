@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import { ArrowLeft } from 'lucide-react';
-import { getLaboratorioById } from '../../services/admin/labData';
+import { getLaboratorioById } from '../../services/admin/adminLab';
 import style from './LabDetalleLaboratorio.module.css';
 
 function LabDetalleLaboratorio() {
