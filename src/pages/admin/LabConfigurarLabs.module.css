@@ -352,3 +352,11 @@
   border-left: 4px solid #10b981; /* Línea verde de tu diseño */
   padding-left: 10px;
 }
+
+/* Estilo para que los campos bloqueados mantengan el diseño estándar */
+.input_diseno[readonly] {
+    background-color: #f9f9f9; /* Un gris muy sutil para indicar bloqueo */
+    color: #334155;            /* El color de fuente oscuro de tu estándar */
+    cursor: not-allowed;       /* Cambia el cursor para indicar que no se edita */
+    border: 1px solid #e2e8f0; /* El borde suave que usas en los demás inputs */
+}

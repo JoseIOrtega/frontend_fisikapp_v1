@@ -24,11 +24,13 @@ function LabConfigurarLabs() {
   const [selectedCategoria, setSelectedCategoria] = useState(null);
   const [selectedObjetivo, setSelectedObjetivo] = useState(null);
   const [selectedPalabra, setSelectedPalabra] = useState(null);
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("General");
+  const [searchTerm, setSearchTerm] = useState("");
   
   // --- ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); 
-  const [newData, setNewData] = useState({ nombre: '', descripcion: '', categoriaId: '' });
+  const [newData, setNewData] = useState({ nombre: '', descripcion: '', categoriaId: '', tipo_objetivo: '' });
 
   // --- FORMULARIO PRINCIPAL ---
   const [formData, setFormData] = useState({
@@ -86,7 +88,14 @@ function LabConfigurarLabs() {
 
   const openModal = (type) => {
     setModalType(type);
-    setNewData({ nombre: '', descripcion: '', categoriaId: formData.categoria || '' });
+    setNewData({ 
+      ...newData,
+      // Si es un objetivo, le pasamos el tipo (General/Específico)
+      // Si es categoría o palabra clave, lo dejamos vacío para que tú escribas
+      nombre: type === "OBJ" ? tipoSeleccionado : '', 
+      descripcion: '', 
+      categoriaId: formData.categoria || '' 
+    });
     setIsModalOpen(true);
   };
 
@@ -216,9 +225,13 @@ function LabConfigurarLabs() {
                 <div className={style.field}>
                   <label>Objetivo Principal *</label>
                   <div className={style.input_group_row}>
-                    <select className={style.input_diseno} onChange={(e) => handleSelectChange(e, 'objetivo')} value={formData.objetivo}>
-                      <option value="">Seleccione...</option>
-                      {objetivos.map(o => <option key={o.id} value={o.id}>{o.tipo_objetivo}</option>)}
+                    <select 
+                      className={style.input_diseno} 
+                      value={tipoSeleccionado} 
+                      onChange={(e) => setTipoSeleccionado(e.target.value)}
+                    >
+                      <option value="General">General</option>
+                      <option value="Específico">Específico</option>
                     </select>
                     <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}><Plus size={20}/></button>
                   </div>
@@ -229,13 +242,36 @@ function LabConfigurarLabs() {
                 <div className={style.field}>
                   <label>Palabra Clave *</label>
                   <div className={style.input_group_row}>
-                    <select className={style.input_diseno} onChange={(e) => handleSelectChange(e, 'palabra_clave')} value={formData.palabra_clave}>
-                      <option value="">Seleccione...</option>
-                      {palabrasClave
-                        .filter(p => String(p.categoria) === String(formData.categoria))
-                        .map(p => <option key={p.id} value={p.id}>{p.palabra_clave}</option>)
-                      }
-                    </select>
+                    <input
+                        list="palabras-list"
+                        className={style.input_diseno}
+                        placeholder="Escribe para buscar..."
+                        // Usamos searchTerm para que te deje escribir libremente
+                        value={searchTerm} 
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setSearchTerm(val); // Esto permite que el input se actualice mientras escribes
+
+                            // Buscamos si lo que escribiste coincide con una opción real
+                            const coincidencia = palabrasClave.find(p => p.palabra_clave === val);
+                            if (coincidencia) {
+                                handleSelectChange({ target: { value: coincidencia.id } }, 'palabra_clave');
+                            }
+                        }}
+                        // Si el usuario hace clic fuera y no eligió nada válido, limpiamos o reseteamos
+                        onBlur={() => {
+                            const actual = palabrasClave.find(p => String(p.id) === String(formData.palabra_clave));
+                            if (actual) setSearchTerm(actual.palabra_clave);
+                        }}
+                    />
+                    <datalist id="palabras-list">
+                        {palabrasClave
+                            .filter(p => String(p.categoria) === String(formData.categoria))
+                            .map(p => (
+                                <option key={p.id} value={p.palabra_clave} />
+                            ))
+                        }
+                    </datalist>
                     <button type="button" onClick={() => openModal("PAL")} className={style.btn_plus_secondary}><Plus size={20}/></button>
                   </div>
                   <div className={style.textarea_resumen}>{selectedPalabra?.descripcion || "..."}</div>
@@ -254,7 +290,13 @@ function LabConfigurarLabs() {
         <form onSubmit={handleCreateInModal} className={style.modal_form}>
           <div className={style.modal_field}>
             <label>{modalType === "OBJ" ? "Tipo de Objetivo" : "Nombre"}</label>
-            <input className={style.input_diseno} value={newData.nombre} onChange={e => setNewData({...newData, nombre: e.target.value})} required />
+            <input 
+              className={style.input_diseno} 
+              value={newData.nombre} 
+              onChange={e => setNewData({...newData, nombre: e.target.value})} 
+              required 
+              readOnly={modalType === "OBJ"} 
+            />
           </div>
 
           {modalType === "PAL" && (

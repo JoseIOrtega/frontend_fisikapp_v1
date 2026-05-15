@@ -1,0 +1,51 @@
+.container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.title {
+    color: #1a237e;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.tabla_container {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabla th {
+    border-bottom: 2px solid #eee;
+    padding: 12px;
+    color: #555;
+}
+
+.tabla td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.btn_ver {
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.status_done {
+    color: #2ecc71;
+    font-weight: bold;
+}
