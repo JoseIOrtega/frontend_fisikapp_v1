@@ -13,6 +13,7 @@ function DocenteLayout({ children, onSearch }) {
   const routeNames = {
     "/profesor/dashboard": "Dashboard",
     "/profesor/mis-laboratorios": "Mis Laboratorios",
+    "/profesor/archivados": "Laboratorios Archivados",
     "/profesor/mis-estudiantes": "Mis Estudiantes", // Solo habilitado al entrar a un lab
     "/profesor/reportes": "Historial de Reportes",   // Al final, como resultado del trabajo
     "/profesor/perfil": "Mi Perfil",

@@ -53,7 +53,9 @@ export const API_CONFIG = {
             }
 
         },
-
+        DOCENTE: {
+            LABORATORIOS_DOCENTE:`${BASE_URL}/laboratorios/`,
+        },
 
 
     }
