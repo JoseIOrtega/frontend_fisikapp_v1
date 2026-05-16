@@ -1,101 +1,119 @@
-import { useEffect, useState } from "react";
+import { FlaskConical, Users, ToggleLeft, FileText, Eye, Edit, Sparkles } from 'lucide-react';
 import AdminLayout from "../../layouts/AdminLayout";
-import { getLaboratorios } from "../../services/admin/adminLab";
-import style from './DashboardAdmin.module.css';
+import AdminCardContainer from "../../components/UI/admin/AdminCardContainer";
+import AdminDataTable from "../../components/UI/admin/AdminDataTable";
+import AdminIconButton from "../../components/UI/admin/AdminIconButton";
+import { getRelativeTime } from '../../utils/dateHelpers';
+import style from "./DashboardAdmin.module.css";
 
 function DashboardAdmin() {
-  const [laboratorios, setLaboratorios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // --- Estados de Paginación ---
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Puedes ajustar este número
+  // Datos mockeados basados en tus archivos previos (LabRepositorioDeLabs y UsuariosAdmin)
+  const ultimosLaboratorios = [
+    { id: 1, nombre_de_laboratorio: "Cinemática del Punto", categoria: "Cinemática", fecha_creacion: "2026-05-15T14:20:00Z" },
+    { id: 2, nombre_de_laboratorio: "Campos Magnéticos", categoria: "Electromagnetismo", fecha_creacion: "2026-05-10T09:15:00Z" },
+    { id: 3, nombre_de_laboratorio: "Óptica Geométrica", categoria: "Física Óptica", fecha_creacion: "2026-05-01T16:45:00Z" }
+  ];
 
-  useEffect(() => {
-    const fetchLabs = async () => {
-      try {
-        setLoading(true);
-        const data = await getLaboratorios();
-        setLaboratorios(data ? data.filter(lab => lab.estado === "Activo") : []);
-      } catch (error) {
-        console.error("Error al cargar laboratorios en dashboard:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLabs();
-  }, []);
-
-  // --- Lógica para calcular los elementos mostrados ---
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = laboratorios.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(laboratorios.length / itemsPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const columnasLabs = [
+    { label: "Laboratorio Reciente" },
+    { label: "Categoría" },
+    { label: "Modificado" },
+    { label: "Acciones", style: { textAlign: 'center' } }
+  ];
 
   return (
     <AdminLayout>
-      <div className={style["layout"]}>
-        <h2 className={style.titulo_seccion}>Dashboard Admin</h2>
+      <div className={style.layout}>
         
-        {loading ? (
-          <p className={style.loading}>Cargando laboratorios...</p>
-        ) : (
-          <>
-            <div className={style.contenedor_burbujas}>
-              {currentItems.map((lab) => (
-                <div key={lab.id} className={style.burbuja}>
-                  <div className={style.burbuja_contenido}>
-                    <h3 className={style.lab_nombre}>{lab.nombre_de_laboratorio}</h3>
-                    <p className={style.lab_categoria}>{lab.categoria}</p>
-                    <p className={style.lab_descripcion}>
-                      {lab.descripcion || "Este laboratorio está disponible para realizar prácticas y experimentos técnicos."}
-                    </p>
-                  </div>
-                  <button className={style.btn_unirse}>
-                    Unirse
-                  </button>
-                </div>
-              ))}
+        {/* HEADER SECTION */}
+        <div className={style.headerSection}>
+          <h2 className={style.title}>Panel de Control Administrativo</h2>
+        </div>
 
-              {laboratorios.length === 0 && (
-                <p className={style.empty}>No hay laboratorios activos para mostrar.</p>
-              )}
+        {/* 1. FILA DE TARJETAS (KPIs) */}
+        <div className={style.kpiGrid}>
+          <div className={style.kpiCard}>
+            <div className={`${style.iconWrapper} ${style.bgLab}`}>
+              <FlaskConical size={22} color="#18ffba" />
             </div>
+            <div className={style.kpiInfo}>
+              <h3>12</h3>
+              <p>Total Laboratorios</p>
+            </div>
+          </div>
 
-            {/* --- Controles de Paginación --- */}
-            {laboratorios.length > itemsPerPage && (
-              <div className={style.paginacion}>
-                <button 
-                  onClick={() => paginate(currentPage - 1)} 
-                  disabled={currentPage === 1}
-                  className={style.btn_paginacion}
-                >
-                  &laquo;
-                </button>
-                
-                {[...Array(totalPages).keys()].map(number => (
-                  <button
-                    key={number + 1}
-                    onClick={() => paginate(number + 1)}
-                    className={`${style.btn_paginacion} ${currentPage === number + 1 ? style.active : ""}`}
-                  >
-                    {number + 1}
-                  </button>
-                ))}
+          <div className={style.kpiCard}>
+            <div className={`${style.iconWrapper} ${style.bgActive}`}>
+              <ToggleLeft size={22} color="#05cd99" />
+            </div>
+            <div className={style.kpiInfo}>
+              <h3>10</h3>
+              <p>Guías Activas</p>
+            </div>
+          </div>
 
-                <button 
-                  onClick={() => paginate(currentPage + 1)} 
-                  disabled={currentPage === totalPages}
-                  className={style.btn_paginacion}
-                >
-                  &raquo;
-                </button>
+          <div className={style.kpiCard}>
+            <div className={`${style.iconWrapper} ${style.bgUsers}`}>
+              <Users size={22} color="#422AFB" />
+            </div>
+            <div className={style.kpiInfo}>
+              <h3>54</h3>
+              <p>Usuarios Totales</p>
+            </div>
+          </div>
+
+          <div className={style.kpiCard}>
+            <div className={`${style.iconWrapper} ${style.bgAi}`}>
+              <FileText size={22} color="#FFBC11" />
+            </div>
+            <div className={style.kpiInfo}>
+              <h3>85%</h3>
+              <p>Eficiencia IA</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. DISTRIBUCIÓN PRINCIPAL (GRILLA DE DOS COLUMNAS) */}
+        <div className={style.mainGrid}>
+          
+          {/* Bloque Izquierdo: Tabla de Guías Recientes */}
+          <div className={style.tableSection}>
+            <AdminCardContainer>
+              <h3 className={style.panelSubtitle}>Últimas Plantillas Configuradas</h3>
+              <AdminDataTable 
+                columns={columnasLabs}
+                data={ultimosLaboratorios}
+                renderRow={(lab) => (
+                  <tr key={lab.id}>
+                    <td className={style.nombreLab}>{lab.nombre_de_laboratorio}</td>
+                    <td><span className={style.categoriaBadge}>{lab.categoria}</span></td>
+                    <td title={new Date(lab.fecha_creacion).toLocaleString()}>{getRelativeTime(lab.fecha_creacion)}</td>
+                    <td className={style.actionsCell}>
+                      <AdminIconButton icon={Eye} type="detail" title="ver" />
+                      <AdminIconButton icon={Edit} type="edit" title="editar" />
+                    </td>
+                  </tr>
+                )}
+              />
+            </AdminCardContainer>
+          </div>
+
+          {/* Bloque Derecho: Herramientas Rápidas de IA */}
+          <div className={style.sideSection}>
+            <div className={style.aiBanner}>
+              <div className={style.aiHeader}>
+                <Sparkles size={20} color="#18ffba" />
+                <h4>Asistente de Contenido IA</h4>
               </div>
-            )}
-          </>
-        )}
+              <p>Optimiza la redacción de tus nuevas guías pedagógicas. Genera marcos teóricos y resúmenes automáticos al instante.</p>
+              <button type="button" className={style.btnIaGradient}>
+                ✨ Diseñar Nueva Guía
+              </button>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </AdminLayout>
   );

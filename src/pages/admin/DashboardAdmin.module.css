@@ -1,140 +1,156 @@
 .layout {
-    padding: 24px;
-}
-
-.titulo_seccion {
-    /* Color del texto principal del Sidebar */
-    color: #FFFFFF; 
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
-
-/* Contenedor Flexbox para poner una al lado de la otra */
-.contenedor_burbujas {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
+    padding: 10px 5px;
+}
+
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 24px;
+    color: #142050; /* Color primario del sidebar aplicado a headers de página */
+    font-weight: 700;
+}
+
+/* --- SECCIÓN KPIs --- */
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
 }
 
-.burbuja {
-    /* Fondo oscuro similar al sidebar o ligeramente más claro para contraste */
-    background: #142050; 
-    border-radius: 20px;
-    padding: 24px;
-    width: 300px;
-    min-height: 200px;
-    position: relative;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-    /* Borde sutil del sidebar */
-    border: 1px solid rgba(255, 255, 255, 0.05); 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.kpiCard {
+    background-color: #FFFFFF;
+    border: 1px solid #f0f2f5;
+    border-radius: 15px;
+    padding: 20px;
     display: flex;
-    flex-direction: column;
-}
-
-.burbuja:hover {
-    transform: translateY(-5px);
-    /* Brillo basado en el color neón del sidebar */
-    box-shadow: 0px 15px 35px rgba(24, 255, 186, 0.1);
-    border: 1px solid rgba(24, 255, 186, 0.3);
-}
-
-.lab_nombre {
-    /* Blanco para resaltar sobre el azul oscuro */
-    color: #FFFFFF; 
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-}
-
-.lab_categoria {
-    /* Color verde neón (activeLink color) */
-    color: #18ffba; 
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-}
-
-.lab_descripcion {
-    /* Color de texto secundario del sidebar (link color) */
-    color: #A3AED0; 
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 50px;
-}
-
-.btn_unirse {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    /* Botón con el color vibrante del sidebar */
-    background-color: #18ffba; 
-    /* Texto oscuro para contraste sobre el verde neón */
-    color: #142050; 
-    border: none;
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0px 4px 10px rgba(24, 255, 178, 0.3);
-}
-
-.btn_unirse:hover {
-    background-color: #12d69d;
-    transform: scale(1.05);
-}
-
-.loading, .empty {
-    /* Color secundario para estados vacíos */
-    color: #A3AED0; 
-    text-align: center;
-    width: 100%;
-    margin-top: 50px;
-}
-
-
-/* ... (Mantenemos tus estilos anteriores igual) ... */
-
-/* Estilos de Paginación */
-.paginacion {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
-    margin-top: 40px;
+    gap: 15px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.iconWrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Colores de fondo sutiles para los iconos basados en tus tokens */
+.bgLab { background-color: rgba(24, 255, 186, 0.1); }
+.bgActive { background-color: rgba(5, 205, 153, 0.1); }
+.bgUsers { background-color: rgba(66, 42, 251, 0.1); }
+.bgAi { background-color: rgba(255, 188, 17, 0.1); }
+
+.kpiInfo h3 {
+    font-size: 22px;
+    color: #142050;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.kpiInfo p {
+    font-size: 14px;
+    color: #A3AED0; /* Mismo color del link inactivo en el sidebar */
+    margin: 0;
+    font-weight: 600;
+}
+
+/* --- GRIDS Y PANELES --- */
+.mainGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+@media (max-width: 1028px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panelSubtitle {
+    font-size: 16px;
+    color: #142050;
+    font-weight: 700;
     margin-bottom: 20px;
 }
 
-.btn_paginacion {
-    background: #142050;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #A3AED0;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
+.nombreLab {
     font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.btn_paginacion:hover:not(:disabled) {
-    border-color: #18ffba;
-    color: #FFFFFF;
-    background: rgba(24, 255, 186, 0.05);
-}
-
-.btn_paginacion.active {
-    background-color: #18ffba;
     color: #142050;
-    border-color: #18ffba;
-    box-shadow: 0px 0px 15px rgba(24, 255, 186, 0.2);
 }
 
-.btn_paginacion:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+.categoriaBadge {
+    background-color: #f4f7fe;
+    color: #142050;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.actionsCell {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+/* --- ACCESO RÁPIDO BANNER IA --- */
+.aiBanner {
+    background-color: #142050; /* Hereda el color oscuro de tu Sidebar */
+    border-radius: 15px;
+    padding: 25px;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    justify-content: center;
+}
+
+.aiHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.aiHeader h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.aiBanner p {
+    font-size: 14px;
+    color: #A3AED0; /* Texto secundario legible sobre oscuro */
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* El botón con los colores e identidad neón del Sidebar */
+.btnIaGradient {
+    background: linear-gradient(135deg, #18ffba 0%, #05cd99 100%);
+    color: #142050; /* Texto oscuro para legibilidad sobre el neón */
+    font-weight: 700;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 15px rgba(24, 255, 178, 0.3);
+}
+
+.btnIaGradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 20px rgba(24, 255, 178, 0.5);
 }
