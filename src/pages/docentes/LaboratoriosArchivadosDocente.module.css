@@ -22,11 +22,11 @@
   font-weight: 600;
 }
 
-.createButton {
+.deleteButtonSimple {
   display: flex;
   align-items: center;
   gap: 8px; /* Espacio entre icono y texto */
-  background-color: #08cc9b; /* Verde vibrante de tus botones */
+  background-color: #d84d6b; /* Verde vibrante de tus botones */
   color: #ffffff; /* Texto azul oscuro */
   border: none;
   padding: 10px 20px;
@@ -36,8 +36,8 @@
   transition: background-color 0.2s ease;
 }
 
-.createButton:hover {
-  background-color: #08cc9b; /* Verde un poco más oscuro al hover */
+.deleteButtonSimple:hover {
+  background-color: #cc0822; /* Verde un poco más oscuro al hover */
 }
 
 /* --- ESTILOS DEL CONTENEDOR GRID (SCROLL AQUÍ) --- */
