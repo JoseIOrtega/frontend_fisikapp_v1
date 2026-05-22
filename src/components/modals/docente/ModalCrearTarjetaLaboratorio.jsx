@@ -11,7 +11,7 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
   const [objetivosRaw, setObjetivosRaw] = useState([]); 
   const [textoObjetivo, setTextoObjetivo] = useState("");
   
-  // NUEVOS ESTADOS: Para capturar el grado y la jornada
+  // Estados para capturar el grado y la jornada
   const [gradoSel, setGradoSel] = useState("");
   const [jornadaSel, setJornadaSel] = useState("");
 
@@ -86,32 +86,22 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
     }
   }, [isOpen]);
 
-  // 🚀 MANEJADOR INTERNO: Asegura y blinda la inyección de los metadatos en el título
+  // 🚀 MANEJADOR INTERNO ACTUALIZADO: Envía los campos de manera nativa e independiente
   const handleFormSubmit = async () => {
     if (!plantillaFinal || isSubmitting) return;
     
     try {
       setIsSubmitting(true);
 
-      // Armamos las etiquetas uniendo grado y jornada si existen
-      const componentesSufijo = [];
-      if (gradoSel) componentesSufijo.push(gradoSel);
-      if (jornadaSel) componentesSufijo.push(jornadaSel);
-
-      const sufijo = componentesSufijo.join(' - ');
-      
-      // Si el docente seleccionó datos, se inyectan en formato [Grado - Jornada]
-      const tituloConMetadatos = sufijo 
-        ? `${plantillaFinal.titulo_lab} [${sufijo}]` 
-        : plantillaFinal.titulo_lab;
-
-      // Creamos la copia limpia de la estructura para heredar al backend/estado padre
+      // Creamos la copia de la estructura sin alterar el título original con corchetes
       const tarjetaNuevaData = {
-        ...plantillaFinal,
-        titulo_lab: tituloConMetadatos
+        id: plantillaFinal.id,
+        titulo_lab: plantillaFinal.titulo_lab, // El nombre limpio de la plantilla base
+        grado: gradoSel || null,               // Enviamos el string del grado seleccionado
+        jornada: jornadaSel || null            // Enviamos el string de la jornada seleccionada
       };
 
-      // 📢 Pasamos la información procesada al componente superior
+      // 📢 Pasamos el objeto limpio con los 4 parámetros estructurados al componente padre (MisLaboratoriosDocente)
       await onConfirm(tarjetaNuevaData);
     } catch (err) {
       console.error("Error al confirmar la creación de la tarjeta:", err);

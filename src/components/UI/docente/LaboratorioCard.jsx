@@ -1,3 +1,4 @@
+import React from 'react';
 import { Beaker, ArrowRight, Trash2, Lock, RefreshCcw } from 'lucide-react';
 import style from './LaboratorioCard.module.css';
 
@@ -6,32 +7,24 @@ function LaboratorioCard({
   onIngresar, 
   onEliminar, 
   onToggleEstado, 
-  onReutilizar, // Nueva función para clonar
-  esArchivado = false // Prop para identificar la sección
+  onReutilizar, 
+  esArchivado = false 
 }) {
-  // Traemos "fecha_creacion" del objeto que viene de la base de datos
-  const { id, titulo_lab, categoria_nombre, codigo_lab, estado, inhabilitadoPorAdmin, configurado_completo, fecha_creacion } = laboratorio;
+  // Desestructuramos directamente grado y jornada desde el objeto de la base de datos
+  const { 
+    id, 
+    titulo_lab, 
+    categoria_nombre, 
+    codigo_lab, 
+    estado, 
+    inhabilitadoPorAdmin, 
+    configurado_completo, 
+    fecha_creacion,
+    grado,       // Recibido directamente desde Django
+    jornada      // Recibido directamente desde Django
+  } = laboratorio;
   
-  // Consideramos inactivo si el string es 'inactivo', si el booleano es false, o si está bloqueado/archivado
   const isInactivo = estado === 'inactivo' || estado === false || inhabilitadoPorAdmin || esArchivado;
-
-  // 🚀 LÓGICA DE EXTRACCIÓN: Separar título original de los corchetes [...]
-  let nombreMostrar = titulo_lab;
-  let gradoEtiqueta = "";
-  let jornadaEtiqueta = "";
-
-  const regexCorchetes = /\[(.*?)\]/;
-  const match = titulo_lab.match(regexCorchetes);
-
-  if (match) {
-    // Extrae el título limpio sin los corchetes
-    nombreMostrar = titulo_lab.replace(regexCorchetes, '').trim(); 
-    
-    // Separa el grado y la jornada mediante el guion
-    const partes = match[1].split(' - ');
-    gradoEtiqueta = partes[0] || "";
-    jornadaEtiqueta = partes[1] || "";
-  }
 
   return (
     <div className={`
@@ -44,15 +37,15 @@ function LaboratorioCard({
           <Beaker size={18} />
         </div>
         
-        {/* Switch: Solo aparece si NO es archivado y NO está bloqueado por Admin */}
+        {/* Switch: Activo / Inactivo */}
         {!esArchivado && !inhabilitadoPorAdmin ? (
-          <label className={style.switch} title={estado === 'activo' ? 'Desactivar' : 'Activar'}>
+          <label className={style.switch} title={estado === 'activo' || estado === true ? 'Desactivar' : 'Activar'}>
             <input 
               type="checkbox"
               title={estado === 'activo' || estado === true ? 'Desactivar' : 'Activar'} 
-              checked={laboratorio.estado === true || laboratorio.estado === 'activo'}
+              checked={estado === true || estado === 'activo'}
               onChange={(e) => {
-                e.stopPropagation(); // ¡Detiene el clic aquí y evita que afecte a toda la tarjeta!
+                e.stopPropagation(); 
                 onToggleEstado(id); 
               }} 
             />
@@ -67,18 +60,18 @@ function LaboratorioCard({
       </header>
 
       <div className={style.content}>
-        {/* Mostramos el nombre limpio sin los corchetes */}
-        <h3 className={style.title} title={nombreMostrar}>
-          {nombreMostrar}
+        {/* Mostramos el título directo de la base de datos sin procesos de strings */}
+        <h3 className={style.title} title={titulo_lab}>
+          {titulo_lab}
         </h3>
         
-        {/* 🚀 SECCIÓN ESCOLAR UNIFICADA (Aparecen juntos de corrido) */}
+        {/* Información escolar con los campos nativos */}
         <div className={style.schoolInfo}>
-          {gradoEtiqueta && <span className={style.badge}>{gradoEtiqueta}</span>}
-          {jornadaEtiqueta && <span className={style.badge}>{jornadaEtiqueta}</span>}
+          {grado && <span className={style.badge}>{grado}</span>}
+          {jornada && <span className={style.badge}>{jornada}</span>}
           
-          {/* Pone el punto divisor si hay fecha de creación y además hay etiquetas de grado o jornada antes */}
-          {fecha_creacion && (gradoEtiqueta || jornadaEtiqueta) && (
+          {/* Pone el punto divisor si hay fecha de creación y además hay etiquetas antes */}
+          {fecha_creacion && (grado || jornada) && (
             <span className={style.separator}>•</span>
           )}
 
@@ -101,7 +94,7 @@ function LaboratorioCard({
         )}
       </div>
 
-      {/* SECCIÓN DEL CENTRO REDISEÑADA */}
+      {/* SECCIÓN DEL CÓDIGO DE ACCESO */}
       {esArchivado ? (
         <div className={`${style.codeSection} ${style.codeDisabled}`}>
           <span className={style.codeHint}>CÓDIGO DE ACCESO</span>
@@ -120,7 +113,6 @@ function LaboratorioCard({
       )}
 
       <footer className={style.actions}>
-        {/* Eliminar siempre está disponible */}
         <button 
           className={style.deleteBtn} 
           onClick={() => onEliminar(id)}
@@ -129,7 +121,6 @@ function LaboratorioCard({
           <Trash2 size={18} />
         </button>
         
-        {/* Botón principal cambia según la sección */}
         {esArchivado ? (
           <button className={style.reuseBtn} onClick={() => onReutilizar(id)}>
             Reutilizar
