@@ -154,8 +154,9 @@
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+
 /* ==========================================================================
-   NUEVAS LÍNEAS PARA LA PAGINACIÓN
+   NUEVAS LÍNEAS PARA LA PAGINACIÓN (Sincronizado con AdminSidebar)
    ========================================================================== */
 
 .paginationContainer {
@@ -178,7 +179,7 @@
     justify-content: center;
     background: #FFFFFF;
     border: 1px solid #E0E5F2;
-    color: #707EAE;
+    color: #A3AED0; /* Cambiado al color de texto secundario del Sidebar */
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
@@ -196,24 +197,25 @@
     font-size: 14px;
 }
 
-/* Efecto al pasar el mouse */
+/* Efecto al pasar el mouse (Hover) */
 .paginationBtn:hover:not(:disabled), 
 .pageBtn:hover:not(.activePage) {
-    background: #F4F7FE;
-    color: #422AFB;
-    border-color: #422AFB;
+    background: rgba(20, 32, 80, 0.05); /* Fondo sutil usando el azul oscuro (#142050) */
+    color: #142050; /* Texto en el azul oscuro principal */
+    border-color: #142050; /* Borde en el azul oscuro principal */
 }
 
-/* Estilo para la página donde estás ubicado */
+/* Estilo para la página donde estás ubicado (Activo) */
 .activePage {
-    background-color: #422AFB !important;
-    color: #FFFFFF !important;
-    border-color: #422AFB !important;
-    box-shadow: 0px 4px 12px rgba(66, 42, 251, 0.2);
+    background-color: #142050 !important; /* Fondo azul oscuro principal del sidebar */
+    color: #18ffba !important; /* Texto en el color neón vibrante del indicador activo */
+    border-color: #142050 !important;
+    box-shadow: 0px 4px 12px rgba(24, 255, 186, 0.2); /* Brillo sutil con el tono neón */
 }
 
 .paginationBtn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     background: #F4F7FE;
+    color: #A3AED0;
 }
