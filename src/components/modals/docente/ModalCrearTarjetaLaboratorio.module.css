@@ -1,0 +1,220 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px); /* Desenfoque más suave y moderno */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #ffffff;
+  width: 90%;
+  max-width: 460px;
+  border-radius: 24px; /* Bordes más orgánicos */
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.15);
+  animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); /* Animación con rebote sutil */
+}
+
+@keyframes popIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.header {
+  padding: 24px 24px 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleGroup h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a; /* Color más oscuro y legible */
+  margin: 0;
+}
+
+.iconBadge {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MEJORA: Botón de cerrar estilizado */
+.closeBtn {
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+  color: #334155;
+  transform: rotate(90deg); /* Efecto divertido al pasar el mouse */
+}
+
+.body {
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Separación uniforme entre elementos */
+}
+
+.inputGroup label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #08cc9b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(8, 204, 155, 0.1); /* Brillo sutil al enfocar */
+}
+
+.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* MEJORA: Caja de información del objetivo súper estilizada */
+.infoBox {
+  padding: 16px;
+  background: #f0f7ff; /* Fondo azul pastel muy limpio */
+  border: 1px solid #e0f2fe;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoBox h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0369a1; /* Azul intermedio */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.infoBox p {
+  font-size: 0.85rem;
+  color: #334155;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.footer {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelBtn {
+  padding: 12px 20px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.confirmBtn {
+  padding: 12px 20px;
+  background: #08cc9b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  background: #06b488;
+  transform: translateY(-1px);
+}
+
+.confirmBtn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.confirmBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Contenedor para colocar Grado y Jornada lado a lado */
+.rowInputs {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.rowInputs .inputGroup {
+  flex: 1; /* Hace que ambos selectores midan exactamente lo mismo */
+}
+
+.labelWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

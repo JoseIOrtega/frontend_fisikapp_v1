@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getUsuarioDetalle } from '../../services/admin/GestionAdminService';
+import { getUsuarioDetalle } from '../../../services/admin/GestionAdminService';
 import styles from './ModalVerAdmin.module.css';
 
 const ModalVerAdmin = ({ id, isOpen, onClose, titulo = "Perfil de Administrador" }) => {

@@ -12,7 +12,8 @@ function DocenteLayout({ children, onSearch }) {
   // Diccionario con el orden lógico y la nueva sección de reportes
   const routeNames = {
     "/profesor/dashboard": "Dashboard",
-    "/profesor/mis-laboratorios": "Mis Laboratorios",
+    "/profesor/mis-laboratorios": "Laboratorios",
+    "/profesor/archivados": "Laboratorios Archivados",
     "/profesor/mis-estudiantes": "Mis Estudiantes", // Solo habilitado al entrar a un lab
     "/profesor/reportes": "Historial de Reportes",   // Al final, como resultado del trabajo
     "/profesor/perfil": "Mi Perfil",

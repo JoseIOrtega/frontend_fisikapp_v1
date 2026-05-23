@@ -15,8 +15,8 @@ import { useModal } from '../../context/ModalContext';
 import GenericModal from '../../components/modals/GenericModal';
 import AddMemberForm from '../../components/UI/admin/gestion_admins/AddMemberForm';
 import style from './GestionAdmin.module.css';
-import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
-import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
+import ModalEditarAdmin from '../../components/modals/admin/ModalEditarAdmin';
+import ModalVerAdmin from '../../components/modals/admin/ModalVerAdmin';
 
 import PaginationControls from '../../components/UI/paginacion/PaginationControls'
 
