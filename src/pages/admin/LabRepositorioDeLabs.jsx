@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
-import AdminDataTable from "../../components/UI/admin/AdminDataTable";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AdminLayout from "../../layouts/AdminLayout"
+import AdminDataTable from "../../components/UI/admin/AdminDataTable"
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
@@ -12,6 +13,7 @@ import {
 import style from './LabRepositorioDeLabs.module.css'
 
 function LabRepositorioDeLabs() {
+  const [searchTerm, setSearchTerm] = useState("");
   const [laboratorios, setLaboratorios] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -80,12 +82,12 @@ function LabRepositorioDeLabs() {
     loadLaboratorios();
   }, []);
 
-  // Columnas adaptadas a Laboratorios
   const columnas = [
-    { label: "Laboratorio" }, // Aquí irá Código y Título (como Nombre y Correo)
-    { label: "Resumen" },
+    { label: "Nombre de Laboratorio" },
+    { label: "Categoría" },
     { label: "Estado" },
-    { label: "Acciones" }
+    { label: "Creado" },
+    { label: "Acciones", style: { textAlign: 'center' } }
   ];
 
   const filteredLaboratorios = laboratorios.filter((laboratorio) =>
@@ -109,31 +111,8 @@ function LabRepositorioDeLabs() {
     });
   };
 
-      // Mapeo básico para asegurar el booleano del estado
-      const resultado = listaLabs.map(lab => ({
-        ...lab,
-        estado: Boolean(lab.estado)
-      }));
-
-      setLaboratorios(resultado); 
-    } catch (error) {
-      console.error("Error al cargar laboratorios:", error);
-      showModal('error', 'Error al sincronizar los laboratorios.');
-    } finally {
-      setCargando(false);
-    }
-  }, [paginaActual, searchTerm, showModal]);
-
-  useEffect(() => {
-    fetchDatos();
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [fetchDatos]);
-
-  const handleBusqueda = (valor) => {
-    setSearchTerm(valor);
-    setPaginaActual(1); 
+  const handleView = (laboratorio) => {
+    navigate(`/admin/laboratorio/repositorio_labs/${laboratorio.id}`);
   };
 
   const handleToggleBloqueo = async (laboratorio) => {

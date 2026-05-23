@@ -205,8 +205,6 @@ export const AdminLab = async (tituloLaboratorio, descripcion, introduxxion, mar
         return datos;
     }
 };
-<<<<<<< HEAD
-=======
 
 // ============= FUNCIONES AUXILIARES CON FALLBACK =============
 
@@ -334,4 +332,3 @@ export async function saveLaboratorio(laboratorio) {
 
     return newLabs;
 };
->>>>>>> gestion_laboratorio
