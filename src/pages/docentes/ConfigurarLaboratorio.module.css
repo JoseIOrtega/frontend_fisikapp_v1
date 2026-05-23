@@ -1,0 +1,261 @@
+.layout {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.panelContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.centerBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  color: #64748b;
+  gap: 0.75rem;
+}
+
+/* ==========================================
+   HEADER CARD (OPTIMIZADO - SIN CAJA BLANCA)
+   ========================================== */
+.headerCard {
+  background: transparent; /* 🚀 Quitamos el fondo blanco */
+  border: none;             /* 🚀 Quitamos el borde dashed anterior */
+  border-radius: 0;
+  padding: 0.5rem 0.25rem;  /* Reducimos padding para que se alinee al borde del layout */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* El botón de volver ahora sí resalta como una mini-tarjeta blanca flotante */
+.backIconBtn {
+  background: white; 
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.backIconBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateX(-2px); /* Un pequeño efecto de empuje al apuntar */
+}
+
+.labTitle {
+  font-size: 1.55rem;
+  color: #1e3a8a;
+  margin: 0;
+  font-weight: 700;
+}
+
+.labSubtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.labSubtitle span {
+  font-weight: 600;
+  color: #334155;
+}
+
+/* BOTÓN DE ACCIÓN */
+.actionBtn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: #e2e8f0;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.btnActivo {
+  background: #1e3a8a;
+  color: white;
+}
+
+.btnActivo:hover {
+  background: #172554;
+}
+
+/* BANNER */
+.statusBanner {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.bannerText {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.bannerText strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.bannerText p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.statusIconPending {
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* SECCIÓN ETAPAS */
+.etapasBlock {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.blockTitleGroup h3 {
+  font-size: 1.15rem;
+  color: #1e293b;
+  margin: 0;
+  font-weight: 700;
+}
+
+.blockTitleGroup p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 2px 0 1.25rem 0;
+}
+
+.etapasList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* FILAS DE ETAPA */
+.etapaRow {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.etapaRow:hover {
+  transform: translateY(-2px); /* Se levanta sutilmente */
+  border-color: #cbd5e1;       /* Oscurece un poco el borde */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra elegante */
+}
+
+.etapaLeftLayout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.verticalBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #1e3a8a;
+}
+
+.etapaIconBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etapaDetails h4 {
+  margin: 1px 0;
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.etapaNumber {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusPendingTxt {
+  font-size: 0.8rem;
+  color: #b45309;
+  font-weight: 500;
+}
+
+.rowConfigBtn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rowConfigBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

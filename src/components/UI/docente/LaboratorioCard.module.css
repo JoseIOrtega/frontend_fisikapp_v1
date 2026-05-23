@@ -114,6 +114,41 @@
 }
 
 /* ==========================================================================
+   🚀 SECCIÓN DE INFORMACIÓN ESCOLAR (NUEVO REGISTRO EN FILA CONSECUTIVA)
+   ========================================================================== */
+.schoolInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.separator {
+  color: #cbd5e1;
+  font-size: 0.7rem;
+}
+
+.dateLabel {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-left: 2px; /* Alineado de corrido junto a la jornada */
+}
+
+/* ==========================================================================
    SECCIÓN DEL CÓDIGO DE ACCESO
    ========================================================================== */
 .codeSection {
@@ -154,13 +189,52 @@
   font-style: italic;
 }
 
+/* Texto de alerta debajo del título */
+.pendingMsg {
+  color: #D46B08;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Contenedor central cuando el laboratorio está incompleto */
+.codeSectionPending {
+  background-color: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 54px;
+  box-sizing: border-box;
+}
+
+.codeHintPending {
+  font-size: 0.7rem;
+  color: #64748B;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.codeValuePending {
+  font-size: 1rem;
+  color: #475569;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
 /* ==========================================================================
    ACCIONES (BOTONES)
    ========================================================================== */
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: auto; /* Empuja los botones al fondo de la card */
+  margin-top: auto;
 }
 
 .deleteBtn {
@@ -239,6 +313,19 @@
 
 .reuseBtn:hover svg {
   transform: rotate(180deg);
+}
+
+/* 🚀 Cuando la tarjeta está inactiva, el botón cambia de color a gris sutil */
+.cardInactiva .enterBtn {
+  background-color: #cbd5e1 !important;
+  color: #64748b !important;
+  border: 1px solid #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cardInactiva .enterBtn:hover {
+  background-color: #cbd5e1 !important;
 }
 
 /* ==========================================================================

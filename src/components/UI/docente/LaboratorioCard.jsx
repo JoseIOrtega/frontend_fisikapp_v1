@@ -1,3 +1,4 @@
+import React from 'react';
 import { Beaker, ArrowRight, Trash2, Lock, RefreshCcw } from 'lucide-react';
 import style from './LaboratorioCard.module.css';
 
@@ -6,13 +7,24 @@ function LaboratorioCard({
   onIngresar, 
   onEliminar, 
   onToggleEstado, 
-  onReutilizar, // Nueva función para clonar
-  esArchivado = false // Prop para identificar la sección
+  onReutilizar, 
+  esArchivado = false 
 }) {
-  const { id, titulo_lab, categoria_nombre, codigo_lab, estado, inhabilitadoPorAdmin } = laboratorio;
+  // Desestructuramos directamente grado y jornada desde el objeto de la base de datos
+  const { 
+    id, 
+    titulo_lab, 
+    categoria_nombre, 
+    codigo_lab, 
+    estado, 
+    inhabilitadoPorAdmin, 
+    configurado_completo, 
+    fecha_creacion,
+    grado,       // Recibido directamente desde Django
+    jornada      // Recibido directamente desde Django
+  } = laboratorio;
   
-  // En Archivados, consideramos que siempre está "pausado" visualmente
-  const isInactivo = estado === 'inactivo' || inhabilitadoPorAdmin || esArchivado;
+  const isInactivo = estado === 'inactivo' || estado === false || inhabilitadoPorAdmin || esArchivado;
 
   return (
     <div className={`
@@ -25,13 +37,17 @@ function LaboratorioCard({
           <Beaker size={18} />
         </div>
         
-        {/* Switch: Solo aparece si NO es archivado y NO está bloqueado por Admin */}
+        {/* Switch: Activo / Inactivo */}
         {!esArchivado && !inhabilitadoPorAdmin ? (
-          <label className={style.switch} title={estado === 'activo' ? 'Desactivar' : 'Activar'}>
+          <label className={style.switch} title={estado === 'activo' || estado === true ? 'Desactivar' : 'Activar'}>
             <input 
-              type="checkbox" 
-              checked={estado === 'activo'} 
-              onChange={() => onToggleEstado(id)} 
+              type="checkbox"
+              title={estado === 'activo' || estado === true ? 'Desactivar' : 'Activar'} 
+              checked={estado === true || estado === 'activo'}
+              onChange={(e) => {
+                e.stopPropagation(); 
+                onToggleEstado(id); 
+              }} 
             />
             <span className={style.slider}></span>
           </label>
@@ -44,31 +60,59 @@ function LaboratorioCard({
       </header>
 
       <div className={style.content}>
+        {/* Mostramos el título directo de la base de datos sin procesos de strings */}
         <h3 className={style.title} title={titulo_lab}>
           {titulo_lab}
         </h3>
+        
+        {/* Información escolar con los campos nativos */}
+        <div className={style.schoolInfo}>
+          {grado && <span className={style.badge}>{grado}</span>}
+          {jornada && <span className={style.badge}>{jornada}</span>}
+          
+          {/* Pone el punto divisor si hay fecha de creación y además hay etiquetas antes */}
+          {fecha_creacion && (grado || jornada) && (
+            <span className={style.separator}>•</span>
+          )}
+
+          {fecha_creacion && (
+            <span className={style.dateLabel}>
+              {new Date(fecha_creacion).toLocaleDateString()}
+            </span>
+          )}
+        </div>
         
         {/* Mensajes de estado dinámicos */}
         {inhabilitadoPorAdmin ? (
           <p className={style.adminMsg}>Inhabilitado por la administración</p>
         ) : esArchivado ? (
           <p className={style.inactiveMsg}>Proyecto en archivo</p>
-        ) : isInactivo ? (
+        ) : isInactivo && configurado_completo ? (
           <p className={style.inactiveMsg}>Laboratorio pausado</p>
         ) : (
           <p className={style.category}>{categoria_nombre}</p>
         )}
       </div>
 
-      <div className={`${style.codeSection} ${isInactivo ? style.codeDisabled : ''}`}>
-        <span className={style.codeHint}>CÓDIGO DE ACCESO</span>
-        <div className={style.codeValue}>
-          {esArchivado ? "--- ---" : (codigo_lab || "--- ---")}
+      {/* SECCIÓN DEL CÓDIGO DE ACCESO */}
+      {esArchivado ? (
+        <div className={`${style.codeSection} ${style.codeDisabled}`}>
+          <span className={style.codeHint}>CÓDIGO DE ACCESO</span>
+          <div className={style.codeValue}>--- ---</div>
         </div>
-      </div>
+      ) : configurado_completo ? (
+        <div className={`${style.codeSection} ${isInactivo ? style.codeDisabled : ''}`}>
+          <span className={style.codeHint}>CÓDIGO DE ACCESO</span>
+          <div className={style.codeValue}>{codigo_lab || "--- ---"}</div>
+        </div>
+      ) : (
+        <div className={style.codeSectionPending}>
+          <span className={style.codeHintPending}>ESTADO DEL LAB</span>
+          <div className={style.codeValuePending}>Por configurar</div>
+        </div>
+      )}
 
       <footer className={style.actions}>
-        {/* Eliminar siempre está disponible, pero en archivados es "Eliminar definitivo" */}
         <button 
           className={style.deleteBtn} 
           onClick={() => onEliminar(id)}
@@ -77,7 +121,6 @@ function LaboratorioCard({
           <Trash2 size={18} />
         </button>
         
-        {/* Botón principal cambia según la sección */}
         {esArchivado ? (
           <button className={style.reuseBtn} onClick={() => onReutilizar(id)}>
             Reutilizar
@@ -86,10 +129,10 @@ function LaboratorioCard({
         ) : (
           <button 
             className={style.enterBtn} 
-            disabled={isInactivo} 
+            disabled={inhabilitadoPorAdmin || isInactivo} 
             onClick={() => onIngresar(id)}
           >
-            {inhabilitadoPorAdmin ? 'Bloqueado' : isInactivo ? 'Habilitar' : 'Ingresar'}
+            {inhabilitadoPorAdmin ? 'Bloqueado' : !configurado_completo ? 'Configurar' : isInactivo ? 'Pausado' : 'Ingresar'}
             <ArrowRight size={16} />
           </button>
         )}
