@@ -11,57 +11,62 @@ function DocenteLayout({ children, onSearch }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
-  // Diccionario con el orden lógico y la nueva sección de reportes
+  // Diccionario con las rutas estáticas
   const routeNames = {
     "/profesor/dashboard": "Dashboard",
-    "/profesor/mis-laboratorios": "Mis Laboratorios",
-    "/profesor/mis-estudiantes": "Mis Estudiantes", // Solo habilitado al entrar a un lab
-    "/profesor/reportes": "Historial de Reportes",   // Al final, como resultado del trabajo
+    "/profesor/mis-laboratorios": "Laboratorios",
+    "/profesor/archivados": "Laboratorios Archivados",
+    "/profesor/mis-estudiantes": "Mis Estudiantes", 
+    "/profesor/reportes": "Historial de Reportes",   
     "/profesor/perfil": "Mi Perfil",
     "/profesor/configuracion": "Configuración"
   };
 
-  const currentTitle = routeNames[location.pathname] || "Panel Profesor";
+  // Primero revisamos si la URL actual comienza con la ruta de configuración
+  let currentTitle = "Panel Profesor";
+
+  if (location.pathname.startsWith("/profesor/mis-laboratorios/configurar")) {
+    currentTitle = "Configurar Laboratorio";
+  } else if (routeNames[location.pathname]) {
+    // Si no es la de configurar, la busca normalmente en tu diccionario
+    currentTitle = routeNames[location.pathname];
+  }
 
   return (
-    <div className={style['admin-layout']}>
-      {/* Botón móvil */}
-      <button 
-        className={style.mobileBtn} 
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+  <div className={style['admin-layout']}>
+    {/* Botón móvil */}
+    <button 
+      className={style.mobileBtn} 
+      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+    >
+      {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+    </button>
 
-      {/* Overlay para móvil */}
-      {isSidebarOpen && (
-        <div className={style.overlay} onClick={() => setIsSidebarOpen(false)} />
-      )}
+    {/* Overlay para móvil */}
+    {isSidebarOpen && (
+      <div className={style.overlay} onClick={() => setIsSidebarOpen(false)} />
+    )}
 
-      {/* Sidebar del Profesor */}
-      <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
-        <DocenteSidebar />
+    {/* Sidebar del Profesor */}
+    <div className={`${style.sidebarWrapper} ${isSidebarOpen ? style.show : ''}`}>
+      <DocenteSidebar />
+    </div>
+
+    {/* Contenido Principal */}
+    <div className={style['main-content']}>
+      {/* Contenedor del Navbar */}
+      <div className={style['navbar-container']}>
+        <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
       </div>
 
-        <div className={style['main-content']}>
-          <div className={style['navbar-container']}>
-            <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
-          </div>
-    
-           {/* Este es el espacio blanco de la derecha donde aparecerá la tabla */}
-          <div style={{ flex: 1, overflowY: 'auto' }}>
-            <Outlet /> 
-          </div>
-        </div>
-
-        
-        {/* Contenedor con scroll inteligente para que Perfil no se corte */}
-        <div className={style['info']}>
-          {children}
-        </div>
-      
+      {/* Espacio con scroll inteligente para la tabla e hijos */}
+      <div style={{ flex: 1, overflowY: 'auto' }} className={style['info']}>
+        <Outlet /> 
+        {children}
+      </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default DocenteLayout;

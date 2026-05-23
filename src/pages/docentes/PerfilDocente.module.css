@@ -173,55 +173,77 @@
 /* FOTO */
 
 /* PerfilAdmin.module.css */
-
+/* Contenedor general de la sección del avatar */
 .avatarSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+    width: 100%;
 }
 
-/* PerfilAdmin.module.css */
-
+/* Contenedor cuando hay una imagen real */
 .avatarContainer {
-  position: relative;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  padding: 3px;
-  /* Usamos el azul oscuro profundo de tu marca */
-  background: #142050; 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #1B2559; /* El anillo oscuro exterior */
+    box-sizing: border-box;
 }
 
 .profileCircle {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #f1f5f9;
-  border: 3px solid white; 
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
 }
 
+/* CORRECCIÓN CLAVE: Círculo de Iniciales con centrado perfecto matemático */
+.initialsCircle {
+    position: relative;     /* Para que el botón de la cámara se posicione bien si está editando */
+    width: 120px;
+    height: 120px;
+    background-color: #ffffff; /* Fondo blanco */
+    color: #1B2559;            /* Letras con el azul oscuro de tu navbar */
+    font-size: 2.4rem;         /* Tamaño de letra ideal */
+    font-weight: 700;
+    
+    /* El truco para centrar el texto "JO" exactamente en el medio */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    border-radius: 50%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    /* El borde se calcula hacia ADENTRO, evitando que se vea ovalado o disparejo */
+    border: 4px solid #1B2559; 
+    box-sizing: border-box;
+    
+    box-shadow: 0px 8px 20px rgba(112, 144, 176, 0.15);
+}
+
+/* Ajuste para el botón flotante de la cámara cuando editas */
 .uploadBadge {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  /* Este es el azul que usas en los iconos del Sidebar */
-  background: #18ffba; 
-  color: white;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: 2px solid white;
-  transition: transform 0.2s ease, background 0.2s ease;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #18ffcd;
+    color: white;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(67, 24, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    z-index: 10;
 }
 
 .uploadBadge:hover {
-  background: #6f6ff5;
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
