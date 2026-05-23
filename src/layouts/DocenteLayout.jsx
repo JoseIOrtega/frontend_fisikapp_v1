@@ -59,10 +59,9 @@ function DocenteLayout({ children, onSearch }) {
         <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
       </div>
 
-      {/* Espacio con scroll inteligente para la tabla e hijos */}
+      {/* Espacio con scroll inteligente para la tabla */}
       <div style={{ flex: 1, overflowY: 'auto' }} className={style['info']}>
         <Outlet /> 
-        {children}
       </div>
     </div>
   </div>
