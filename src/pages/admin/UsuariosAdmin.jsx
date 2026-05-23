@@ -10,9 +10,9 @@ import { getUsuarios } from "../../services/admin/UsuariosService";
 import { getLoginLogsService } from "../../services/admin/UsuariosService";
 import { crearNuevoUsuario } from '../../services/admin/UsuariosService';
 import { actualizarUsuarioService } from '../../services/admin/UsuariosService';
-import ModalEditarAdmin from '../../components/modals/ModalEditarAdmin';
-import ModalVerAdmin from '../../components/modals/ModalVerAdmin';
-import ModalCargaCSVAdmin from '../../components/modals/ModalCargaCSVAdmin';
+import ModalEditarAdmin from '../../components/modals/admin/ModalEditarAdmin';
+import ModalVerAdmin from '../../components/modals/admin/ModalVerAdmin';
+import ModalCargaCSVAdmin from '../../components/modals/admin/ModalCargaCSVAdmin';
 import GenericModal from "../../components/modals/GenericModal";
 import AddMemberForm from "../../components/UI/admin/gestion_admins/AddMemberForm"
 
@@ -398,8 +398,10 @@ function UsuariosAdmin() {
                     <AdminIconButton 
                       icon={Edit} 
                       type="edit" 
-                      title="Editar" 
-                      onClick={() => handleAbrirEditar(usuario)} // <--- Conexión aquí
+                      title={!usuario.estado ? "Debe activar al usuario para editar" : "Editar"} 
+                      onClick={() => handleAbrirEditar(usuario)}
+                      // ¡Ahora esta prop sí funcionará!
+                      disabled={!usuario.estado} 
                     />
                     
                     <AdminIconButton 

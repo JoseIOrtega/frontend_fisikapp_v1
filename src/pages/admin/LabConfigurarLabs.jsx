@@ -3,6 +3,7 @@ import AdminLayout from "../../layouts/AdminLayout";
 import AdminCrateButton from "../../components/UI/admin/AdminCreateButton";
 import AdminCardContainer from "../../components/UI/admin/AdminCardContainer";
 import GenericModal from "../../components/modals/GenericModal"; 
+import { useModal } from '../../context/ModalContext';
 import { Plus, Save } from 'lucide-react';
 import style from './LabConfigurarLabs.module.css';
 import { 
@@ -14,6 +15,7 @@ import {
 
 function LabConfigurarLabs() {
   // --- ESTADOS DE DATOS ---
+  const { showModal } = useModal();
   const [categorias, setCategorias] = useState([]);
   const [objetivos, setObjetivos] = useState([]);
   const [palabrasClave, setPalabrasClave] = useState([]);
@@ -150,7 +152,8 @@ function LabConfigurarLabs() {
         ra: formData.ra
       };
       await crearLaboratorio(payload);
-      alert("✅ Plantilla agregada correctamente");
+      //alert("✅ Plantilla agregada correctamente");
+      showModal('success', '✅ Plantilla agregada correctamente');
     } catch (err) {
       alert("❌ Verifique los campos obligatorios (*)");
     }

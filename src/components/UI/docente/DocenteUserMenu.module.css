@@ -1,0 +1,107 @@
+.profileContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Contenedor circular para la foto o las iniciales */
+.avatarWrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.avatarWrapper:hover {
+    transform: scale(1.05); /* Efecto sutil al pasar el mouse */
+}
+
+/* Estilos para la imagen real (cuando cargue bien de Cloudinary) */
+.profileImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 2px solid #1B2559; /* Borde sutil con el color oscuro de tu app */
+}
+
+/*Estilos para el círculo con las iniciales (el salvavidas si hay 404) */
+.initialsAvatar {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* Azul/morado vibrante de Fisikapp */
+    color: #142050;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid #142050;
+}
+
+/* --- MENÚ DESPLEGABLE (DROPDOWN) --- */
+
+.dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 200px;
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0px 10px 30px rgba(112, 144, 176, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.menuHeader {
+    font-weight: 700;
+    color: #1B2559;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.divider {
+    height: 1px;
+    background: #E9EDF7;
+    margin: 8px 0;
+}
+
+.menuItem {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px;
+    color: #707EAE;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menuItem:hover {
+    background: #F4F7FE;
+    color: #1B2559;
+}
+
+.logout {
+    color: #EE5D50; /* Cambiado a un rojo suave para que resalte que es cerrar sesión */
+    font-weight: 600;
+}
+
+.logout:hover {
+    background: #FFF5F5;
+    color: #E04438;
+}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import style from './DocenteLayout.module.css'; 
 import DocenteSidebar from './DocenteSidebar';
-import AdminNavbar from './AdminNavbar'; 
+import DocenteNavbar from './DocenteNavbar'; 
 import { Menu, X } from 'lucide-react';
 
 function DocenteLayout({ children, onSearch }) {
@@ -12,7 +12,8 @@ function DocenteLayout({ children, onSearch }) {
   // Diccionario con el orden lógico y la nueva sección de reportes
   const routeNames = {
     "/profesor/dashboard": "Dashboard",
-    "/profesor/mis-laboratorios": "Mis Laboratorios",
+    "/profesor/mis-laboratorios": "Laboratorios",
+    "/profesor/archivados": "Laboratorios Archivados",
     "/profesor/mis-estudiantes": "Mis Estudiantes", // Solo habilitado al entrar a un lab
     "/profesor/reportes": "Historial de Reportes",   // Al final, como resultado del trabajo
     "/profesor/perfil": "Mi Perfil",
@@ -44,7 +45,7 @@ function DocenteLayout({ children, onSearch }) {
       <div className={style['main-content']}>
         {/* Contenedor del Navbar: corregido para evitar anchos raros */}
         <div className={style['navbar-container']}>
-          <AdminNavbar pageTitle={currentTitle} onSearch={onSearch}/>
+          <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
         </div>
         
         {/* Contenedor con scroll inteligente para que Perfil no se corte */}

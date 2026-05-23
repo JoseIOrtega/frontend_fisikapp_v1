@@ -56,7 +56,7 @@ a {
 
 /* 5. SCROLLBAR ESPACIAL: Un detalle pro para que combine con los átomos */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -64,7 +64,7 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-acento); /* El azul claro de tus átomos */
+    background: var(--color-barra-scroll); /* El azul claro de tus átomos */
     border-radius: 10px;
 }
 
@@ -72,3 +72,20 @@ a {
     background: #2d89aa; /* Un tono un poco más oscuro al pasar el mouse */
 }
 
+
+/* ////////////////////////////////////////////////////////////////////////////// */
+
+/* Esto mata el scroll de afuera (el del navegador) */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prohíbe el scroll en la raíz */
+}
+
+/* Esto asegura que React ocupe toda la pantalla sin salirse */
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
