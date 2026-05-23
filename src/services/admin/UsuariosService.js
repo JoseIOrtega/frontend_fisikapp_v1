@@ -5,10 +5,10 @@ import { API_CONFIG } from "../../services/apiConfig";
  * @returns {Promise<Array>} Lista de usuarios desde la base de datos
  */
 // Añadimos 'pagina' como argumento, con valor por defecto 1
-export const getUsuarios = async (pagina = 1, termino = "") => {
+export const getUsuarios = async (pagina = 1, termino = "" , rol = "estudiate") => {
     try {
         // Construimos la URL base con la página y el filtro de rol
-        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=profesor`;
+        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=${rol}`;
         
         // Si hay un término de búsqueda, lo concatenamos usando &search=
         if (termino) {

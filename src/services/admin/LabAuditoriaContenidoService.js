@@ -23,7 +23,7 @@ export const getLaboratorios = async () => {
 export const getLaboratorioById = async (id) => {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}/${id}/`, {
+  const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}${id}/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

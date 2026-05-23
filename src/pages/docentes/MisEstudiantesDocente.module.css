@@ -1,0 +1,85 @@
+.layout {
+    padding: 20px;
+    position: relative;
+}
+
+.contentWrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.headerSection {
+    margin-bottom: 20px;
+}
+
+.title {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.tableContainer {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Información del Usuario */
+.userInfoContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.nameText {
+    font-weight: 600;
+    color: #334155;
+}
+
+.emailText {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+/* Estados */
+.statusActive {
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.statusInactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.paginationContainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.overlayCarga {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.actionsCell {
+  display: flex;
+  align-items: center;    /* Los centra horizontalmente */
+  justify-content: center; /* Los centra verticalmente en la celda */
+  gap: 8px;               /* Espacio de separación entre los dos botones */
+  padding: 10px 0;        /* Un poco de aire arriba y abajo */
+}

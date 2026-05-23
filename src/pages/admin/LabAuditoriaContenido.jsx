@@ -8,6 +8,7 @@ import { FlaskConical, Edit, Eye, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import style from './LabAuditoriaContenido.module.css'
 import { useNavigate } from "react-router-dom";
+import LabDetalleAuditoria from "./LabDetalleLaboratorio";
 
 
 
@@ -41,12 +42,20 @@ function LabAuditoriaContenido() {
   const fetchLaboratorios = async () => {
     try {
       const data = await getLaboratorios();
-      setLaboratorios(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+
+   if (data && Array.isArray(data.results)) {
+      setLaboratorios(data.results);
+    } else if (Array.isArray(data)) {
+      // Por si acaso en algún entorno no está paginado
+      setLaboratorios(data);
+    } else {
       setLaboratorios([]);
     }
-  };
+  } catch (error) {
+    console.error("Error al obtener laboratorios en el componente:", error);
+    setLaboratorios([]);
+  }
+};
 
 
 
