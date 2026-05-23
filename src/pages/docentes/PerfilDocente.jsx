@@ -13,22 +13,29 @@ function PerfilDocente() {
     const [verClave, setVerClave] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
-    // NUEVO: Estado para guardar una copia de respaldo de los datos
+    // Estado para guardar una copia de respaldo de los datos
     const [copiaRespaldo, setCopiaRespaldo] = useState(null);
     
-    // 1. Datos del perfil (Nombre, Correo, etc.)
+    // 1. Datos del perfil
     const [formData, setFormData] = useState({
         id: '', nombre: '', correo: '', fecha_nacimiento: '',
         identificacion: '', institucion: '', rol: '', foto: null
     });
 
-    // 2. Datos de seguridad (ESTE es el que usaremos para los inputs de clave)
-    // const [passData, setPassData] = useState({ old_password: '', new_password: '' });
+    // 2. Datos de seguridad
     const [passData, setPassData] = useState({ 
         old_password: '', 
         new_password: '', 
-        confirmar_password: '' // <-- Agregamos la confirmacion
+        confirmar_password: '' 
     });
+
+    // 🚀 NUEVA FUNCIÓN: Extrae las iniciales del docente para usarlas de respaldo
+    const obtenerIniciales = (nombre) => {
+        if (!nombre) return "U";
+        const palabras = nombre.trim().split(/\s+/);
+        if (palabras.length === 1) return palabras[0].charAt(0).toUpperCase();
+        return (palabras[0].charAt(0) + palabras[1].charAt(0)).toUpperCase();
+    };
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -37,8 +44,6 @@ function PerfilDocente() {
                 const dataObtenida = await getPerfilUser();
 
                 if (dataObtenida) {
-                    // --- AQUÍ VA EL AJUSTE ---
-                    // Convertimos cualquier 'null' que venga de la base de datos en texto vacío ''
                     const datosLimpios = {
                         id: dataObtenida.id || '',
                         nombre: dataObtenida.nombre || '',
@@ -47,17 +52,16 @@ function PerfilDocente() {
                         identificacion: dataObtenida.identificacion || '',
                         institucion: dataObtenida.institucion || '',
                         rol: dataObtenida.rol || '',
-                        foto: dataObtenida.foto || null // La foto sí puede ser null para mostrar el avatar por defecto
+                        foto: dataObtenida.foto || null 
                     };
 
                     setFormData(datosLimpios);
                     setCopiaRespaldo({ ...datosLimpios });
                 }
             } catch (error) {
-                // Este catch atrapa el error 403 o fallos de red y muestra el modal
                 showModal('error', 'No se pudieron cargar los datos del perfil.');
             } finally {
-                setLoading(false); // Apagamos el estado de carga pase lo que pase
+                setLoading(false);
             }
         };
         
@@ -65,29 +69,19 @@ function PerfilDocente() {
         
     }, []);
 
-
-    // FUNCIÓN PARA CANCELAR (Arregla el problema de la imagen en blanco)
+    // FUNCIÓN PARA CANCELAR
     const handleCancelar = () => {
-        // 1. Apagamos el modo edición
         setEditando(false);
-        
-        // 2. Limpiamos los campos de contraseña para que no se queden escritos
-        setPassData({ old_password: '', new_password: '', confirm_password: '' });
-        
-        // 3. Quitamos la previsualización de la foto nueva
+        // Arreglado 'confirmar_password' para limpiar bien el estado
+        setPassData({ old_password: '', new_password: '', confirmar_password: '' });
         setPreviewImage(null);
-
-        // 4. IMPORTANTE: Restauramos los datos originales para evitar el "cuadro blanco"
-        // Si no haces esto, los cambios que el usuario escribió se quedan en los inputs aunque no edite
         setFormData({ ...copiaRespaldo }); 
     };
-
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // FUNCIÓN PARA ACTUALIZAR passData CUANDO ESCRIBEN EN LAS CLAVES
     const handlePassChange = (e) => {
         setPassData({ ...passData, [e.target.name]: e.target.value });
     };
@@ -95,29 +89,20 @@ function PerfilDocente() {
     const handleGuardar = async () => {
         setLoading(true);
         try {
-            // 1. Detectamos qué quiere cambiar el usuario antes de procesar
-            // Revisamos si hay una nueva foto en camino
             const hayNuevaFoto = formData.foto instanceof File;
-
-            // --- ARREGLO DE FECHA ---
-            // Forzamos que la fecha siempre sea YYYY-MM-DD para que Django no se queje
             const fechaFormateada = formData.fecha_nacimiento ? new Date(formData.fecha_nacimiento).toISOString().split('T')[0] : null;
             
-            // Revisamos si cambió algún texto comparándolo con nuestro respaldo
             const cambioTextoPerfil = 
                 formData.nombre !== copiaRespaldo.nombre ||
                 formData.correo !== copiaRespaldo.correo ||
                 formData.identificacion !== copiaRespaldo.identificacion ||
                 formData.institucion !== copiaRespaldo.institucion ||
-                //formData.fecha_nacimiento !== copiaRespaldo.fecha_nacimiento;
-                fechaFormateada !== copiaRespaldo.fecha_nacimiento; // Comparamos con la formateada
+                fechaFormateada !== copiaRespaldo.fecha_nacimiento;
 
             const cambioPerfil = hayNuevaFoto || cambioTextoPerfil;
-            // const cambioClave = passData.old_password && passData.new_password;
-            
             const cambioClave = passData.old_password && passData.new_password;
 
-            // PARTE 1: Actualizar Perfil y Foto (Solo si detectamos cambios)
+            // PARTE 1: Actualizar Perfil y Foto
             if (cambioPerfil) {
                 const dataAEnviar = new FormData();
                 dataAEnviar.append('nombre', formData.nombre);
@@ -125,7 +110,6 @@ function PerfilDocente() {
                 dataAEnviar.append('identificacion', formData.identificacion);
                 dataAEnviar.append('institucion', formData.institucion);
                 
-                // 1. CORRECCIÓN: No envíes formData.fecha_nacimiento arriba, usa SOLO la formateada aquí
                 if (fechaFormateada) {
                     dataAEnviar.append('fecha_nacimiento', fechaFormateada);
                 }
@@ -134,20 +118,16 @@ function PerfilDocente() {
                     dataAEnviar.append('foto', formData.foto);
                 }
 
-                // 2. Enviamos al servidor
                 await updatePerfilUser(dataAEnviar);
                 
-                // 3. Pedimos los datos actualizados
                 const response = await getPerfilUser();
                 
-                // 4. CORRECCIÓN: Quitamos el setItem extra que tenías abajo y dejamos solo la validación
                 if (response.foto) {
                     localStorage.setItem('user_photo', response.foto);
                 } else {
                     localStorage.removeItem('user_photo');
                 }
 
-                // 5. Notificamos y sincronizamos
                 window.dispatchEvent(new Event('userUpdate'));
                 setFormData({ ...response });
                 setCopiaRespaldo({ ...response });
@@ -156,17 +136,14 @@ function PerfilDocente() {
 
             // PARTE 2: Actualizar Contraseña
             if (cambioClave) {
-                // Validación de coincidencia antes de enviar
                 if (passData.new_password !== passData.confirmar_password) {
                     showModal('error', 'La nueva contraseña y la confirmación no coinciden.');
                     return; 
                 }
-                
-                // Si pasan, enviamos el objeto passData completo (que ya tiene las 3 llaves)
                 await changePasswordUser(passData);
             }
 
-            // --- PARTE 3: MENSAJES PERSONALIZADOS ---
+            // PARTE 3: Mensajes Informativos
             if (cambioPerfil && cambioClave) {
                 showModal('success', '¡Perfil y contraseña actualizados!');
             } else if (cambioClave) {
@@ -174,27 +151,21 @@ function PerfilDocente() {
             } else if (cambioPerfil) {
                 showModal('success', 'Perfil actualizado con éxito.');
             } else {
-                // Caso donde le dio guardar pero no movió nada
                 showModal('info', 'No se detectaron cambios para guardar.');
             }
 
-            // Finalizamos el modo edición y limpiamos claves
             setEditando(false);
-            setPassData({ old_password: '', new_password: '', confirm_password: '' });
+            // Arreglado 'confirmar_password' aquí también
+            setPassData({ old_password: '', new_password: '', confirmar_password: '' });
 
-        }catch (err) {
-
+        } catch (err) {
             const error = err.data || err; 
-            //console.log("Detalle del error procesado:", error);
             
-            // PRIORIDAD: Si el backend envía una propiedad llamada 'error' (como vimos en consola)
             if (error && error.error) {
-                // Aquí entrará tanto "Contraseña actual incorrecta" como errores de la nueva clave
                 showModal('error', error.error);
                 return;
             } 
 
-            // A. Error de Identificación (El que viste en consola)
             if (error && error.identificacion) {
                 let msgId = Array.isArray(error.identificacion) ? error.identificacion[0] : error.identificacion;
                 if (msgId.includes("already exists")) {
@@ -203,37 +174,22 @@ function PerfilDocente() {
                     showModal('error', msgId);
                 }
             }
-            // B. Error de Fecha
             else if (error && error.fecha_nacimiento) {
-                //showModal('error', 'El formato de fecha no es válido. Usa el calendario.');
                 showModal('error', 'Agrega tu fecha de nacimiento. Usa el calendario');
             }
-
-            // C. Si el error es en el correo (Correo ya registrado)
-            //  TRADUCCIÓN DEL CORREO (Aquí está el cambio clave)
             else if (error && error.correo) {
                 let mensajeOriginal = Array.isArray(error.correo) ? error.correo[0] : error.correo;
-                
-                // Si el backend envía el texto en inglés, lo interceptamos
                 if (mensajeOriginal.includes("already exists")) {
                     showModal('error', 'Este correo electrónico ya se encuentra registrado. Intenta con otro.');
                 } else {
                     showModal('error', mensajeOriginal);
                 }
             }
-            // SECUNDARIO: Por si el formato cambia a validación por campos
-            else if (error && error.new_password) {
-                showModal('error', `Nueva clave: ${error.new_password[0]}`);
-            }
-            else if (error && error.old_password) {
-                showModal('error', `Clave actual: ${error.old_password[0]}`);
-            }
-            // FINAL: Mensaje de emergencia si no hay respuesta clara
             else {
                 showModal('error', 'No se pudieron guardar los cambios. Inténtalo más tarde.');
             }
-        }finally {
-            setLoading(false); // <--- 2. Lo apagamos pase lo que pase
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -246,25 +202,19 @@ function PerfilDocente() {
     };
 
     if (loading) {
-        // Reemplaza tu bloque "if (loading)" por este:
         return (
             <DocenteLayout>
                 <div className={style.container}>
-                    {loading ? (
-                        // En lugar de una página blanca, mostramos un mensaje dentro del diseño
-                        <div className={style.skeletonContainer}>
-                            <p>Cargando datos del docente...</p>
-                        </div>
-                    ) : (
-                        // Aquí va todo tu diseño actual del perfil
-                        <div className={style.profileContent}>
-                            {/* ... (Imagen, Inputs, Botones) ... */}
-                        </div>
-                    )}
+                    <div className={style.skeletonContainer}>
+                        <p>Cargando datos del docente...</p>
+                    </div>
                 </div>
             </DocenteLayout>
         );
     }
+
+    // Identificamos si hay alguna imagen disponible para pintar en el <img>
+    const tieneImagenValida = previewImage || formData.foto;
 
     return (
         <DocenteLayout>
@@ -272,45 +222,61 @@ function PerfilDocente() {
                 <h2 className={style.title}>Configuración</h2>
                 <div className={style["headerPerfil"]}>
                     <h3 className={style["rol"]}>{formData.rol ? formData.rol.toUpperCase() : ""}</h3>
-                    
                 </div>
                 <div className={style["card"]}>
-                    {/* SECCIÓN DE FOTO (Igual a como la tenías) */}
+                    
+                    {/* SECCIÓN DE FOTO CORREGIDA Y ALINEADA */}
                     <div className={style["avatarSection"]}>
-                        <div className={`${style["avatarContainer"]} ${editando ? style["editable"] : ""}`}>
-                            <img 
-                                src={previewImage || formData.foto || `https://ui-avatars.com/api/?name=${formData.nombre || 'U'}&background=0D1B2A&color=fff`} 
-                                alt="Perfil" 
-                                className={style["profileCircle"]}
-                                onError={(e) => { e.target.src = "/default-avatar.png"; }} 
-                            />
-                            {editando && (
-                                <label className={style["uploadBadge"]}>
-                                    <Camera size={20} />
-                                    <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
-                                </label>
-                            )}
-                        </div>
+                        {tieneImagenValida ? (
+                            <div className={`${style["avatarContainer"]} ${editando ? style["editable"] : ""}`}>
+                                <img 
+                                    src={previewImage || formData.foto} 
+                                    alt="Perfil" 
+                                    className={style["profileCircle"]}
+                                    onError={() => {
+                                        console.warn("La imagen de perfil dio 404. Cambiando a iniciales.");
+                                        setPreviewImage(null);
+                                        setFormData({ ...formData, foto: null });
+                                    }} 
+                                />
+                                {editando && (
+                                    <label className={style["uploadBadge"]}>
+                                        <Camera size={20} />
+                                        <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                                    </label>
+                                )}
+                            </div>
+                        ) : (
+                            /* AQUÍ: Si no hay foto, el div de las iniciales controla su propio borde de forma exacta */
+                            <div className={`${style["initialsCircle"]} ${editando ? style["editable"] : ""}`}>
+                                {obtenerIniciales(formData.nombre)}
+                                
+                                {editando && (
+                                    <label className={style["uploadBadge"]}>
+                                        <Camera size={20} />
+                                        <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                                    </label>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* INPUTS DE DATOS PERSONALES */}
                     <AuthInput label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} disabled={!editando} />
-                    {/*<AuthInput label="Identificación" name="identificacion" value={formData.identificacion} onChange={handleChange} disabled={!editando}/>*/}
-                    {/*<AuthInput label="Correo electrónico" name="correo" value={formData.correo} onChange={handleChange} disabled={!editando}/>*/}
                     <AuthInput label="Fecha de Nacimiento" name="fecha_nacimiento" type="date" value={formData.fecha_nacimiento} onChange={handleChange} disabled={!editando}/>
                     <AuthInput label="Institución / Colegio" name="institucion" value={formData.institucion} onChange={handleChange} disabled={!editando}/>
 
-                    {/* SECCIÓN DE CONTRASEÑA (Aquí están los cambios clave) */}
+                    {/* SECCIÓN DE CONTRASEÑA */}
                     {editando && (
                         <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
                             <p style={{ color: '#666', fontSize: '0.8rem' }}>Solo llena esto si deseas cambiar tu clave.</p>
                             
                             <AuthInput 
                                 label="Contraseña Actual" 
-                                name="old_password" // <-- Nombre que espera el backend
+                                name="old_password" 
                                 type={verClave ? "text" : "password"}  
-                                value={passData.old_password} // <-- Conectado a passData
-                                onChange={handlePassChange} // <-- Usa la función de passData
+                                value={passData.old_password} 
+                                onChange={handlePassChange} 
                                 placeholder="Escribe tu contraseña actual"
                                 iconAction={
                                     verClave 
@@ -321,14 +287,13 @@ function PerfilDocente() {
                             
                             <AuthInput 
                                 label="Nueva Contraseña" 
-                                name="new_password" // <-- Nombre que espera el backend
+                                name="new_password" 
                                 type="password" 
-                                value={passData.new_password} // <-- Conectado a passData
-                                onChange={handlePassChange}
+                                value={passData.new_password} 
+                                onChange={handlePassChange} 
                                 placeholder="Mínimo 8 caracteres"
                             />
 
-                            {/* --- NUEVO INPUT DE CONFIRMACIÓN --- */}
                             <AuthInput 
                                 label="Repetir Nueva Contraseña" 
                                 name="confirmar_password" 
@@ -340,6 +305,7 @@ function PerfilDocente() {
                         </div>
                     )}
 
+                    {/* BOTONES DE ACCIÓN */}
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', marginTop: '25px' }}>
                         {!editando ? (
                             <button className={style["btnActualizar"]} onClick={() => setEditando(true)}>Modificar Datos</button>
