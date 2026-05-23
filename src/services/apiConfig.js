@@ -33,6 +33,7 @@ export const API_CONFIG = {
             CREAR_PROFESOR_ESTUDIANTE: `${BASE_URL}/users/crear-profesor/`, // Para crear un usuario como profesor o estudiante
 
             LOGS: `${BASE_URL}/logs/`,
+<<<<<<< HEAD
             LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
 
             CATEGORIAS: {
@@ -52,6 +53,9 @@ export const API_CONFIG = {
                 CREATE: `${BASE_URL}/laboratorios/`,
             }
 
+=======
+            LABS: `${BASE_URL}/laboratorios/`,  // Para LaboratorioAdmin.jsx - rutas Django REST Framework
+>>>>>>> gestion_laboratorio
         },
         DOCENTE: {
             // NUEVO: La ruta para listar los laboratorios que pertenecen al docente

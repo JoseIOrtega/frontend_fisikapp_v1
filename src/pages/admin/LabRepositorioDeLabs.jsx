@@ -2,24 +2,83 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import AdminDataTable from "../../components/UI/admin/AdminDataTable";
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import AdminCreateButton from "../../components/UI/admin/AdminCreateButton";
-import { Beaker, Edit, Eye, Trash2, CheckCircle, FilePlus } from "lucide-react";
-import { getLaboratorios } from "../../services/admin/LabService";
-import { useModal } from '../../context/ModalContext';
-import PaginationControls from '../../components/UI/paginacion/PaginationControls';
-
-// Reutilizamos tu CSS de UsuariosAdmin
-import style from "./UsuariosAdmin.module.css"; 
+import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getRelativeTime } from '../../utils/dateHelpers';
+import { 
+  getLaboratorios, 
+  patchLaboratorioAPI, 
+  deleteLaboratorioAPI 
+} from '../../services/admin/adminLab';
+import style from './LabRepositorioDeLabs.module.css'
 
 function LabRepositorioDeLabs() {
   const [laboratorios, setLaboratorios] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const { showModal } = useModal();
+  const [loading, setLoading] = useState(true);
   
-  const [paginaActual, setPaginaActual] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const scrollRef = useRef(null);
+  // --- ESTADO DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; 
+
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: 'info',
+    message: '',
+    isConfirm: false,
+    onConfirm: null,
+    confirmText: 'Confirmar',
+    cancelText: 'Cancelar',
+  });
+
+  const navigate = useNavigate();
+
+  // Resetear a pág 1 cuando se busca
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const showModal = (type, message) => {
+    setModalConfig({
+      isOpen: true,
+      type,
+      message,
+      isConfirm: false,
+      onConfirm: null,
+      confirmText: 'Aceptar',
+      cancelText: 'Cancelar',
+    });
+  };
+
+  const showConfirm = (type, message, onConfirm, confirmText = 'Eliminar', cancelText = 'Cancelar') => {
+    setModalConfig({
+      isOpen: true,
+      type,
+      message,
+      isConfirm: true,
+      onConfirm,
+      confirmText,
+      cancelText,
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false, isConfirm: false, onConfirm: null }));
+  };
+
+  useEffect(() => {
+    const loadLaboratorios = async () => {
+      try {
+        setLoading(true);
+        const data = await getLaboratorios();
+        setLaboratorios(data || []);
+      } catch (error) {
+        console.error("Error al cargar laboratorios:", error);
+        setLaboratorios([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLaboratorios();
+  }, []);
 
   // Columnas adaptadas a Laboratorios
   const columnas = [
@@ -29,19 +88,26 @@ function LabRepositorioDeLabs() {
     { label: "Acciones" }
   ];
 
-  const fetchDatos = useCallback(async () => {
-    try {
-      setCargando(true);
-      
-      // Llamada al servicio que creamos
-      const data = await getLaboratorios(paginaActual, searchTerm);
-      
-      const listaLabs = data.results || [];
+  const filteredLaboratorios = laboratorios.filter((laboratorio) =>
+    laboratorio.nombre_de_laboratorio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    laboratorio.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    laboratorio.estado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    new Date(laboratorio.fecha_creacion).toLocaleString().toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-      if (data.count) {
-        // Asumiendo que el backend pagina de a 10
-        setTotalPaginas(Math.ceil(data.count / 10));
-      }
+  // --- LÓGICA DE CÁLCULO DE PAGINACIÓN ---
+  const totalPages = Math.ceil(filteredLaboratorios.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredLaboratorios.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleEdit = (laboratorio) => {
+    navigate("/admin/laboratorio/configurar_labs", {
+      state: { laboratorio }
+    });
+  };
 
       // Mapeo básico para asegurar el booleano del estado
       const resultado = listaLabs.map(lab => ({
@@ -70,87 +136,147 @@ function LabRepositorioDeLabs() {
     setPaginaActual(1); 
   };
 
+  const handleToggleBloqueo = async (laboratorio) => {
+    const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
+    try {
+      const resultado = await patchLaboratorioAPI(laboratorio.id, {
+        estado: nuevoEstado === "Activo"
+      });
+      if (!resultado?.success) throw new Error(resultado?.error || "Error");
+      setLaboratorios(prevLabs =>
+        prevLabs.map(lab => lab.id === laboratorio.id ? { ...lab, estado: nuevoEstado } : lab)
+      );
+    } catch (error) {
+      showModal('error', "No se pudo actualizar el estado.");
+    }
+  };
+
+  const handleDelete = (laboratorio) => {
+    showConfirm(
+      'warning',
+      `¿Estás seguro de que deseas eliminar el laboratorio "${laboratorio.nombre_de_laboratorio}"?`,
+      async () => {
+        try {
+          const resultado = await deleteLaboratorioAPI(laboratorio.id);
+
+          if (resultado.success) {
+            setLaboratorios(prevLabs => prevLabs.filter(lab => lab.id !== laboratorio.id));
+            closeModal();
+          } else {
+            // Aquí capturamos el error 500 del backend
+            showModal('error', "Error del servidor (500). Es posible que el laboratorio tenga datos vinculados y no pueda eliminarse.");
+          }
+        } catch (error) {
+          showModal('error', "Error al eliminar el laboratorio.");
+        }
+      }
+    );
+  };
+
   return (
-    <AdminLayout onSearch={handleBusqueda}>
-      <div className={style.layout}>
-        <div className={style.contentWrapper}>
-          
-          {cargando && (
-            <div className={style.overlayCarga}>
-              <span>Sincronizando laboratorios...</span>
+    <AdminLayout onSearch={setSearchTerm}>
+      <div className={style["layout"]}>
+        <div className={style["seccion_del_header"]}>
+          <h2 className={style.titulo_header_laboratorio}>Repositorio de Laboratorios</h2>
+          {loading && <span className={style.loadingText}>Cargando...</span>}
+        </div>
+
+        {laboratorios.length === 0 && !loading && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+            No hay laboratorios disponibles
+          </div>
+        )}
+
+        {laboratorios.length > 0 && (
+          <>
+          <AdminDataTable
+            columns={columnas}
+            data={currentItems} // CORRECCIÓN: Usar currentItems para que la paginación funcione
+            renderRow={(laboratorio) => (
+              <tr key={laboratorio.id}>
+                <td className={style.nombre_laboratorio}>{laboratorio.nombre_de_laboratorio}</td>
+                <td>{laboratorio.categoria}</td>
+                <td><span className={laboratorio.estado === "Activo" ? style.statusActive : style.statusInactive}>{laboratorio.estado}</span></td>
+                <td title={new Date(laboratorio.fecha_creacion).toLocaleString()} style={{ cursor: 'help' }}>{getRelativeTime(laboratorio.fecha_creacion)}</td>
+                <td className={style.actionsDetails}>
+                  <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} />
+                  <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => handleView(laboratorio)} />
+                  <AdminIconButton 
+                    icon={laboratorio.estado === "Activo" ? UserX : UserCheck} 
+                    title="bloquear" 
+                    type={laboratorio.estado === "Inactivo" ? "blocked" : "delete"}
+                    onClick={() => handleToggleBloqueo(laboratorio)}
+                    isBlocked={laboratorio.estado === "Inactivo"}
+                  />
+                  <AdminIconButton icon={Trash2} title="Eliminar" type="delete" onClick={() => handleDelete(laboratorio)} />
+                </td>
+              </tr>
+            )}
+          />
+
+          {/* --- BLOQUE DE PAGINACIÓN --- */}
+          {totalPages > 1 && (
+            <div className={style.paginationContainer}>
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === 1}
+                onClick={() => paginate(currentPage - 1)}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              <div className={style.pageNumbers}>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => paginate(i + 1)}
+                    className={`${style.pageBtn} ${currentPage === i + 1 ? style.activePage : ''}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === totalPages}
+                onClick={() => paginate(currentPage + 1)}
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           )}
-
-          <div className={style.headerSection}>
-            <h2 className={style.title}>Repositorio de Laboratorios</h2>
-            
-          </div>
-
-          <div className={style.tableContainer} ref={scrollRef}>
-            <AdminDataTable 
-              columns={columnas} 
-              data={laboratorios}
-              renderRow={(lab) => (
-                <tr key={lab.id}>
-                  {/* Celda Principal: Código y Título (Estilo userInfoContainer) */}
-                  <td className={style.userCell}>
-                    <div className={style.userInfoContainer}>
-                      <span className={style.nameText}>{lab.codigo_lab}</span>
-                      <span className={style.emailText}>{lab.titulo_lab}</span>
-                    </div>
-                  </td>
-
-                  {/* Resumen o Categoría */}
-                  <td>
-                    <span className={style.emailText}>
-                        {lab.resumen?.length > 40 ? `${lab.resumen.substring(0, 40)}...` : lab.resumen}
-                    </span>
-                  </td>
-
-                  {/* Estado con tus clases de CSS */}
-                  <td>
-                    <span className={lab.estado ? style.statusActive : style.statusInactive}>
-                      {lab.estado ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-
-                  {/* Acciones */}
-                  <td className={style.actionsCell}>
-                    <AdminIconButton 
-                      icon={Edit} 
-                      type="edit" 
-                      title="Editar" 
-                      onClick={() => console.log("Edit", lab.id)} 
-                    />
-                    
-                    <AdminIconButton 
-                      icon={Eye} 
-                      type="detail" 
-                      title="Ver simulador" 
-                      onClick={() => console.log("Ver", lab.id)} 
-                    />
-
-                    <AdminIconButton 
-                      icon={lab.estado ? Trash2 : CheckCircle} 
-                      type={lab.estado ? "delete" : "success"} 
-                      title={lab.estado ? "Desactivar" : "Activar"} 
-                      onClick={() => console.log("Toggle", lab.id)} 
-                    />
-                  </td>
-                </tr>
-              )}
-            />
-          </div>
-          
-          <footer className={style.paginationContainer}>
-            <PaginationControls 
-              paginaActual={paginaActual}
-              totalPaginas={totalPaginas} 
-              onPaginaChange={(nueva) => setPaginaActual(nueva)} 
-            />
-          </footer>
-        </div>
+          </>
+        )}
       </div>
+
+      {modalConfig.isOpen && (
+        <div className={style.overlay} onClick={closeModal}>
+          <div className={style.modal} onClick={(e) => e.stopPropagation()}>
+            <button className={style.closeBtn} onClick={closeModal}><X size={20} /></button>
+            <div className={style.iconContainer}>
+              {{
+                success: <CheckCircle color="#05cd99" size={50} />,
+                error: <XCircle color="#EE5D50" size={50} />,
+                warning: <AlertTriangle color="#FFBC11" size={50} />,
+                info: <Info color="#422AFB" size={50} />
+              }[modalConfig.type] || <Info color="#422AFB" size={50} />}
+            </div>
+            <h3 className={style.title}>
+              {{ success: '¡Ok!', error: 'Hubo un error', warning: 'Atención', info: 'Información' }[modalConfig.type] || 'Información'}
+            </h3>
+            <p className={style.message}>{modalConfig.message}</p>
+            {modalConfig.isConfirm ? (
+              <div className={style.buttonContainer}>
+                <button className={`${style.actionBtn} ${style.cancelBtn}`} onClick={closeModal}>{modalConfig.cancelText}</button>
+                <button className={`${style.actionBtn} ${style.confirmBtn}`} onClick={modalConfig.onConfirm}>{modalConfig.confirmText}</button>
+              </div>
+            ) : (
+              <button className={style.actionBtn} onClick={closeModal}>Aceptar</button>
+            )}
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

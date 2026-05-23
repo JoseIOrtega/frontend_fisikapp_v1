@@ -37,3 +37,185 @@
     gap: 8px;
     justify-content: center;
 }
+
+.filaBloqueada {
+    background-color: #E8E8E8;
+    transition: background-color 0.3s ease;
+}
+
+.filaBloqueada:hover {
+    background-color: #D9D9D9;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 25, 47, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #A3AED0;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconContainer {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  color: #1B254B;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.message {
+  color: #707EAE;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.actionBtn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-2px);
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.buttonContainer .actionBtn {
+  flex: 1;
+  width: auto;
+}
+
+.confirmBtn {
+  background-color: #05cd99 !important;
+}
+
+.cancelBtn {
+  background-color: #EE5D50 !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+
+/* ==========================================================================
+   NUEVAS LÍNEAS PARA LA PAGINACIÓN (Sincronizado con AdminSidebar)
+   ========================================================================== */
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 10px 0;
+}
+
+.pageNumbers {
+    display: flex;
+    gap: 8px;
+}
+
+.paginationBtn, .pageBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border: 1px solid #E0E5F2;
+    color: #A3AED0; /* Cambiado al color de texto secundario del Sidebar */
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.paginationBtn {
+    width: 40px;
+    height: 40px;
+}
+
+.pageBtn {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+}
+
+/* Efecto al pasar el mouse (Hover) */
+.paginationBtn:hover:not(:disabled), 
+.pageBtn:hover:not(.activePage) {
+    background: rgba(20, 32, 80, 0.05); /* Fondo sutil usando el azul oscuro (#142050) */
+    color: #142050; /* Texto en el azul oscuro principal */
+    border-color: #142050; /* Borde en el azul oscuro principal */
+}
+
+/* Estilo para la página donde estás ubicado (Activo) */
+.activePage {
+    background-color: #142050 !important; /* Fondo azul oscuro principal del sidebar */
+    color: #18ffba !important; /* Texto en el color neón vibrante del indicador activo */
+    border-color: #142050 !important;
+    box-shadow: 0px 4px 12px rgba(24, 255, 186, 0.2); /* Brillo sutil con el tono neón */
+}
+
+.paginationBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #F4F7FE;
+    color: #A3AED0;
+}
