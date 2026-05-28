@@ -1,30 +1,31 @@
 import { useState, useEffect } from "react";
-import { getLaboratorios } from "../../services/admin/LabAuditoriaContenidoService";
-import AdminLayout from "../../layouts/AdminLayout"
-import AdminCrateButton from "../../components/UI/admin/AdminCreateButton"
-import AdminDataTable from "../../components/UI/admin/AdminDataTable"
+import { getLaboratorios, updateEstadoLaboratorio } from "../../services/admin/LabAuditoriaContenidoService";
+import AdminLayout from "../../layouts/AdminLayout";
+import AdminDataTable from "../../components/UI/admin/AdminDataTable";
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import { FlaskConical, Edit, Eye, UserX, UserCheck } from 'lucide-react';
+import { Eye, UserX, UserCheck } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
-import style from './LabAuditoriaContenido.module.css'
+import style from './LabAuditoriaContenido.module.css';
 import { useNavigate } from "react-router-dom";
-import LabDetalleAuditoria from "./LabDetalleLaboratorio";
-
-
-
 
 function LabAuditoriaContenido() {
   const [laboratorios, setLaboratorios] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const toggleEstadoLocal = (id) => {
-  const nuevos = laboratorios.map((lab) =>
-    lab.id === id ? { ...lab, estado: !lab.estado } : lab
-  );
+  const toggleEstadoLocal = async (id, estadoActual) => {
+    try {
+      const nuevoEstado = !estadoActual;
+      await updateEstadoLaboratorio(id, nuevoEstado);
 
-  setLaboratorios(nuevos);
-};
+      const nuevos = laboratorios.map((lab) =>
+        lab.id === id ? { ...lab, estado: nuevoEstado } : lab
+      );
+      setLaboratorios(nuevos);
+    } catch (error) {
+      console.error("No se pudo cambiar el estado en el servidor:", error);
+    }
+  };
 
   const columnas = [
     { label: "Nombre de Laboratorio" },
@@ -35,42 +36,46 @@ function LabAuditoriaContenido() {
     { label: "Acciones", style: { textAlign: 'center' } }
   ];
 
-    useEffect(() => {
-      fetchLaboratorios();
-    }, []);
+  useEffect(() => {
+    fetchLaboratorios();
+  }, []);
 
   const fetchLaboratorios = async () => {
     try {
       const data = await getLaboratorios();
+      let listaOriginal = [];
 
-   if (data && Array.isArray(data.results)) {
-      setLaboratorios(data.results);
-    } else if (Array.isArray(data)) {
-      // Por si acaso en algún entorno no está paginado
-      setLaboratorios(data);
-    } else {
+      if (data && Array.isArray(data.results)) {
+        listaOriginal = data.results;
+      } else if (Array.isArray(data)) {
+        listaOriginal = data;
+      }
+
+      // 🔹 SOLUCIÓN DEFENSIVA: Si Django no envía 'id', generamos uno correlativo (1, 2, 3...) 
+      // para que React pueda construir la ruta de navegación correctamente.
+      const laboratoriosProcesados = listaOriginal.map((lab, index) => ({
+        ...lab,
+        id: lab.id !== undefined ? lab.id : (index + 1)
+      }));
+
+      setLaboratorios(laboratoriosProcesados);
+    } catch (error) {
+      console.error("Error al obtener laboratorios en el componente:", error);
       setLaboratorios([]);
     }
-  } catch (error) {
-    console.error("Error al obtener laboratorios en el componente:", error);
-    setLaboratorios([]);
-  }
-};
+  };
 
-
-
-const filteredAdmins = Array.isArray(laboratorios)
-  ? laboratorios.filter((lab) =>
-      lab.titulo_lab?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : [];
+  const filteredAdmins = Array.isArray(laboratorios)
+    ? laboratorios.filter((lab) =>
+        lab.titulo?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
   
   return (
     <AdminLayout onSearch={setSearchTerm}>
         <div className={style["layout"]}>
             <div className={style["seccion_del_header"]}>
               <h2 className={style.titulo_header_laboratorio}>Auditoría de contenido</h2>
-              
             </div>
 
             <AdminDataTable
@@ -80,7 +85,7 @@ const filteredAdmins = Array.isArray(laboratorios)
                 <tr key={laboratorio.id}>
                   
                   <td className={style.nombre_laboratorio}>
-                    {laboratorio.titulo_lab}
+                    {laboratorio.titulo}
                   </td>
 
                   <td>{laboratorio.categoria}</td>
@@ -97,17 +102,22 @@ const filteredAdmins = Array.isArray(laboratorios)
                     </span>
                   </td>
 
-                  <td title={new Date(laboratorio.fecha_actualizacion).toLocaleString()}>
-                    {getRelativeTime(laboratorio.fecha_actualizacion)}
+                  <td title={laboratorio.ultimo_ingreso ? new Date(laboratorio.ultimo_ingreso).toLocaleString() : ""}>
+                    {laboratorio.ultimo_ingreso ? getRelativeTime(laboratorio.ultimo_ingreso) : "Sin ingresos"}
                   </td>
 
                   <td className={style.actionsDetails}>
-                    <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => navigate(`/admin/laboratorio/auditoria_contenido/${laboratorio.id}`)}/>
-                   <AdminIconButton   icon={laboratorio.estado ? UserX : UserCheck}  type="delete"  onClick={() => toggleEstadoLocal(laboratorio.id)}/>
-
- 
- 
-
+                    <AdminIconButton 
+                      icon={Eye} 
+                      title="ver" 
+                      type="detail" 
+                      onClick={() => navigate(`/admin/laboratorio/auditoria_contenido/${laboratorio.id}`)}
+                    />
+                    <AdminIconButton   
+                      icon={laboratorio.estado ? UserX : UserCheck}   
+                      type="delete"  
+                      onClick={() => toggleEstadoLocal(laboratorio.id, laboratorio.estado)}
+                    />
                   </td>
 
                 </tr>
@@ -115,7 +125,7 @@ const filteredAdmins = Array.isArray(laboratorios)
             />
         </div>
     </AdminLayout>
-  )
+  );
 }
 
-export default LabAuditoriaContenido
+export default LabAuditoriaContenido;
