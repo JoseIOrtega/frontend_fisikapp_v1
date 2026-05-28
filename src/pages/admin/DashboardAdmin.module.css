@@ -3,18 +3,8 @@
     flex-direction: column;
     gap: 30px;
     padding: 10px 5px;
-}
-
-.headerSection {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.title {
-    font-size: 24px;
-    color: #142050; /* Color primario del sidebar aplicado a headers de página */
-    font-weight: 700;
+    background-color: #f4f7fc;
+    box-sizing: border-box;
 }
 
 /* --- SECCIÓN KPIs --- */
@@ -27,130 +17,339 @@
 .kpiCard {
     background-color: #FFFFFF;
     border: 1px solid #f0f2f5;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 20px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.02);
+    justify-content: space-between;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.015);
 }
 
 .iconWrapper {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Colores de fondo sutiles para los iconos basados en tus tokens */
-.bgLab { background-color: rgba(24, 255, 186, 0.1); }
-.bgActive { background-color: rgba(5, 205, 153, 0.1); }
-.bgUsers { background-color: rgba(66, 42, 251, 0.1); }
-.bgAi { background-color: rgba(255, 188, 17, 0.1); }
+.bgLab { background-color: #e6f4ea; }
+.bgUsers { background-color: #f1f3f4; }
+.bgAi { background-color: #e8f0fe; }
+.bgRed { background-color: #fce8e6; }
+
+.kpiInfo p {
+    font-size: 12px;
+    color: #94a3b8; 
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
 
 .kpiInfo h3 {
-    font-size: 22px;
+    font-size: 26px;
     color: #142050;
     font-weight: 800;
-    margin: 0;
+    margin: 4px 0 0 0;
     line-height: 1.2;
 }
 
-.kpiInfo p {
-    font-size: 14px;
-    color: #A3AED0; /* Mismo color del link inactivo en el sidebar */
-    margin: 0;
-    font-weight: 600;
-}
-
-/* --- GRIDS Y PANELES --- */
-.mainGrid {
+/* --- SECCIÓN CENTRAL: PERFIL Y GRÁFICOS --- */
+.chartsSectionGrid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px;
 }
 
-@media (max-width: 1028px) {
-    .mainGrid {
+@media (max-width: 1024px) {
+    .chartsSectionGrid {
         grid-template-columns: 1fr;
     }
 }
 
+/* Tarjeta Perfil */
+.profileCard {
+    grid-column: span 3;
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+    border: 1px solid #f0f2f5;
+}
+
+@media (max-width: 1024px) {
+    .profileCard { grid-column: span 12; }
+}
+
+.avatarWrapper {
+    position: relative;
+    margin-top: 10px;
+}
+
+.avatarImg {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00f2fe;
+}
+
+.statusBadgeIcon {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    color: #10b981;
+    background-color: #ffffff;
+    border-radius: 50%;
+}
+
+.profileInfo h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #142050;
+}
+
+.profileInfo p {
+    font-size: 14px;
+    color: #a3aed0;
+    font-weight: 500;
+    margin: 4px 0 0 0;
+}
+
+.profileFooter {
+    width: 100%;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 20px;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footerGroupLeft { text-align: left; }
+.footerGroupRight { text-align: right; }
+
+.footerLabel {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.statusBadgeActive {
+    background-color: #e6f4ea;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.sessionTime {
+    font-size: 13px;
+    font-weight: 700;
+    color: #142050;
+}
+
+/* Tarjeta Gráfico Línea */
+.chartTrendCard {
+    grid-column: span 6;
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+    border: 1px solid #f0f2f5;
+}
+
+@media (max-width: 1024px) {
+    .chartTrendCard { grid-column: span 12; }
+}
+
+.chartHeaderFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.chartPanelTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #142050;
+}
+
+.chartPanelSub {
+    font-size: 12px;
+    color: #a3aed0;
+    font-weight: 500;
+    margin: 2px 0 0 0;
+}
+
+.growthPercentage {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00e676;
+}
+
+.linearChartWrapper {
+    background-color: #1a2c4c;
+    border-radius: 20px;
+    padding: 15px;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.svgLineChart {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.chartMonthsXAxis {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 15px;
+    font-size: 9px;
+    color: #a3aed0;
+    font-weight: 500;
+}
+
+/* Tarjeta Estado Operativo Dona */
+.operationalStatusCard {
+    grid-column: span 3;
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+    border: 1px solid #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@media (max-width: 1024px) {
+    .operationalStatusCard { grid-column: span 12; }
+}
+
+.donutContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.donutWrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+}
+
+.svgDonut {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.legendWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legendRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.legendItemLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legendDot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+}
+
+.dotActive { background-color: #00f2fe; }
+.dotInactive { background-color: #cbd5e1; }
+.legendName { color: #a3aed0; }
+.legendVal { color: #142050; font-weight: 700; }
+
+/* --- SECCIÓN TABLA --- */
+.tableSection {
+    margin-top: 10px;
+}
+
+.tableHeaderFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
 .panelSubtitle {
-    font-size: 16px;
+    font-size: 18px;
     color: #142050;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin: 0;
+}
+
+.viewAllButton {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #00cc99;
+    cursor: pointer;
+    padding: 0;
+}
+
+.viewAllButton:hover {
+    text-decoration: underline;
 }
 
 .nombreLab {
-    font-weight: 600;
+    font-weight: 700;
     color: #142050;
 }
 
-.categoriaBadge {
-    background-color: #f4f7fe;
-    color: #142050;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
+.cellNameStyle {
+    color: #475569;
+    font-weight: 500;
+}
+
+.cellDateStyle {
+    color: #94a3b8;
+    font-weight: 500;
 }
 
 .actionsCell {
     display: flex;
     gap: 8px;
     justify-content: center;
-}
-
-/* --- ACCESO RÁPIDO BANNER IA --- */
-.aiBanner {
-    background-color: #142050; /* Hereda el color oscuro de tu Sidebar */
-    border-radius: 15px;
-    padding: 25px;
-    color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    height: 100%;
-    justify-content: center;
-}
-
-.aiHeader {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.aiHeader h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0;
-}
-
-.aiBanner p {
-    font-size: 14px;
-    color: #A3AED0; /* Texto secundario legible sobre oscuro */
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* El botón con los colores e identidad neón del Sidebar */
-.btnIaGradient {
-    background: linear-gradient(135deg, #18ffba 0%, #05cd99 100%);
-    color: #142050; /* Texto oscuro para legibilidad sobre el neón */
-    font-weight: 700;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0px 4px 15px rgba(24, 255, 178, 0.3);
-}
-
-.btnIaGradient:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 20px rgba(24, 255, 178, 0.5);
 }

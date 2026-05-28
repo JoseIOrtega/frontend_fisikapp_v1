@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useModal } from '../../context/ModalContext';
+import GenericModal from '../../components/modals/GenericModal';
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminDataTable from "../../components/UI/admin/AdminDataTable"
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import { Edit, Eye, Trash2, UserX, UserCheck, CheckCircle, XCircle, AlertTriangle, Info, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit, Eye, UserX, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getRelativeTime } from '../../utils/dateHelpers';
 import { 
   getLaboratorios, 
-  patchLaboratorioAPI, 
-  deleteLaboratorioAPI 
+  patchLaboratorioAPI
 } from '../../services/admin/adminLab';
 import style from './LabRepositorioDeLabs.module.css'
 
@@ -16,55 +17,24 @@ function LabRepositorioDeLabs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [laboratorios, setLaboratorios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bloqueoModal, setBloqueoModal] = useState({
+    isOpen: false,
+    laboratorio: null,
+    nuevoEstado: null
+  });
+  
+  const { showModal } = useModal();
+  const navigate = useNavigate();
+
   
   // --- ESTADO DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; 
-
-  const [modalConfig, setModalConfig] = useState({
-    isOpen: false,
-    type: 'info',
-    message: '',
-    isConfirm: false,
-    onConfirm: null,
-    confirmText: 'Confirmar',
-    cancelText: 'Cancelar',
-  });
-
-  const navigate = useNavigate();
+  const itemsPerPage = 8;
 
   // Resetear a pág 1 cuando se busca
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
-
-  const showModal = (type, message) => {
-    setModalConfig({
-      isOpen: true,
-      type,
-      message,
-      isConfirm: false,
-      onConfirm: null,
-      confirmText: 'Aceptar',
-      cancelText: 'Cancelar',
-    });
-  };
-
-  const showConfirm = (type, message, onConfirm, confirmText = 'Eliminar', cancelText = 'Cancelar') => {
-    setModalConfig({
-      isOpen: true,
-      type,
-      message,
-      isConfirm: true,
-      onConfirm,
-      confirmText,
-      cancelText,
-    });
-  };
-
-  const closeModal = () => {
-    setModalConfig((prev) => ({ ...prev, isOpen: false, isConfirm: false, onConfirm: null }));
-  };
 
   useEffect(() => {
     const loadLaboratorios = async () => {
@@ -115,8 +85,25 @@ function LabRepositorioDeLabs() {
     navigate(`/admin/laboratorio/repositorio_labs/${laboratorio.id}`);
   };
 
-  const handleToggleBloqueo = async (laboratorio) => {
+  const abrirModalBloqueo = (laboratorio) => {
     const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
+    setBloqueoModal({
+      isOpen: true,
+      laboratorio,
+      nuevoEstado
+    });
+  };
+
+  const cerrarModalBloqueo = () => {
+    setBloqueoModal({
+      isOpen: false,
+      laboratorio: null,
+      nuevoEstado: null
+    });
+  };
+
+  const confirmarBloqueo = async () => {
+    const { laboratorio, nuevoEstado } = bloqueoModal;
     try {
       const resultado = await patchLaboratorioAPI(laboratorio.id, {
         estado: nuevoEstado === "Activo"
@@ -125,31 +112,12 @@ function LabRepositorioDeLabs() {
       setLaboratorios(prevLabs =>
         prevLabs.map(lab => lab.id === laboratorio.id ? { ...lab, estado: nuevoEstado } : lab)
       );
+      cerrarModalBloqueo();
+      showModal('success', `Laboratorio ${nuevoEstado === "Activo" ? "desbloqueado" : "bloqueado"} exitosamente.`);
     } catch (error) {
+      cerrarModalBloqueo();
       showModal('error', "No se pudo actualizar el estado.");
     }
-  };
-
-  const handleDelete = (laboratorio) => {
-    showConfirm(
-      'warning',
-      `¿Estás seguro de que deseas eliminar el laboratorio "${laboratorio.nombre_de_laboratorio}"?`,
-      async () => {
-        try {
-          const resultado = await deleteLaboratorioAPI(laboratorio.id);
-
-          if (resultado.success) {
-            setLaboratorios(prevLabs => prevLabs.filter(lab => lab.id !== laboratorio.id));
-            closeModal();
-          } else {
-            // Aquí capturamos el error 500 del backend
-            showModal('error', "Error del servidor (500). Es posible que el laboratorio tenga datos vinculados y no pueda eliminarse.");
-          }
-        } catch (error) {
-          showModal('error', "Error al eliminar el laboratorio.");
-        }
-      }
-    );
   };
 
   return (
@@ -184,10 +152,9 @@ function LabRepositorioDeLabs() {
                     icon={laboratorio.estado === "Activo" ? UserX : UserCheck} 
                     title="bloquear" 
                     type={laboratorio.estado === "Inactivo" ? "blocked" : "delete"}
-                    onClick={() => handleToggleBloqueo(laboratorio)}
+                    onClick={() => abrirModalBloqueo(laboratorio)}
                     isBlocked={laboratorio.estado === "Inactivo"}
                   />
-                  <AdminIconButton icon={Trash2} title="Eliminar" type="delete" onClick={() => handleDelete(laboratorio)} />
                 </td>
               </tr>
             )}
@@ -229,33 +196,49 @@ function LabRepositorioDeLabs() {
         )}
       </div>
 
-      {modalConfig.isOpen && (
-        <div className={style.overlay} onClick={closeModal}>
-          <div className={style.modal} onClick={(e) => e.stopPropagation()}>
-            <button className={style.closeBtn} onClick={closeModal}><X size={20} /></button>
-            <div className={style.iconContainer}>
-              {{
-                success: <CheckCircle color="#05cd99" size={50} />,
-                error: <XCircle color="#EE5D50" size={50} />,
-                warning: <AlertTriangle color="#FFBC11" size={50} />,
-                info: <Info color="#422AFB" size={50} />
-              }[modalConfig.type] || <Info color="#422AFB" size={50} />}
-            </div>
-            <h3 className={style.title}>
-              {{ success: '¡Ok!', error: 'Hubo un error', warning: 'Atención', info: 'Información' }[modalConfig.type] || 'Información'}
-            </h3>
-            <p className={style.message}>{modalConfig.message}</p>
-            {modalConfig.isConfirm ? (
-              <div className={style.buttonContainer}>
-                <button className={`${style.actionBtn} ${style.cancelBtn}`} onClick={closeModal}>{modalConfig.cancelText}</button>
-                <button className={`${style.actionBtn} ${style.confirmBtn}`} onClick={modalConfig.onConfirm}>{modalConfig.confirmText}</button>
-              </div>
-            ) : (
-              <button className={style.actionBtn} onClick={closeModal}>Aceptar</button>
-            )}
+      <GenericModal 
+        isOpen={bloqueoModal.isOpen} 
+        onClose={cerrarModalBloqueo}
+        title={bloqueoModal.nuevoEstado === "Inactivo" ? "Bloquear Laboratorio" : "Desbloquear Laboratorio"}
+      >
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          <p style={{ marginBottom: '20px', fontSize: '16px' }}>
+            {bloqueoModal.nuevoEstado === "Inactivo" 
+              ? `¿Deseas bloquear el laboratorio "${bloqueoModal.laboratorio?.nombre_de_laboratorio}"?`
+              : `¿Deseas desbloquear el laboratorio "${bloqueoModal.laboratorio?.nombre_de_laboratorio}"?`
+            }
+          </p>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <button 
+              onClick={cerrarModalBloqueo}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#ccc',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={confirmarBloqueo}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#422AFB',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Confirmar
+            </button>
           </div>
         </div>
-      )}
+      </GenericModal>
     </AdminLayout>
   );
 }
