@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useModal } from '../../context/ModalContext';
-import GenericModal from '../../components/modals/GenericModal';
 import AdminLayout from "../../layouts/AdminLayout"
 import AdminDataTable from "../../components/UI/admin/AdminDataTable"
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
@@ -17,12 +16,6 @@ function LabRepositorioDeLabs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [laboratorios, setLaboratorios] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [bloqueoModal, setBloqueoModal] = useState({
-    isOpen: false,
-    laboratorio: null,
-    nuevoEstado: null
-  });
-  
   const { showModal } = useModal();
   const navigate = useNavigate();
 
@@ -85,25 +78,8 @@ function LabRepositorioDeLabs() {
     navigate(`/admin/laboratorio/repositorio_labs/${laboratorio.id}`);
   };
 
-  const abrirModalBloqueo = (laboratorio) => {
+  const toggleBloqueo = async (laboratorio) => {
     const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
-    setBloqueoModal({
-      isOpen: true,
-      laboratorio,
-      nuevoEstado
-    });
-  };
-
-  const cerrarModalBloqueo = () => {
-    setBloqueoModal({
-      isOpen: false,
-      laboratorio: null,
-      nuevoEstado: null
-    });
-  };
-
-  const confirmarBloqueo = async () => {
-    const { laboratorio, nuevoEstado } = bloqueoModal;
     try {
       const resultado = await patchLaboratorioAPI(laboratorio.id, {
         estado: nuevoEstado === "Activo"
@@ -112,10 +88,8 @@ function LabRepositorioDeLabs() {
       setLaboratorios(prevLabs =>
         prevLabs.map(lab => lab.id === laboratorio.id ? { ...lab, estado: nuevoEstado } : lab)
       );
-      cerrarModalBloqueo();
       showModal('success', `Laboratorio ${nuevoEstado === "Activo" ? "desbloqueado" : "bloqueado"} exitosamente.`);
     } catch (error) {
-      cerrarModalBloqueo();
       showModal('error', "No se pudo actualizar el estado.");
     }
   };
@@ -146,14 +120,13 @@ function LabRepositorioDeLabs() {
                 <td><span className={laboratorio.estado === "Activo" ? style.statusActive : style.statusInactive}>{laboratorio.estado}</span></td>
                 <td title={new Date(laboratorio.fecha_creacion).toLocaleString()} style={{ cursor: 'help' }}>{getRelativeTime(laboratorio.fecha_creacion)}</td>
                 <td className={style.actionsDetails}>
-                  <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} />
+                  <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} disabled={laboratorio.estado !== "Activo"} />
                   <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => handleView(laboratorio)} />
                   <AdminIconButton 
                     icon={laboratorio.estado === "Activo" ? UserX : UserCheck} 
-                    title="bloquear" 
+                    title={laboratorio.estado === "Activo" ? "bloquear" : "desbloquear"} 
                     type={laboratorio.estado === "Inactivo" ? "blocked" : "delete"}
-                    onClick={() => abrirModalBloqueo(laboratorio)}
-                    isBlocked={laboratorio.estado === "Inactivo"}
+                    onClick={() => toggleBloqueo(laboratorio)}
                   />
                 </td>
               </tr>
@@ -195,50 +168,6 @@ function LabRepositorioDeLabs() {
           </>
         )}
       </div>
-
-      <GenericModal 
-        isOpen={bloqueoModal.isOpen} 
-        onClose={cerrarModalBloqueo}
-        title={bloqueoModal.nuevoEstado === "Inactivo" ? "Bloquear Laboratorio" : "Desbloquear Laboratorio"}
-      >
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <p style={{ marginBottom: '20px', fontSize: '16px' }}>
-            {bloqueoModal.nuevoEstado === "Inactivo" 
-              ? `¿Deseas bloquear el laboratorio "${bloqueoModal.laboratorio?.nombre_de_laboratorio}"?`
-              : `¿Deseas desbloquear el laboratorio "${bloqueoModal.laboratorio?.nombre_de_laboratorio}"?`
-            }
-          </p>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <button 
-              onClick={cerrarModalBloqueo}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#ccc',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
-            >
-              Cancelar
-            </button>
-            <button 
-              onClick={confirmarBloqueo}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#422AFB',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </GenericModal>
     </AdminLayout>
   );
 }
