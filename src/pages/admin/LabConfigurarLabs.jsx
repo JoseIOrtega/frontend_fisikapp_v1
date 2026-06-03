@@ -29,6 +29,8 @@ function LabConfigurarLabs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
   const [busquedaCategoria, setBusquedaCategoria] = useState("");
+  const [mostrarDropdown, setMostrarDropdown] = useState(false);
+  const [indiceResaltado, setIndiceResaltado] = useState(-1);
   
   // --- ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +50,55 @@ function LabConfigurarLabs() {
     estado: true,
     ra: false
   });
+
+  // Maneja la selección limpia de una categoría desde el dropdown
+    const handleSeleccionarCategoria = (categoria) => {
+        setBusquedaCategoria(categoria.nombre); // Rellena el input con el texto
+        setFormData({ ...formData, categoriaId: categoria.id }); // Guarda el ID en tu formulario
+        setMostrarDropdown(false); // Cierra la lista
+        setIndiceResaltado(-1); // Resetea el teclado
+    };
+
+    // Maneja el movimiento de flechas y Enter dentro del buscador
+    const handleKeyDownCategorias = (e) => {
+        // Preparamos la misma lista filtrada basándonos en lo que hay escrito
+        const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().split(/\s+/);
+        const listaFiltradasEnTiempoReal = categorias.filter(c => {
+            const nombreBD = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            return palabrasBuscadas.every(palabra => nombreBD.includes(palabra));
+        });
+
+        // Si el dropdown está oculto o no hay coincidencias, no hacemos nada
+        if (!mostrarDropdown || listaFiltradasEnTiempoReal.length === 0) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault(); // Evita que el cursor de texto salte al final
+            setIndiceResaltado((prev) =>
+                prev < listaFiltradasEnTiempoReal.length - 1 ? prev + 1 : 0
+            );
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setIndiceResaltado((prev) =>
+                prev > 0 ? prev - 1 : listaFiltradasEnTiempoReal.length - 1
+            );
+        } else if (e.key === "Enter") {
+            e.preventDefault(); // Evita que el formulario se envíe antes de tiempo
+            if (indiceResaltado >= 0 && indiceResaltado < listaFiltradasEnTiempoReal.length) {
+                const catSeleccionada = listaFiltradasEnTiempoReal[indiceResaltado];
+                
+                // Actualiza el formulario usando la función nativa que lee la descripción
+                handleSelectChange({ target: { value: catSeleccionada.id } }, 'categoria');
+                if (typeof setSelectedCategoria === 'function') setSelectedCategoria(catSeleccionada);
+                
+                // Rellena el input y cierra la lista
+                setBusquedaCategoria(catSeleccionada.nombre);
+                setMostrarDropdown(false);
+                setIndiceResaltado(-1);
+            }
+        } else if (e.key === "Escape") {
+            setMostrarDropdown(false);
+        }
+    };
 
   const cargarTodosLosDatos = async () => {
     try {
@@ -192,25 +243,34 @@ function LabConfigurarLabs() {
   };
 
   const handleSavePlantilla = async () => {
-    try {
-      const payload = {
-        titulo_lab: formData.titulo_lab,
-        resumen: formData.resumen,
-        prologo: formData.prologo,
-        introduccion: formData.introduccion,
-        marco_teorico: formData.marco_teorico,
-        categoria: parseInt(formData.categoria),
-        objetivo: parseInt(formData.objetivo),
-        palabras_clave: formData.palabra_clave ? [parseInt(formData.palabra_clave)] : [],
-        estado: formData.estado,
-        ra: formData.ra
-      };
-      await crearLaboratorio(payload);
-      showModal('success', '✅ Plantilla agregada correctamente');
-    } catch (err) {
-      alert("❌ Verifique los campos obligatorios (*)");
-    }
-  };
+        // AQUÍ ES EL LUGAR PERFECTO PARA EL CONSOLE.LOG
+        console.log("=== ESTADO LOCAL DEL FORMULARIO ===", formData);
+
+        try {
+            const payload = {
+                titulo_lab: formData.titulo_lab,
+                resumen: formData.resumen,
+                prologo: formData.prologo,
+                introduccion: formData.introduccion,
+                marco_teorico: formData.marco_teorico,
+                // Corregido: lee 'categoriaId' que es donde el buscador del input guarda el ID
+                categoria: parseInt(formData.categoriaId || formData.categoria),
+                // Corregido: lee 'objetivo' que es donde el select dinámico guarda el ID
+                objetivo: parseInt(formData.objetivo),
+                palabras_clave: formData.palabra_clave ? [parseInt(formData.palabra_clave)] : [],
+                estado: formData.estado,
+                ra: formData.ra
+            };
+
+            console.log("=== PAYLOAD FINAL ENVIADO (JAULA DE DATOS) ===", payload);
+
+            await crearLaboratorio(payload);
+            showModal('success', '✅ Plantilla agregada correctamente');
+        } catch (err) {
+            console.error("Error detallado al guardar:", err);
+            alert("❌ Verifique los campos obligatorios (*)");
+        }
+    };
 
   return (
     <AdminLayout>
@@ -227,7 +287,7 @@ function LabConfigurarLabs() {
               <Sparkles size={16} className={style.icon_spark} /> 
               {isGeneratingIA ? "Generando..." : "Generar con IA"}
             </button>
-            <AdminCrateButton icon={Save} text="Agregar Plantilla" onClick={handleSavePlantilla} />
+            <AdminCrateButton icon={Save} text="Agregar Laboratorio" onClick={handleSavePlantilla} />
           </div>
         </div>
 
@@ -262,11 +322,12 @@ function LabConfigurarLabs() {
                       type="text"
                       className={style.input_diseno}
                       placeholder="Escribe para buscar (ej: Mecánica Clásica)..."
-                      // Sincronización directa con el estado local de búsqueda sin interferencias de condiciones
                       value={busquedaCategoria}
                       onChange={(e) => {
                         const texto = e.target.value;
                         setBusquedaCategoria(texto);
+                        setMostrarDropdown(true);
+                        setIndiceResaltado(-1);
                         
                         // Si borras el texto por completo, se limpia la selección del formulario
                         if (texto.trim() === "") {
@@ -274,57 +335,67 @@ function LabConfigurarLabs() {
                           if (typeof setSelectedCategoria === 'function') setSelectedCategoria(null);
                         }
                       }}
+                      onFocus={() => setMostrarDropdown(true)}
+                      onBlur={() => {
+                        // Pequeño retraso para dejar que el clic del mouse se procese antes de ocultar el menú
+                        setTimeout(() => setMostrarDropdown(false), 250);
+                      }}
+                      onKeyDown={handleKeyDownCategorias}
                     />
                     <button type="button" onClick={() => openModal("CAT")} className={style.btn_plus_secondary}>
                       <Plus size={20}/>
                     </button>
 
-                    {/* El menú de sugerencias solo se muestra si el usuario ha escrito algo en la caja */}
-                    {busquedaCategoria.trim() !== "" && (
+                    {/* El menú de sugerencias controlado de manera asíncrona y por teclado */}
+                    {mostrarDropdown && busquedaCategoria.trim() !== "" && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, right: '50px', 
                         backgroundColor: '#fff', border: '1px solid #ccc', zIndex: 10,
                         maxHeight: '150px', overflowY: 'auto', borderRadius: '4px', boxShadow: '0px 4px 6px rgba(0,0,0,0.1)'
                       }}>
-                        {categorias
-                          .filter(c => {
-                            // Limpieza de acentos y minúsculas para coincidencia inteligente
+                        {(() => {
+                          // Preparamos el filtro inteligente quitando acentos y espacios extras
+                          const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().split(/\s+/);
+                          
+                          const filtradas = categorias.filter(c => {
                             const nombreBD = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                            const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/\s+/).filter(Boolean);
-                            
-                            // Compara que todas las palabras digitadas estén dentro del nombre de la base de datos
                             return palabrasBuscadas.every(palabra => nombreBD.includes(palabra));
-                          })
-                          .map(c => (
+                          });
+
+                          // Guardamos las categorías filtradas dinámicamente para que la función de las flechas las reconozca
+                          window.categoriasFiltradas = filtradas;
+
+                          if (filtradas.length === 0) {
+                            return (
+                              <div style={{ padding: '8px 12px', color: '#888', fontStyle: 'italic' }}>
+                                No se encontraron resultados. Dale al "+" para crearla.
+                              </div>
+                            );
+                          }
+
+                          return filtradas.map((c, index) => (
                             <div 
-                              key={c.id} 
-                              style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: '#000' }}
-                              onClick={() => {
-                                // Al hacer clic sobre el resultado, guardamos los datos reales en el formulario
+                              key={c.id || index} 
+                              style={{ 
+                                padding: '8px 12px', 
+                                cursor: 'pointer', 
+                                borderBottom: '1px solid #f0f0f0', 
+                                color: '#000',
+                                backgroundColor: index === indiceResaltado ? '#e6f7ff' : '#fff' // Resaltado con flechas
+                              }}
+                              // onMouseDown evita que el onBlur del input rompa el clic
+                              onMouseDown={() => {
                                 handleSelectChange({ target: { value: c.id } }, 'categoria');
                                 if (typeof setSelectedCategoria === 'function') setSelectedCategoria(c);
-                                
-                                // Fijamos el nombre completo de la categoría en el input y cerramos la lista limpiando el filtro
                                 setBusquedaCategoria(c.nombre);
+                                setMostrarDropdown(false);
                               }}
-                              onMouseEnter={(e) => e.target.style.backgroundColor = '#f5f5f5'}
-                              onMouseLeave={(e) => e.target.style.backgroundColor = '#fff'}
+                              onMouseEnter={() => setIndiceResaltado(index)}
                             >
                               {c.nombre}
                             </div>
-                          ))
-                        }
-                        
-                        {/* Mensaje de aviso si no hay coincidencias exactas */}
-                        {categorias.filter(c => {
-                          const nombreBD = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                          const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/\s+/).filter(Boolean);
-                          return palabrasBuscadas.every(palabra => nombreBD.includes(palabra));
-                        }).length === 0 && (
-                          <div style={{ padding: '8px 12px', color: '#888', fontStyle: 'italic' }}>
-                            No se encontraron resultados. Dale al "+" para crearla.
-                          </div>
-                        )}
+                          ));
+                        })()}
                       </div>
                     )}
                   </div>
@@ -336,21 +407,32 @@ function LabConfigurarLabs() {
                 </div>
 
                 {/* OBJETIVO */}
-                <div className={style.field}>
-                  <label>Objetivo Principal *</label>
-                  <div className={style.input_group_row}>
-                    <select className={style.input_diseno} onChange={(e) => handleSelectChange(e, 'objetivo')} value={formData.objetivo}>
-                      <option value="">Seleccione...</option>
-                      <option value="General">Objetivo General</option>
-                      <option value="Especifico">Objetivo Específico</option>
-                    </select>
-                    <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}>
-                      <Plus size={20}/>
-                    </button>
-                  </div>
-                  {/* Se mantiene la descripción vinculada al estado si se requiere mostrar detalles adicionales */}
-                  <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion_objetivo || "..."}</div>
-                </div>
+            <div className={style.field}>
+              <label>Objetivo Principal *</label>
+              <div className={style.input_group_row}>
+                <select 
+                  className={style.input_diseno} 
+                  onChange={(e) => handleSelectChange(e, 'objective' in formData ? 'objective' : 'objetivo')} 
+                  value={formData.objetivo || formData.objective || ""}
+                >
+                  <option value="">Seleccione...</option>
+                  {/* Filtramos la lista en tiempo real para eliminar duplicados por ID */}
+                  {objetivos
+                    .filter((obj, index, self) => self.findIndex(o => o.id === obj.id) === index)
+                    .map((obj) => (
+                      <option key={obj.id} value={obj.id}>
+                        {obj.tipo_objetivo === "General" ? "Objetivo General" : "Objetivo Específico"}
+                      </option>
+                    ))
+                  }
+                </select>
+                <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}>
+                  <Plus size={20}/>
+                </button>
+              </div>
+              {/* Se mantiene la descripción vinculada al estado si se requiere mostrar detalles adicionales */}
+              <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion_objetivo || "..."}</div>
+            </div>
 
                 {/* PALABRA CLAVE */}
                 <div className={style.field}>

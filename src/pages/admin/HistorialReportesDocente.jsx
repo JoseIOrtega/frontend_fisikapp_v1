@@ -93,7 +93,11 @@ const HistorialReportes = () => {
                             reportes.map((reporte) => (
                                 <tr key={reporte.id}>
                                     <td>{reporte.laboratorio_nombre}</td>
-                                    <td>{reporte.estudiantes_info.resumen_nombres}</td>
+                                    <td>{reporte.estudiantes_info?.lista_detallada?.length > 0? reporte.estudiantes_info.lista_detallada
+                                        .map(est => est.nombre)
+                                        .join(', ')
+                                        : "Sin estudiantes asignados"}
+                                    </td>
                                     <td>
                                         <button 
                                             className={style.btn_ver}
