@@ -95,13 +95,13 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                titulo_lab: laboratorioData.nombre_de_laboratorio,
+                titulo_lab: laboratorioData.nombre_de_laboratorio || laboratorioData.titulo_lab,
                 resumen: laboratorioData.resumen,
                 introduccion: laboratorioData.introduccion,
                 marco_teorico: laboratorioData.marco_teorico,
                 categoria: laboratorioData.categoria,
-                estado: laboratorioData.estado === "Activo",
-                fechacreacion: laboratorioData.fechacreacion
+                estado: laboratorioData.estado === "Activo" || laboratorioData.estado === true,
+                fechacreacion: laboratorioData.fechacreacion || laboratorioData.fecha_creacion
             })
         });
 
@@ -206,8 +206,6 @@ function getLaboratoriosFromStorage() {
 export async function getLaboratorios() {
     try {
         const apiData = await getLaboratoriosAPI();
-        
-        // Manejar tanto respuestas de array como de objeto paginado
         const items = Array.isArray(apiData) ? apiData : (apiData?.results || []);
         
         if (items && items.length > 0) {
@@ -266,40 +264,73 @@ export async function getLaboratorioById(id) {
     return labs.find((item) => item.id === id) || null;
 }
 
-// Guardar laboratorio con fallback a localStorage
+// INTERCEPCIÓN INTELIGENTE DE GUARDADO PARA CASOS DE EDICIÓN
 export async function saveLaboratorio(laboratorio) {
     const STORAGE_KEY = "fisikapp_laboratorios";
+    const EDIT_TEMP_KEY = "fisikapp_laboratorio_en_edicion";
     let backendSuccess = false;
+
+    // 1. Verificamos si existe un proceso de edición activo guardado en el puente temporal
+    const laboratorioEnEdicionRaw = localStorage.getItem(EDIT_TEMP_KEY);
+    let idEdicion = null;
+    let labOriginal = null;
+
+    if (laboratorioEnEdicionRaw) {
+        labOriginal = JSON.parse(laboratorioEnEdicionRaw);
+        idEdicion = labOriginal.id; // Recuperamos el ID real que la otra pantalla no conoce
+    }
+
+    // 2. Clonamos y normalizamos los datos mapeando los campos del backend
+    let datosAEnviar = { ...laboratorio };
+    if (idEdicion) {
+        datosAEnviar.id = idEdicion;
+    }
 
     try {
         let result;
-        if (laboratorio.id) {
-            result = await updateLaboratorioAPI(laboratorio.id, laboratorio);
+        // Si detectamos ID por el puente temporal, forzamos la actualización (PUT)
+        if (datosAEnviar.id) {
+            result = await updateLaboratorioAPI(datosAEnviar.id, datosAEnviar);
         } else {
-            result = await createLaboratorioAPI(laboratorio);
+            result = await createLaboratorioAPI(datosAEnviar);
         }
 
         if (result?.success) {
-            console.log("Laboratorio guardado en backend exitosamente");
+            console.log("Laboratorio procesado en backend exitosamente");
             backendSuccess = true;
         } else {
-            console.warn("Error al guardar en backend:", result?.error);
+            console.warn("Error al procesar en backend:", result?.error);
         }
     } catch (error) {
         console.warn("Backend no disponible o error de autenticación:", error.message);
     }
 
-    // Siempre mantener localStorage como respaldo
+    // 3. Sincronizamos los cambios directamente con el localStorage para consistencia inmediata de la tabla
     const labs = getLaboratoriosFromStorage();
-    const updated = labs.map((item) => item.id === laboratorio.id ? { ...item, ...laboratorio } : item);
-    const newLabs = updated.some((item) => item.id === laboratorio.id) ? updated : [...labs, laboratorio];
+    
+    const labFormateado = {
+        id: datosAEnviar.id || Date.now(),
+        nombre_de_laboratorio: datosAEnviar.nombre_de_laboratorio || datosAEnviar.titulo_lab,
+        categoria: datosAEnviar.categoria || labOriginal?.categoria || "Sin categoría",
+        estado: datosAEnviar.estado === "Activo" || datosAEnviar.estado === true ? "Activo" : "Inactivo",
+        fecha_creacion: datosAEnviar.fecha_creacion || datosAEnviar.fechacreacion || labOriginal?.fecha_creacion || new Date().toISOString(),
+        resumen: datosAEnviar.resumen || "",
+        introduccion: datosAEnviar.introduccion || "",
+        marco_teorico: datosAEnviar.marco_teorico || ""
+    };
+
+    const updated = labs.map((item) => item.id === labFormateado.id ? { ...item, ...labFormateado } : item);
+    const newLabs = updated.some((item) => item.id === labFormateado.id) ? updated : [...labs, labFormateado];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newLabs));
+
+    // 4. CRUCIAL: Limpiamos el puente temporal para futuras creaciones limpias
+    localStorage.removeItem(EDIT_TEMP_KEY);
 
     if (backendSuccess) {
         console.log("Guardado exitoso en backend y localStorage");
     } else {
-        console.log("Guardado en localStorage (backend no disponible)");
+        console.log("Guardado en localStorage de respaldo");
     }
 
     return newLabs;
-};
+}

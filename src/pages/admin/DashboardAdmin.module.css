@@ -204,20 +204,104 @@
 .linearChartWrapper {
     background-color: #1a2c4c;
     border-radius: 20px;
-    padding: 15px;
-    height: 180px;
+    padding: 18px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
-    align-items: flex-end;
+    gap: 18px;
+    align-items: stretch;
+    min-height: 260px;
 }
 
-.svgLineChart {
+.trendChartsContainer {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.yearlyChart,
+.monthlyChart {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: flex-start;
+}
+
+.yearlyChart {
+    flex: 0 0 150px;
+    min-height: 230px;
+}
+
+.monthlyChart {
+    flex: 1;
+    min-height: 230px;
+    overflow-y: auto;
+}
+
+.chartTitle {
+    font-size: 12px;
+    color: #cbd5e1;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.monthlyRows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.monthlyRow {
+    display: grid;
+    grid-template-columns: 90px auto 40px;
+    align-items: center;
+    gap: 10px;
+}
+
+.monthLabel {
+    font-size: 11px;
+    color: #dbeafe;
+    white-space: nowrap;
+}
+
+.rowTrack {
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.rowBar {
+    height: 100%;
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    border-radius: 999px;
+}
+
+.monthValue {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: right;
+}
+
+.noData {
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.svgYearly,
+.svgMonthly {
     width: 100%;
     height: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
 }
 
 .chartMonthsXAxis {

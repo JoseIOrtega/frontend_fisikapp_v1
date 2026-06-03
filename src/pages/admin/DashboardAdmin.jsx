@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FlaskConical, 
   Users, 
@@ -12,14 +12,55 @@ import AdminLayout from "../../layouts/AdminLayout";
 import AdminCardContainer from "../../components/UI/admin/AdminCardContainer";
 import AdminDataTable from "../../components/UI/admin/AdminDataTable";
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
+import { getDashboardStats } from "../../services/admin/DashboardService";
 import style from "./DashboardAdmin.module.css";
 
 function DashboardAdmin() {
+  const [dashboardMetrics, setDashboardMetrics] = useState({
+    totalLaboratorios: 0,
+    totalUsuariosAdmin: 0,
+    eficienciaIA: 0,
+    laboratoriosEliminados: 0,
+    activeLabsCount: 0,
+    inactiveLabsCount: 0,
+    activePercentage: 0,
+    inactivePercentage: 100,
+    trend: { yearlyCounts: {}, last12MonthCounts: [], last12MonthLabels: [], years: [] },
+    loading: true,
+  });
+  const [dashboardError, setDashboardError] = useState(null);
+
+  const fetchDashboardMetrics = async () => {
+    try {
+      setDashboardError(null);
+      const metrics = await getDashboardStats();
+      setDashboardMetrics({ ...metrics, loading: false });
+    } catch (error) {
+      console.error('Error fetching dashboard metrics:', error);
+      setDashboardError('No se pudieron cargar los indicadores en tiempo real.');
+      setDashboardMetrics((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardMetrics();
+    const intervalId = setInterval(fetchDashboardMetrics, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
   const ultimosLaboratorios = [
     { id: 1, nombre_de_laboratorio: "Química Avanzada II", categoria: "Química", fecha_creacion: "12 Oct 2023" },
     { id: 2, nombre_de_laboratorio: "Física Newtoniana", categoria: "Física", fecha_creacion: "10 Oct 2023" },
     { id: 3, nombre_de_laboratorio: "Biología Celular - Mitosis", categoria: "Biología", fecha_creacion: "08 Oct 2023" }
   ];
+
+  const yearlyCounts = dashboardMetrics.trend?.yearlyCounts || {};
+  const yearlyYears = dashboardMetrics.trend?.years || [];
+  const yearlyValues = yearlyYears.map((year) => yearlyCounts[year] || 0);
+  const yearlyMax = Math.max(1, ...yearlyValues);
+
+  const monthlyLabels = dashboardMetrics.trend?.last12MonthLabels || [];
+  const monthlyValues = dashboardMetrics.trend?.last12MonthCounts || [];
+  const monthlyMax = Math.max(1, ...monthlyValues);
 
   const columnasLabs = [
     { label: "ID Plantilla" },
@@ -37,7 +78,7 @@ function DashboardAdmin() {
           <div className={style.kpiCard}>
             <div className={style.kpiInfo}>
               <p>Total de Laboratorios</p>
-              <h3>124</h3>
+              <h3>{dashboardMetrics.loading ? '...' : dashboardMetrics.totalLaboratorios.toLocaleString()}</h3>
             </div>
             <div className={`${style.iconWrapper} ${style.bgLab}`}>
               <FlaskConical size={22} color="#00cc99" />
@@ -46,8 +87,8 @@ function DashboardAdmin() {
 
           <div className={style.kpiCard}>
             <div className={style.kpiInfo}>
-              <p>Usuarios Totales</p>
-              <h3>1,240</h3>
+              <p>Usuarios Admin</p>
+              <h3>{dashboardMetrics.loading ? '...' : dashboardMetrics.totalUsuariosAdmin.toLocaleString()}</h3>
             </div>
             <div className={`${style.iconWrapper} ${style.bgUsers}`}>
               <Users size={22} color="#5f6368" />
@@ -57,7 +98,7 @@ function DashboardAdmin() {
           <div className={style.kpiCard}>
             <div className={style.kpiInfo}>
               <p>Eficiencia IA</p>
-              <h3>94%</h3>
+              <h3>{dashboardMetrics.loading ? '...' : `${dashboardMetrics.eficienciaIA}%`}</h3>
             </div>
             <div className={`${style.iconWrapper} ${style.bgAi}`}>
               <Bolt size={22} color="#1a73e8" />
@@ -67,13 +108,19 @@ function DashboardAdmin() {
           <div className={style.kpiCard}>
             <div className={style.kpiInfo}>
               <p>Laboratorios Eliminados</p>
-              <h3>3</h3>
+              <h3>{dashboardMetrics.loading ? '...' : dashboardMetrics.laboratoriosEliminados.toLocaleString()}</h3>
             </div>
             <div className={`${style.iconWrapper} ${style.bgRed}`}>
               <Trash2 size={22} color="#d93025" />
             </div>
           </div>
         </div>
+
+        {dashboardError && (
+          <div style={{ margin: '1rem 0', color: '#d93025', fontWeight: 500 }}>
+            {dashboardError}
+          </div>
+        )}
 
         {/* 2. SECCIÓN CENTRAL: PERFIL + GRÁFICOS */}
         <div className={style.chartsSectionGrid}>
@@ -110,36 +157,57 @@ function DashboardAdmin() {
             <div className={style.chartHeaderFlex}>
               <div>
                 <h3 className={style.chartPanelTitle}>Tendencia de Laboratorios</h3>
-                <p className={style.chartPanelSub}>Crecimiento mensual acumulado</p>
+                <p className={style.chartPanelSub}>Últimos 12 meses de creación</p>
               </div>
               <span className={style.growthPercentage}>↗ +14.2%</span>
             </div>
             
             <div className={style.linearChartWrapper}>
-              <svg viewBox="0 0 500 150" className={style.svgLineChart}>
-                <path
-                  d="M0,120 Q30,110 60,115 T120,95 T180,110 T240,65 T300,90 T360,50 T420,15 T480,40 L500,40 L500,150 L0,150 Z"
-                  fill="none"
-                  stroke="#ffffff"
-                  strokeWidth="3"
-                  opacity="0.9"
-                />
-                <path
-                  d="M0,120 Q30,110 60,115 T120,95 T180,110 T240,65 T300,90 T360,50 T420,15 T480,40 L500,40 L500,150 L0,150 Z"
-                  fill="url(#chart-gradient)"
-                  opacity="0.15"
-                />
-                <defs>
-                  <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#ffffff" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className={style.chartMonthsXAxis}>
-                <span>Enero</span><span>Febrero</span><span>Marzo</span><span>Abril</span>
-                <span>Mayo</span><span>Junio</span><span>Julio</span><span>Agosto</span>
-                <span>Sept.</span><span>Oct.</span><span>Nov.</span><span>Dic.</span>
+              <div className={style.trendChartsContainer}>
+                <div className={style.yearlyChart}>
+                  <div className={style.chartTitle}>Crear por año</div>
+                  <svg viewBox="0 0 200 140" preserveAspectRatio="none" className={style.svgYearly}>
+                    <rect x="0" y="0" width="200" height="140" fill="none" />
+                    {
+                      yearlyYears.map((year, i) => {
+                        const value = yearlyValues[i] || 0;
+                        const h = Math.round((value / yearlyMax) * 100);
+                        const x = 16 + i * 24;
+                        const y = 125 - h;
+                        return (
+                          <g key={year}>
+                            <rect x={x} y={y} width={18} height={h} rx="5" fill="#4facfe" opacity="0.95" />
+                            <text x={x + 9} y="132" fontSize="9" fill="#ffffff" textAnchor="middle">{String(year).slice(-2)}</text>
+                            <text x={x + 9} y={y - 6} fontSize="8" fill="#dbeafe" textAnchor="middle">{value}</text>
+                          </g>
+                        );
+                      })
+                    }
+                  </svg>
+                </div>
+
+                <div className={style.monthlyChart}>
+                  <div className={style.chartTitle}>Últimos 12 meses</div>
+                  <div className={style.monthlyRows}>
+                    {monthlyLabels.length === 0 ? (
+                      <div className={style.noData}>No hay datos registrados aun.</div>
+                    ) : (
+                      monthlyLabels.map((label, i) => {
+                        const value = monthlyValues[i] || 0;
+                        const width = Math.round((value / monthlyMax) * 220);
+                        return (
+                          <div className={style.monthlyRow} key={label}>
+                            <span className={style.monthLabel}>{label}</span>
+                            <div className={style.rowTrack}>
+                              <div className={style.rowBar} style={{ width: `${width}px` }} />
+                            </div>
+                            <span className={style.monthValue}>{value}</span>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -157,7 +225,8 @@ function DashboardAdmin() {
                   <circle 
                     cx="18" cy="18" r="15.91" fill="none" 
                     stroke="url(#donut-gradient)" strokeWidth="4.5" 
-                    strokeDasharray="78 22" strokeDashoffset="0"
+                    strokeDasharray={`${dashboardMetrics.activePercentage} ${dashboardMetrics.inactivePercentage}`} 
+                    strokeDashoffset="0"
                   />
                   <defs>
                     <linearGradient id="donut-gradient" x1="0" y1="0" x2="1" y2="1">
@@ -174,14 +243,18 @@ function DashboardAdmin() {
                   <span className={`${style.legendDot} ${style.dotActive}`} />
                   <span className={style.legendName}>Activos</span>
                 </div>
-                <span className={style.legendVal}>78%</span>
+                <span className={style.legendVal}>
+                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.activePercentage}% (${dashboardMetrics.activeLabsCount})`}
+                </span>
               </div>
               <div className={style.legendRow}>
                 <div className={style.legendItemLeft}>
                   <span className={`${style.legendDot} ${style.dotInactive}`} />
                   <span className={style.legendName}>Inactivos</span>
                 </div>
-                <span className={style.legendVal}>22%</span>
+                <span className={style.legendVal}>
+                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.inactivePercentage}% (${dashboardMetrics.inactiveLabsCount})`}
+                </span>
               </div>
             </div>
           </div>

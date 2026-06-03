@@ -19,7 +19,6 @@ function LabRepositorioDeLabs() {
   const { showModal } = useModal();
   const navigate = useNavigate();
 
-  
   // --- ESTADO DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -68,10 +67,13 @@ function LabRepositorioDeLabs() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // --- NUEVA LÓGICA INTEGRADA DE EDICIÓN (SIN TOCAR ARCHIVO DE TU COMPAÑERO) ---
   const handleEdit = (laboratorio) => {
-    navigate("/admin/laboratorio/configurar_labs", {
-      state: { laboratorio }
-    });
+    // 1. Guardamos temporalmente el objeto completo en el storage como puente de comunicación
+    localStorage.setItem("fisikapp_laboratorio_en_edicion", JSON.stringify(laboratorio));
+    
+    // 2. Redirige limpiamente al archivo de configuración
+    navigate("/admin/laboratorio/configurar_labs");
   };
 
   const handleView = (laboratorio) => {
@@ -112,7 +114,7 @@ function LabRepositorioDeLabs() {
           <>
           <AdminDataTable
             columns={columnas}
-            data={currentItems} // CORRECCIÓN: Usar currentItems para que la paginación funcione
+            data={currentItems}
             renderRow={(laboratorio) => (
               <tr key={laboratorio.id}>
                 <td className={style.nombre_laboratorio}>{laboratorio.nombre_de_laboratorio}</td>
