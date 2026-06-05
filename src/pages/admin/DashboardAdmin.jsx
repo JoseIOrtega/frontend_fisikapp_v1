@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Importamos useNavigate para la redirección
 import { 
   FlaskConical, 
   Users, 
   Bolt, 
-  Trash2, 
   Pencil, 
   Eye, 
   CheckCircle2 
@@ -13,9 +13,12 @@ import AdminCardContainer from "../../components/UI/admin/AdminCardContainer";
 import AdminDataTable from "../../components/UI/admin/AdminDataTable";
 import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import { getDashboardStats } from "../../services/admin/DashboardService";
+import { getLaboratorios } from "../../services/admin/adminLab"; 
 import style from "./DashboardAdmin.module.css";
 
 function DashboardAdmin() {
+  const navigate = useNavigate(); // 2. Inicializamos el hook de navegación
+  
   const [dashboardMetrics, setDashboardMetrics] = useState({
     totalLaboratorios: 0,
     totalUsuariosAdmin: 0,
@@ -28,7 +31,11 @@ function DashboardAdmin() {
     trend: { yearlyCounts: {}, last12MonthCounts: [], last12MonthLabels: [], years: [] },
     loading: true,
   });
+  
   const [dashboardError, setDashboardError] = useState(null);
+  
+  const [laboratoriosReales, setLaboratoriosReales] = useState([]);
+  const [loadingLabs, setLoadingLabs] = useState(true);
 
   const fetchDashboardMetrics = async () => {
     try {
@@ -42,16 +49,45 @@ function DashboardAdmin() {
     }
   };
 
+  const fetchLaboratoriosReales = async (isSilent = false) => {
+    try {
+      if (!isSilent) {
+        setLoadingLabs(true);
+      }
+      const data = await getLaboratorios();
+      const ultimosConfigurados = data.slice(-3).reverse(); 
+      setLaboratoriosReales(ultimosConfigurados);
+    } catch (error) {
+      console.error('Error al cargar laboratorios de la base de datos:', error);
+    } finally {
+      if (!isSilent) {
+        setLoadingLabs(false);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchDashboardMetrics();
-    const intervalId = setInterval(fetchDashboardMetrics, 30000);
+    fetchLaboratoriosReales(false);
+
+    const intervalId = setInterval(() => {
+      fetchDashboardMetrics();
+      fetchLaboratoriosReales(true); 
+    }, 30000);
+
     return () => clearInterval(intervalId);
   }, []);
-  const ultimosLaboratorios = [
-    { id: 1, nombre_de_laboratorio: "Química Avanzada II", categoria: "Química", fecha_creacion: "12 Oct 2023" },
-    { id: 2, nombre_de_laboratorio: "Física Newtoniana", categoria: "Física", fecha_creacion: "10 Oct 2023" },
-    { id: 3, nombre_de_laboratorio: "Biología Celular - Mitosis", categoria: "Biología", fecha_creacion: "08 Oct 2023" }
-  ];
+
+  // --- COMPORTAMIENTO DE ACCIONES (INTEGRACIÓN) ---
+  const handleEdit = (lab) => {
+    // Guarda el objeto en localStorage idéntico a RepositorioDeLabs para no romper la edición de tu compañero
+    localStorage.setItem("fisikapp_laboratorio_en_edicion", JSON.stringify(lab));
+    navigate("/admin/laboratorio/configurar_labs");
+  };
+
+  const handleView = (lab) => {
+    navigate(`/admin/laboratorio/repositorio_labs/${lab.id}`);
+  };
 
   const yearlyCounts = dashboardMetrics.trend?.yearlyCounts || {};
   const yearlyYears = dashboardMetrics.trend?.years || [];
@@ -68,6 +104,17 @@ function DashboardAdmin() {
     { label: "Fecha" },
     { label: "Acciones", style: { textAlign: 'center' } }
   ];
+
+  const formatearFecha = (fechaString) => {
+    if (!fechaString) return "Sin fecha";
+    try {
+      const opciones = { day: 'numeric', month: 'short', year: 'numeric' };
+      const fecha = new Date(fechaString);
+      return fecha.toLocaleDateString('es-ES', opciones).replace('.', '');
+    } catch (e) {
+      return fechaString;
+    }
+  };
 
   return (
     <AdminLayout>
@@ -107,11 +154,11 @@ function DashboardAdmin() {
 
           <div className={style.kpiCard}>
             <div className={style.kpiInfo}>
-              <p>Laboratorios Eliminados</p>
-              <h3>{dashboardMetrics.loading ? '...' : dashboardMetrics.laboratoriosEliminados.toLocaleString()}</h3>
+              <p>Laboratorios Activos</p>
+              <h3>{dashboardMetrics.loading ? '...' : dashboardMetrics.activeLabsCount.toLocaleString()}</h3>
             </div>
-            <div className={`${style.iconWrapper} ${style.bgRed}`}>
-              <Trash2 size={22} color="#d93025" />
+            <div className={`${style.iconWrapper} ${style.bgLabActive}`}>
+              <FlaskConical size={22} color="#00cc99" />
             </div>
           </div>
         </div>
@@ -145,7 +192,6 @@ function DashboardAdmin() {
                 <span className={style.statusBadgeActive}>ACTIVO</span>
               </div>
               <div className={style.footerGroupRight}>
-                {/* Error solucionado aquí: cambiado de styles a style */}
                 <span className={style.footerLabel}>Sesión</span>
                 <span className={style.sessionTime}>12:45h</span>
               </div>
@@ -244,7 +290,7 @@ function DashboardAdmin() {
                   <span className={style.legendName}>Activos</span>
                 </div>
                 <span className={style.legendVal}>
-                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.activePercentage}% (${dashboardMetrics.activeLabsCount})`}
+                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.activePercentage}%`}
                 </span>
               </div>
               <div className={style.legendRow}>
@@ -253,7 +299,7 @@ function DashboardAdmin() {
                   <span className={style.legendName}>Inactivos</span>
                 </div>
                 <span className={style.legendVal}>
-                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.inactivePercentage}% (${dashboardMetrics.inactiveLabsCount})`}
+                  {dashboardMetrics.loading ? '...' : `${dashboardMetrics.inactivePercentage}%`}
                 </span>
               </div>
             </div>
@@ -268,21 +314,44 @@ function DashboardAdmin() {
               <h3 className={style.panelSubtitle}>Últimas Plantillas Configuradas</h3>
               <button type="button" className={style.viewAllButton}>Ver todas</button>
             </div>
-            <AdminDataTable 
-              columns={columnasLabs}
-              data={ultimosLaboratorios}
-              renderRow={(lab) => (
-                <tr key={lab.id}>
-                  <td className={style.nombreLab}>#LAB-90{lab.id}2</td>
-                  <td className={style.cellNameStyle}>{lab.nombre_de_laboratorio}</td>
-                  <td className={style.cellDateStyle}>{lab.fecha_creacion}</td>
-                  <td className={style.actionsCell}>
-                    <AdminIconButton icon={Pencil} type="edit" title="editar" />
-                    <AdminIconButton icon={Eye} type="detail" title="ver" />
-                  </td>
-                </tr>
-              )}
-            />
+            
+            {loadingLabs ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#142050', fontWeight: 'bold' }}>
+                Cargando laboratorios desde la base de datos...
+              </div>
+            ) : laboratoriosReales.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                No se encontraron laboratorios registrados.
+              </div>
+            ) : (
+              <AdminDataTable 
+                columns={columnasLabs}
+                data={laboratoriosReales}
+                renderRow={(lab) => (
+                  <tr key={lab.id}>
+                    <td className={style.nombreLab}>#lab-{lab.id}</td>
+                    <td className={style.cellNameStyle}>{lab.nombre_de_laboratorio}</td>
+                    <td className={style.cellDateStyle}>{formatearFecha(lab.fecha_creacion)}</td>
+                    <td className={style.actionsCell}>
+                      {/* CAMBIO: Botones con eventos onClick enlazados y control de estado de bloqueo */}
+                      <AdminIconButton 
+                        icon={Pencil} 
+                        type="edit" 
+                        title="editar" 
+                        onClick={() => handleEdit(lab)}
+                        disabled={lab.estado !== "Activo"} 
+                      />
+                      <AdminIconButton 
+                        icon={Eye} 
+                        type="detail" 
+                        title="ver" 
+                        onClick={() => handleView(lab)}
+                      />
+                    </td>
+                  </tr>
+                )}
+              />
+            )}
           </AdminCardContainer>
         </div>
 

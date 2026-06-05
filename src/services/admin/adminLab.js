@@ -270,17 +270,15 @@ export async function saveLaboratorio(laboratorio) {
     const EDIT_TEMP_KEY = "fisikapp_laboratorio_en_edicion";
     let backendSuccess = false;
 
-    // 1. Verificamos si existe un proceso de edición activo guardado en el puente temporal
     const laboratorioEnEdicionRaw = localStorage.getItem(EDIT_TEMP_KEY);
     let idEdicion = null;
     let labOriginal = null;
 
     if (laboratorioEnEdicionRaw) {
         labOriginal = JSON.parse(laboratorioEnEdicionRaw);
-        idEdicion = labOriginal.id; // Recuperamos el ID real que la otra pantalla no conoce
+        idEdicion = labOriginal.id;
     }
 
-    // 2. Clonamos y normalizamos los datos mapeando los campos del backend
     let datosAEnviar = { ...laboratorio };
     if (idEdicion) {
         datosAEnviar.id = idEdicion;
@@ -288,7 +286,6 @@ export async function saveLaboratorio(laboratorio) {
 
     try {
         let result;
-        // Si detectamos ID por el puente temporal, forzamos la actualización (PUT)
         if (datosAEnviar.id) {
             result = await updateLaboratorioAPI(datosAEnviar.id, datosAEnviar);
         } else {
@@ -305,7 +302,6 @@ export async function saveLaboratorio(laboratorio) {
         console.warn("Backend no disponible o error de autenticación:", error.message);
     }
 
-    // 3. Sincronizamos los cambios directamente con el localStorage para consistencia inmediata de la tabla
     const labs = getLaboratoriosFromStorage();
     
     const labFormateado = {
@@ -323,7 +319,6 @@ export async function saveLaboratorio(laboratorio) {
     const newLabs = updated.some((item) => item.id === labFormateado.id) ? updated : [...labs, labFormateado];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newLabs));
 
-    // 4. CRUCIAL: Limpiamos el puente temporal para futuras creaciones limpias
     localStorage.removeItem(EDIT_TEMP_KEY);
 
     if (backendSuccess) {

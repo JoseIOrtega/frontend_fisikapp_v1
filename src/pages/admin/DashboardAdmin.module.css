@@ -37,7 +37,8 @@
 .bgLab { background-color: #e6f4ea; }
 .bgUsers { background-color: #f1f3f4; }
 .bgAi { background-color: #e8f0fe; }
-.bgRed { background-color: #fce8e6; }
+/* CAMBIO REALIZADO AQUÍ: Se eliminó .bgRed y se configuró el fondo para laboratorios activos */
+.bgLabActive { background-color: #e6f4ea; }
 
 .kpiInfo p {
     font-size: 12px;
