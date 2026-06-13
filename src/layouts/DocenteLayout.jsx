@@ -59,10 +59,23 @@ function DocenteLayout({ children, onSearch }) {
         <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
       </div>
 
-      {/* Espacio con scroll inteligente para la tabla */}
-      <div style={{ flex: 1, overflowY: 'auto' }} className={style['info']}>
-        <Outlet /> 
-      </div>
+        <div className={style['main-content']}>
+          <div className={style['navbar-container']}>
+            <DocenteNavbar pageTitle={currentTitle} onSearch={onSearch}/>
+          </div>
+    
+           {/* Este es el espacio blanco de la derecha donde aparecerá la tabla */}
+          <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto', padding: '10px 30px 20px 30px' }}>
+            <Outlet /> 
+          </div>
+        </div>
+
+        
+        {/* Contenedor con scroll inteligente para que Perfil no se corte */}
+        <div className={style['info']}>
+          {children}
+        </div>
+      
     </div>
   </div>
 );
