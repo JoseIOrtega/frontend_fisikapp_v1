@@ -360,3 +360,60 @@
   border-left: 4px solid #10b981; /* Línea verde de tu diseño */
   padding-left: 10px;
 }
+
+/* Estilo para que los campos bloqueados mantengan el diseño estándar */
+.input_diseno[readonly] {
+    background-color: #f9f9f9; /* Un gris muy sutil para indicar bloqueo */
+    color: #334155;            /* El color de fuente oscuro de tu estándar */
+    cursor: not-allowed;       /* Cambia el cursor para indicar que no se edita */
+    border: 1px solid #e2e8f0; /* El borde suave que usas en los demás inputs */
+}
+
+/* --- NUEVOS ESTILOS PARA LA INTEGRACIÓN CON IA --- */
+
+.wrapper_botones_header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn_ia_gradient {
+    background: linear-gradient(135deg, #7300ff 0%, #1B2559 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(115, 0, 255, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn_ia_gradient:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(115, 0, 255, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn_ia_gradient:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.icon_spark {
+    color: #18ffba; /* Destello en el color turquesa de Fisikapp */
+}
+
+/* Animación sutil de respiración para los cuadros mientras la IA escribe */
+textarea:disabled {
+    background-color: #f8fafc;
+    color: #94a3b8;
+    border-color: #cbd5e1;
+    cursor: wait;
+}
