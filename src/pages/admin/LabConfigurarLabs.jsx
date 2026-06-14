@@ -8,7 +8,7 @@ import { Plus, Save, Sparkles } from 'lucide-react';
 import style from './LabConfigurarLabs.module.css';
 import { 
   getCategorias, crearCategoria, 
-  getObjetivos, crearObjetivo,
+  getObjetivosGenerales, crearObjetivoGeneral,
   getPalabrasClave, crearPalabraClave,
   crearLaboratorio 
 } from "../../services/admin/ConfigLabServices";
@@ -103,7 +103,7 @@ function LabConfigurarLabs() {
   const cargarTodosLosDatos = async () => {
     try {
       const [cats, objs, pals] = await Promise.all([
-        getCategorias(), getObjetivos(), getPalabrasClave()
+        getCategorias(), getObjetivosGenerales(), getPalabrasClave()
       ]);
       setCategorias(cats);
       setObjetivos(objs);
@@ -154,7 +154,7 @@ function LabConfigurarLabs() {
       const payloadIA = {
         titulo: formData.titulo_lab,
         categoria: selectedCategoria ? selectedCategoria.nombre : "",
-        objetivo: selectedObjetivo ? selectedObjetivo.descripcion_objetivo : "",
+        objetivo: selectedObjetivo ? selectedObjetivo.descripcion : "",
         palabras_clave: searchTerm || (selectedPalabra ? selectedPalabra.palabra_clave : "")
       };
 
@@ -195,7 +195,11 @@ function LabConfigurarLabs() {
       if (modalType === "CAT") {
         res = await crearCategoria({ nombre: newData.nombre, descripcion: newData.descripcion });
       } else if (modalType === "OBJ") {
-        res = await crearObjetivo({ nombre: newData.nombre, descripcion: newData.descripcion });
+          res = await crearObjetivoGeneral({ 
+        plantilla: parseInt(formData.categoriaId || formData.categoria),
+        descripcion: newData.descripcion 
+    });
+
       } else if (modalType === "PAL") {
         if (!newData.categoriaId) return alert("Seleccione una categoría");
         res = await crearPalabraClave({ 
@@ -230,7 +234,7 @@ function LabConfigurarLabs() {
           setSelectedCategoria(catsActualizadas.find(c => String(c.id) === nuevoId));
         } else if (modalType === "OBJ") {
           setFormData(prev => ({ ...prev, objetivo: nuevoId }));
-          const objsActualizados = await getObjetivos();
+          const objsActualizados = await getObjetivosGenerales();
           setObjetivos(objsActualizados);
           setSelectedObjetivo(objsActualizados.find(o => String(o.id) === nuevoId));
         }
@@ -243,34 +247,30 @@ function LabConfigurarLabs() {
   };
 
   const handleSavePlantilla = async () => {
-        // AQUÍ ES EL LUGAR PERFECTO PARA EL CONSOLE.LOG
-        console.log("=== ESTADO LOCAL DEL FORMULARIO ===", formData);
+    try {
+        const userId = localStorage.getItem("user_id");
 
-        try {
-            const payload = {
-                titulo_lab: formData.titulo_lab,
-                resumen: formData.resumen,
-                prologo: formData.prologo,
-                introduccion: formData.introduccion,
-                marco_teorico: formData.marco_teorico,
-                // Corregido: lee 'categoriaId' que es donde el buscador del input guarda el ID
-                categoria: parseInt(formData.categoriaId || formData.categoria),
-                // Corregido: lee 'objetivo' que es donde el select dinámico guarda el ID
-                objetivo: parseInt(formData.objetivo),
-                palabras_clave: formData.palabra_clave ? [parseInt(formData.palabra_clave)] : [],
-                estado: formData.estado,
-                ra: formData.ra
-            };
+        const payload = {
+            titulo: formData.titulo_lab,
+            resumen: formData.resumen,
+            prologo: formData.prologo,
+            introduccion: formData.introduccion,
+            marco_teorico: formData.marco_teorico,
+            categoria: parseInt(formData.categoriaId || formData.categoria),
+            creado_por: parseInt(userId),
+            estado: "BORRADOR",
+            simulacion: false
+        };
 
-            console.log("=== PAYLOAD FINAL ENVIADO (JAULA DE DATOS) ===", payload);
+        console.log("PAYLOAD:", payload);
 
-            await crearLaboratorio(payload);
-            showModal('success', '✅ Plantilla agregada correctamente');
-        } catch (err) {
-            console.error("Error detallado al guardar:", err);
-            alert("❌ Verifique los campos obligatorios (*)");
-        }
-    };
+        await crearLaboratorio(payload);
+        showModal('success', '✅ Plantilla agregada correctamente');
+    } catch (err) {
+        console.error("Error detallado al guardar:", err);
+        showModal('error', '❌ Verifique los campos obligatorios (*)');
+    }
+};
 
   return (
     <AdminLayout>
@@ -421,7 +421,7 @@ function LabConfigurarLabs() {
                     .filter((obj, index, self) => self.findIndex(o => o.id === obj.id) === index)
                     .map((obj) => (
                       <option key={obj.id} value={obj.id}>
-                        {obj.tipo_objetivo === "General" ? "Objetivo General" : "Objetivo Específico"}
+                        {obj.descripcion}
                       </option>
                     ))
                   }
@@ -431,7 +431,7 @@ function LabConfigurarLabs() {
                 </button>
               </div>
               {/* Se mantiene la descripción vinculada al estado si se requiere mostrar detalles adicionales */}
-              <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion_objetivo || "..."}</div>
+             <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion || "..."}</div>
             </div>
 
                 {/* PALABRA CLAVE */}
