@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_CONFIG } from  "../../services/apiConfig";
 import { useNavigate } from 'react-router-dom'; // 1. Importamos useNavigate para la redirección
 import { 
   FlaskConical, 
@@ -36,6 +37,35 @@ function DashboardAdmin() {
   
   const [laboratoriosReales, setLaboratoriosReales] = useState([]);
   const [loadingLabs, setLoadingLabs] = useState(true);
+
+  const [perfil, setPerfil] = useState(null);
+
+useEffect(() => {
+
+  const cargarPerfil = async () => {
+
+    try {
+
+      const response = await fetch(
+        API_CONFIG.ENDPOINTS.ADMIN.PERFIL,
+        {
+          headers: API_CONFIG.getHeaders()
+        }
+      );
+
+      const data = await response.json();
+
+      setPerfil(data);
+
+    } catch (error) {
+      console.error("Error cargando perfil:", error);
+    }
+
+  };
+
+  cargarPerfil();
+
+}, []);
 
   const fetchDashboardMetrics = async () => {
     try {
@@ -176,20 +206,22 @@ function DashboardAdmin() {
           <div className={style.profileCard}>
             <div className={style.avatarWrapper}>
               <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" 
-                alt="Ana García" 
-                className={style.avatarImg}
+                  src={perfil?.foto_url || "/avatar-default.png"}
+                  alt={perfil?.nombre}
+                  className={style.avatarImg}
               />
               <CheckCircle2 className={style.statusBadgeIcon} size={20} />
             </div>
             <div className={style.profileInfo}>
-              <h4>Ana García</h4>
-              <p>Administrador</p>
+              <h4>{perfil?.nombre || "Cargando..."}</h4>
+              <p>{perfil?.rol === "admin" ? "Administrador" : perfil?.rol}</p>
             </div>
             <div className={style.profileFooter}>
               <div className={style.footerGroupLeft}>
                 <span className={style.footerLabel}>Estado</span>
-                <span className={style.statusBadgeActive}>ACTIVO</span>
+                  <span className={style.statusBadgeActive}>{
+                      perfil?.estado ? "ACTIVO" : "INACTIVO"}
+                  </span>
               </div>
               <div className={style.footerGroupRight}>
                 <span className={style.footerLabel}>Sesión</span>

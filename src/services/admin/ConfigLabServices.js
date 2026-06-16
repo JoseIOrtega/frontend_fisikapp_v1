@@ -17,6 +17,7 @@ const fetchGet = async (url) => {
 export const getCategorias = () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.LIST);
 
 export const crearCategoria = async (data) => {
+    console.log("Datos enviados a categoría:", data); // agrega esto
     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.CREATE, {
         method: "POST",
         headers: { ...API_CONFIG.getHeaders(), "Content-Type": "application/json" },

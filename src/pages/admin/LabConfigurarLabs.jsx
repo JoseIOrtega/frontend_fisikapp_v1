@@ -347,7 +347,7 @@ function LabConfigurarLabs() {
                     </button>
 
                     {/* El menú de sugerencias controlado de manera asíncrona y por teclado */}
-                    {mostrarDropdown && busquedaCategoria.trim() !== "" && (
+                    {mostrarDropdown && (
                       <div style={{
                         position: 'absolute', top: '100%', left: 0, right: '50px', 
                         backgroundColor: '#fff', border: '1px solid #ccc', zIndex: 10,
@@ -457,12 +457,9 @@ function LabConfigurarLabs() {
                       }}
                     />
                     <datalist id="palabras-list">
-                      {palabrasClave
-                        .filter(p => String(p.categoria) === String(formData.categoria))
-                        .map(p => (
-                          <option key={p.id} value={p.palabra_clave} />
-                        ))
-                      }
+                         {palabrasClave.map(p => (
+                            <option key={p.id} value={p.palabra_clave} />
+                              ))}
                     </datalist>
                     <button type="button" onClick={() => openModal("PAL")} className={style.btn_plus_secondary}><Plus size={20}/></button>
                   </div>

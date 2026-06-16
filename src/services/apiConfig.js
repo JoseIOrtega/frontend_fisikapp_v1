@@ -33,7 +33,7 @@ export const API_CONFIG = {
             CREAR_PROFESOR_ESTUDIANTE: `${BASE_URL}/users/crear-profesor/`, // Para crear un usuario como profesor o estudiante
 
             LOGS: `${BASE_URL}/logs/`,
-            LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
+            LABS: `${BASE_URL}/plantillas/`,                                // Para Laboratorio
 
             CATEGORIAS: {
                 LIST: `${BASE_URL}/categorias/`, 

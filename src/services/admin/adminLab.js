@@ -211,9 +211,9 @@ export async function getLaboratorios() {
         if (items && items.length > 0) {
             const transformedData = items.map(item => ({
                 id: item.id,
-                nombre_de_laboratorio: item.titulo_lab,
+                nombre_de_laboratorio: item.titulo,
                 categoria: item.categoria?.nombre || item.categoria || "Sin categoría",
-                estado: item.estado ? "Activo" : "Inactivo",
+                estado: item.estado === "PUBLICADO" ? "Activo" : "Inactivo",
                 fecha_creacion: item.fecha_creacion,
                 resumen: item.resumen || "",
                 introduccion: item.introduccion || "",
@@ -221,7 +221,7 @@ export async function getLaboratorios() {
                 codigo_lab: item.codigo_lab || "",
                 objetivo: item.objetivo || null,
                 palabras_clave: item.palabras_clave || [],
-                creador: item.creador || null,
+                creador: item.creador_nombre || "—",
                 ra: item.ra || false
             }));
             console.log("Datos obtenidos del backend:", transformedData);
@@ -241,7 +241,7 @@ export async function getLaboratorioById(id) {
         if (apiData) {
             return {
                 id: apiData.id,
-                nombre_de_laboratorio: apiData.titulo_lab,
+                nombre_de_laboratorio: apiData.titulo,
                 categoria: apiData.categoria?.nombre || apiData.categoria || "Sin categoría",
                 estado: apiData.estado ? "Activo" : "Inactivo",
                 fecha_creacion: apiData.fecha_creacion,
@@ -251,7 +251,7 @@ export async function getLaboratorioById(id) {
                 codigo_lab: apiData.codigo_lab || "",
                 objetivo: apiData.objetivo || null,
                 palabras_clave: apiData.palabras_clave || [],
-                creador: apiData.creador || null,
+                creador: apiData.creador_nombre || "—",
                 ra: apiData.ra || false,
                 rawData: apiData
             };
