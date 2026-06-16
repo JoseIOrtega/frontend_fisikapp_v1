@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import imgLogo from "../assets/images/Logo.png";
 import style from './AdminSidebar.module.css'; 
 import { 
-  Home, FlaskConical, Users, ClipboardList, UserPen, Settings, ChevronDown, Archive 
+  Home, FlaskConical, Users,MonitorPlay, ClipboardList, UserPen, Settings, ChevronDown, Archive 
 } from 'lucide-react'; 
 
 function DocenteSidebar() {
@@ -28,42 +28,18 @@ function DocenteSidebar() {
                     <Home size={20} /> <span>Dashboard</span>
                 </NavLink>
 
-                {/* 2. GRUPO LABORATORIOS (ACORDEÓN) */}
-                <div className={style.subMenuContainer}>
-                    <div 
-                        className={`${style.link} ${isLabsActive ? style.activeParent : ''}`} 
-                        onClick={() => setIsLabsOpen(!isLabsOpen)}
-                    >
-                        <div className={style.linkContent}>
-                            <FlaskConical size={20} /> 
-                            <span>Laboratorios</span>
-                        </div>
-                        <ChevronDown 
-                            size={16} 
-                            className={`${style.arrow} ${isLabsOpen ? style.arrowRotate : ''}`} 
-                        />
-                    </div>
+                <NavLink to="/profesor/mis-laboratorios" className={({isActive}) => isActive ? style.activeLink : style.link}>
+                    <FlaskConical size={20} /> <span>Crear Laboratorios</span>
+                </NavLink>
 
-                    {/* SUB-ITEMS */}
-                    <div className={`${style.subMenuItems} ${isLabsOpen ? style.show : ''}`}>
-                        <NavLink 
-                            to="/profesor/mis-laboratorios" 
-                            className={({isActive}) => isActive ? style.activeSubLink : style.subLink}
-                        >
-                            Mis Laboratorios
-                        </NavLink>
-                        <NavLink 
-                            to="/profesor/archivados" 
-                            className={({isActive}) => isActive ? style.activeSubLink : style.subLink}
-                        >
-                            Archivados
-                        </NavLink>
-                    </div>
-                </div>
-
-                {/* 3. MIS ESTUDIANTES */}
+                {/* 3. MIS ESTUDIANTES
                 <NavLink to="/profesor/mis-estudiantes" className={({isActive}) => isActive ? style.activeLink : style.link}>
                     <Users size={20} /> <span>Mis Estudiantes</span>
+                </NavLink> */}
+
+                {/* 3. SESIONES DOCENTE */}
+                <NavLink to="/profesor/sesiones-docente" className={({isActive}) => isActive ? style.activeLink : style.link}>
+                    <MonitorPlay size={20} /> <span>Crear Sesiones</span>
                 </NavLink>
 
                 {/* 4. HISTORIAL DE REPORTES */}
