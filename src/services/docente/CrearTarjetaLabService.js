@@ -19,42 +19,44 @@ export const CrearTarjetaLaboratorio = {
     obtenerObjetivos: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS.LIST),
     obtenerMisLaboratorios: () => fetchGet(API_CONFIG.ENDPOINTS.DOCENTE.LABORATORIOS_DOCENTE),
 
-    // 🚀 MODIFICADO: Ahora recibe grado y jornada como parámetros adicionales
-    crearInstancia: async (plantillaId, tituloPersonalizado, grado, jornada) => {
+    // ACTUALIZADO: Recibe el objeto con los parámetros correctos para el Backend
+    crearInstancia: async (tarjetaNuevaData) => {
+        // Desestructuramos las variables que vienen del modal y de la vista padre
+        const { id_padre, grado, jornada } = tarjetaNuevaData;
+
         const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.CREAR_LABORATORIO, {
             method: "POST",
             headers: {
                 ...API_CONFIG.getHeaders(),
                 "Content-Type": "application/json"
             },
+            // Enviamos exactamente lo que el Serializer de Django exige
             body: JSON.stringify({ 
-                laboratorio: plantillaId, 
-                titulo_lab: tituloPersonalizado, // El nombre limpio que el docente digite
-                grado: grado || null,            // Enviamos el grado directamente a su nuevo campo
-                jornada: jornada || null,        // Enviamos la jornada directamente a su nuevo campo
-                estado: true                     // El laboratorio inicia activo por defecto
+                id_padre: id_padre,              // El ID de la plantilla obligatoria que arrojaba el 400
+                grado: grado || null,            // Campo del grado (string "10-A", etc.)
+                jornada: jornada || null,        // Campo de la jornada (string "Mañana", etc.)
+                estado: false                    // Iniciamos en falso para que requiera configuración (según tus capturas de flujo)
             }),
         });
 
-        // CONTROL DE ERRORES: Si el backend falla con 500 HTML, evitamos el SyntaxError
+        // CONTROL DE ERRORES: Si el backend falla evitamos romper la app y pasamos el JSON detallado
         if (!response.ok) {
             let errorDetalle;
             try {
-                errorDetalle = await response.json(); // Intentamos leer el JSON si Django mandó un error controlado
+                errorDetalle = await response.json(); // Intentamos leer el array de errores de Django
             } catch {
                 errorDetalle = { message: `Error de servidor (${response.status}). No se devolvió un JSON válido.` };
             }
-            throw errorDetalle; // Lanza el error capturado para que caiga en el catch de tu vista
+            throw errorDetalle; // Se lanza al catch de MisLaboratoriosDocente.jsx
         }
 
-        return await response.json(); // Si todo salió bien (Status 201/200), procesamos el objeto real creado
+        return await response.json(); 
     }
 };
 
 export const ActualizarEstado = async (id, nuevoEstado) => {
-  //Usamos FETCH apuntando al ID de la tarjeta que queremos cambiar
-  const respuesta = await  fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
-    method: 'PATCH', // Usamos PATCH porque solo vamos a modificar el campo 'estado'
+  const respuesta = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
+    method: 'PATCH', 
     headers: {
       ...API_CONFIG.getHeaders(),
         "Content-Type": "application/json"
@@ -71,7 +73,6 @@ export const ActualizarEstado = async (id, nuevoEstado) => {
   return await respuesta.json();
 };
 
-// Ponemos "export" directamente aquí también
 export const EliminarLabService = {
   eliminarInstancia: async (id) => {
     const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ELIMINAR_LABORATORIO(id), {

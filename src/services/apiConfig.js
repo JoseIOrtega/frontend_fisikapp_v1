@@ -54,13 +54,14 @@ export const API_CONFIG = {
 
         },
         DOCENTE: {
-            // NUEVO: La ruta para listar los laboratorios que pertenecen al docente
+            // Ruta para listar los laboratorios que pertenecen al docente
             LABORATORIOS_DOCENTE: `${BASE_URL}/laboratorio-profesor/mis_laboratorios/`,
             
             // Para crear la copia/imagen de la plantilla (vía POST)
             CREAR_LABORATORIO: `${BASE_URL}/laboratorio-profesor/`,
             ACTUALIZAR_ESTADO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
             ELIMINAR_LABORATORIO:(id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
+            DETALLE_LABORATORIO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,  //para configurar laboratorio
         },
 
 

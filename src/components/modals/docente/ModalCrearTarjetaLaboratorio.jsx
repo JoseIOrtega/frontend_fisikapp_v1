@@ -86,22 +86,23 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
     }
   }, [isOpen]);
 
-  // 🚀 MANEJADOR INTERNO ACTUALIZADO: Envía los campos de manera nativa e independiente
+  // MANEJADOR INTERNO CORREGIDO: Ahora incluye de forma obligatoria el ID de la plantilla base
   const handleFormSubmit = async () => {
     if (!plantillaFinal || isSubmitting) return;
     
     try {
       setIsSubmitting(true);
 
-      // Creamos la copia de la estructura sin alterar el título original con corchetes
+      // Agrupamos la información incluyendo el ID de la plantilla original (id_padre)
       const tarjetaNuevaData = {
-        id: plantillaFinal.id,
-        titulo_lab: plantillaFinal.titulo_lab, // El nombre limpio de la plantilla base
-        grado: gradoSel || null,               // Enviamos el string del grado seleccionado
-        jornada: jornadaSel || null            // Enviamos el string de la jornada seleccionada
+        id_padre: plantillaFinal.id,           // ¡CAMPO CRÍTICO CLAVE QUE FALTABA!
+        categoria: parseInt(categoriaSel, 10), // Guardamos el ID de la categoría por si acaso
+        titulo_lab: plantillaFinal.titulo_lab,  // El nombre del experimento base
+        grado: gradoSel || null,               
+        jornada: jornadaSel || null            
       };
 
-      // 📢 Pasamos el objeto limpio con los 4 parámetros estructurados al componente padre (MisLaboratoriosDocente)
+      // Pasamos el objeto adaptado al componente padre (MisLaboratoriosDocente)
       await onConfirm(tarjetaNuevaData);
     } catch (err) {
       console.error("Error al confirmar la creación de la tarjeta:", err);
