@@ -344,7 +344,13 @@ useEffect(() => {
           <AdminCardContainer>
             <div className={style.tableHeaderFlex}>
               <h3 className={style.panelSubtitle}>Últimas Plantillas Configuradas</h3>
-              <button type="button" className={style.viewAllButton}>Ver todas</button>
+              <button 
+  type="button" 
+  className={style.viewAllButton}
+  onClick={() => navigate("/admin/laboratorio/repositorio_labs")} // Redirige a la lista completa
+>
+  Ver todas
+</button>
             </div>
             
             {loadingLabs ? (
