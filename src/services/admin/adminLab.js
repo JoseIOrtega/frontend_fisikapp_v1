@@ -125,6 +125,7 @@ export const updateLaboratorioAPI = async (id, laboratorioData) => {
 
 // Actualizar parcialmente un laboratorio (PATCH)
 export const patchLaboratorioAPI = async (id, laboratoriopatch) => {
+    console.log("Enviando al servidor:", JSON.stringify(laboratoriopatch));
     try {
         const response = await fetch(`${API_CONFIG.ENDPOINTS.ADMIN.LABS}${id}/`, {
             method: "PATCH",
