@@ -1,13 +1,8 @@
-import DocenteLayout from "../../layouts/DocenteLayout";
-import style from './SesionesDocente.module.css';
+import React from 'react'
 
 function SesionesDocente() {
   return (
-    <DocenteLayout>
-        <div className={style.container}>
-            Sesiones Docente
-        </div>
-    </DocenteLayout>
+    <div>SesionesDocente</div>
   )
 }
 

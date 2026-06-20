@@ -5,8 +5,8 @@ const fetchGet = async (url) => {
         const response = await fetch(url, { headers: API_CONFIG.getHeaders() });
         if (!response.ok) throw new Error(`Error ${response.status} en la petición`);
         const data = await response.json();
-        if (data.results && Array.isArray(data.results)) return data.results;
-        return Array.isArray(data) ? data : [];
+        // Si el nuevo endpoint `/plantillas/` devuelve una lista directa o un objeto con "results", esto lo maneja:
+        return (data.results && Array.isArray(data.results)) ? data.results : (Array.isArray(data) ? data : []);
     } catch (error) {
         console.error(`Error en GET ${url}:`, error);
         return [];
@@ -14,15 +14,33 @@ const fetchGet = async (url) => {
 };
 
 export const CrearTarjetaLaboratorio = {
+    // Estas funciones se mantienen, pero ahora apuntan a los nuevos endpoints que configuraste
     obtenerCategorias: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.LIST),
     obtenerPlantillasBase: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.LABORATORIOS.LIST),
-    obtenerObjetivos: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS.LIST),
     obtenerMisLaboratorios: () => fetchGet(API_CONFIG.ENDPOINTS.DOCENTE.LABORATORIOS_DOCENTE),
 
-    // ACTUALIZADO: Recibe el objeto con los parámetros correctos para el Backend
+    // SIMPLIFICADO: Ahora solo enviamos lo que el backend pide (el ID de la plantilla)
     crearInstancia: async (tarjetaNuevaData) => {
-        // Desestructuramos las variables que vienen del modal y de la vista padre
-        const { id_padre, grado, jornada } = tarjetaNuevaData;
+        const { id_plantilla, grado, jornada } = tarjetaNuevaData; 
+
+        // Ajuste según el esquema mostrado en Swagger image_834a05.png
+        const bodyCompleto = {
+            plantilla: id_plantilla,
+            grado: grado || "",
+            jornada: jornada || "",
+            estado: "BORRADOR",
+            resumen: "Sin resumen",       // Valor por defecto
+            prologo: "Sin prólogo",       // Campo requerido por el backend
+            introduccion: "Sin intro",
+            marco_teorico: "Sin marco",
+            generado_ia: false,           // Booleano requerido por el Swagger
+            palabras_clave: [],           // Lista vacía
+            conceptos_basicos: [],        // Lista vacía
+            objetivo_general: {           // Objeto anidado requerido
+                descripcion: "Sin descripción",
+                laboratorio: id_plantilla
+            }
+        };
 
         const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.CREAR_LABORATORIO, {
             method: "POST",
@@ -30,46 +48,27 @@ export const CrearTarjetaLaboratorio = {
                 ...API_CONFIG.getHeaders(),
                 "Content-Type": "application/json"
             },
-            // Enviamos exactamente lo que el Serializer de Django exige
-            body: JSON.stringify({ 
-                id_padre: id_padre,              // El ID de la plantilla obligatoria que arrojaba el 400
-                grado: grado || null,            // Campo del grado (string "10-A", etc.)
-                jornada: jornada || null,        // Campo de la jornada (string "Mañana", etc.)
-                estado: false                    // Iniciamos en falso para que requiera configuración (según tus capturas de flujo)
-            }),
+            body: JSON.stringify(bodyCompleto),
         });
 
-        // CONTROL DE ERRORES: Si el backend falla evitamos romper la app y pasamos el JSON detallado
         if (!response.ok) {
-            let errorDetalle;
-            try {
-                errorDetalle = await response.json(); // Intentamos leer el array de errores de Django
-            } catch {
-                errorDetalle = { message: `Error de servidor (${response.status}). No se devolvió un JSON válido.` };
-            }
-            throw errorDetalle; // Se lanza al catch de MisLaboratoriosDocente.jsx
+            const errorDetalle = await response.json();
+            console.error("El backend rechaza estos datos:", errorDetalle);
+            throw errorDetalle;
         }
 
         return await response.json(); 
     }
 };
 
+// ActualizarEstado y EliminarLabService se mantienen igual si esos endpoints no cambiaron
 export const ActualizarEstado = async (id, nuevoEstado) => {
   const respuesta = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
     method: 'PATCH', 
-    headers: {
-      ...API_CONFIG.getHeaders(),
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      estado: nuevoEstado
-    })
+    headers: { ...API_CONFIG.getHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify({ estado: nuevoEstado })
   });
-
-  if (!respuesta.ok) {
-    throw new Error('Error al actualizar el estado en el servidor');
-  }
-
+  if (!respuesta.ok) throw new Error('Error al actualizar el estado');
   return await respuesta.json();
 };
 
@@ -77,16 +76,9 @@ export const EliminarLabService = {
   eliminarInstancia: async (id) => {
     const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ELIMINAR_LABORATORIO(id), {
       method: 'DELETE',
-      headers: {
-        ...API_CONFIG.getHeaders(),
-        "Content-Type": "application/json"
-      }
+      headers: { ...API_CONFIG.getHeaders(), "Content-Type": "application/json" }
     });
-
-    if (!response.ok) {
-      throw new Error('No se pudo eliminar el laboratorio en el servidor.');
-    }
-
+    if (!response.ok) throw new Error('No se pudo eliminar el laboratorio');
     return true;
   }
 };
