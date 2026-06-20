@@ -20,7 +20,7 @@ function MisLaboratoriosDocente() {
   const [idLabAEliminar, setIdLabAEliminar] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const navigate = useNavigate(); // 2. Inicializa el navegador
+  const navigate = useNavigate(); // Inicializa el navegador
 
   // 1. Carga de datos iniciales desde el servidor
   useEffect(() => {
@@ -56,33 +56,28 @@ function MisLaboratoriosDocente() {
     setIsModalOpen(true);
   };
 
-  // 2. Creación del laboratorio adaptada a los nuevos campos de la base de datos
-  const handleConfirmarCreacion = async (plantillaModificada) => {
+  //Toma el objeto estructurado desde el modal y lo transfiere directo al servicio
+  const handleConfirmarCreacion = async (datosFormularioModal) => {
     try {
-      // Extraemos de forma limpia los campos que envía el formulario del modal
-      const { id, titulo_lab, grado, jornada } = plantillaModificada;
-
-      // Enviamos las 4 variables estructuradas al servicio unificado con fetch
-      const respuestaServidor = await CrearTarjetaLaboratorio.crearInstancia(
-        id, 
-        titulo_lab,
-        grado,
-        jornada
-      );
+      // Como 'datosFormularioModal' ya trae internamente { id_padre, grado, jornada },
+      // se lo inyectamos de golpe a la petición del servicio.
+      const respuestaServidor = await CrearTarjetaLaboratorio.crearInstancia(datosFormularioModal);
       
       const nuevaTarjetaReal = respuestaServidor.data || respuestaServidor;
 
-      // Añadimos el nuevo laboratorio al estado local para pintarlo de inmediato
-      setLaboratorios(prevLabs => [...prevLabs, nuevaTarjetaReal]);
+      // Añadimos el nuevo laboratorio al estado local para pintarlo de inmediato al inicio
+      setLaboratorios(prevLabs => [nuevaTarjetaReal, ...prevLabs]);
       setIsModalOpen(false);
+      showModal('success', '¡Laboratorio creado correctamente!');
     } catch (error) {
       console.error("Error al crear la instancia del laboratorio:", error);
       
       // Cierra el modal inmediatamente para desbloquear la pantalla
       setIsModalOpen(false);
       
-      // Muestra la alerta de error sobre la interfaz limpia
-      showModal('error', 'No se pudo crear la copia del laboratorio. Verifica los parámetros del backend.');
+      // Capturamos el error exacto que devuelva Django para mostrarlo en el modal visual
+      const errorBackend = error?.id_padre?.[0] || error?.detail || 'Verifica los parámetros del backend.';
+      showModal('error', `No se pudo crear el laboratorio: ${errorBackend}`);
     }
   };
 
