@@ -7,6 +7,8 @@ import { PlusCircle, FlaskConical, AlertTriangle, X } from 'lucide-react';
 import { useModal } from '../../context/ModalContext';
 import style from './MisLaboratoriosDocente.module.css';
 
+import { useNavigate } from 'react-router-dom';
+
 function MisLaboratoriosDocente() {
   const [laboratorios, setLaboratorios] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -17,6 +19,8 @@ function MisLaboratoriosDocente() {
   
   const [idLabAEliminar, setIdLabAEliminar] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const navigate = useNavigate(); // Inicializa el navegador
 
   // 1. Carga de datos iniciales desde el servidor
   useEffect(() => {
@@ -29,13 +33,18 @@ function MisLaboratoriosDocente() {
           CrearTarjetaLaboratorio.obtenerMisLaboratorios()
         ]);
 
+        // PASO 1: Llenamos los estados de los selectores primero
         setCategorias(Array.isArray(dataCategorias) ? dataCategorias : dataCategorias.results || []);
         setPlantillas(Array.isArray(dataPlantillas) ? dataPlantillas : dataPlantillas.results || []);
-        setLaboratorios(Array.isArray(dataMisLabs) ? dataMisLabs : dataMisLabs.results || []);
+        
+        // PASO 2: Inyectamos los laboratorios del docente
+        const labsFinales = Array.isArray(dataMisLabs) ? dataMisLabs : dataMisLabs.results || [];
+        setLaboratorios(labsFinales);
 
       } catch (error) {
         showModal('error', 'Error al cargar datos del servidor.');
       } finally {
+        // PASO 3: Apagamos el loading al final de todo
         setLoading(false);
       }
     };
@@ -47,34 +56,33 @@ function MisLaboratoriosDocente() {
     setIsModalOpen(true);
   };
 
-  // Extraemos la propiedad .data que responde Django
-  const handleConfirmarCreacion = async (plantillaModificada) => {
+  //Toma el objeto estructurado desde el modal y lo transfiere directo al servicio
+  const handleConfirmarCreacion = async (datosFormularioModal) => {
     try {
-      // Le enviamos a la función el ID de la plantilla y el título que incluye el [Grado - Jornada]
-      const respuestaServidor = await CrearTarjetaLaboratorio.crearInstancia(
-        plantillaModificada.id, 
-        plantillaModificada.titulo_lab
-      );
+      // Como 'datosFormularioModal' ya trae internamente { id_padre, grado, jornada },
+      // se lo inyectamos de golpe a la petición del servicio.
+      const respuestaServidor = await CrearTarjetaLaboratorio.crearInstancia(datosFormularioModal);
       
-      // Atrapamos el objeto real del laboratorio dentro de respuestaServidor.data
       const nuevaTarjetaReal = respuestaServidor.data || respuestaServidor;
 
-      // Añadimos el nuevo laboratorio devuelto por el servidor al estado local
-      setLaboratorios(prevLabs => [...prevLabs, nuevaTarjetaReal]);
+      // Añadimos el nuevo laboratorio al estado local para pintarlo de inmediato al inicio
+      setLaboratorios(prevLabs => [nuevaTarjetaReal, ...prevLabs]);
       setIsModalOpen(false);
+      showModal('success', '¡Laboratorio creado correctamente!');
     } catch (error) {
       console.error("Error al crear la instancia del laboratorio:", error);
       
-      // 🚀 SOLUCIÓN: Cierra el modal de formulario inmediatamente para desbloquear la pantalla
+      // Cierra el modal inmediatamente para desbloquear la pantalla
       setIsModalOpen(false);
       
-      // Ahora sí, muestra la alerta de error sobre la pantalla limpia
-      showModal('error', 'No se pudo crear la copia del laboratorio. Verifica los parámetros del backend.');
+      // Capturamos el error exacto que devuelva Django para mostrarlo en el modal visual
+      const errorBackend = error?.id_padre?.[0] || error?.detail || 'Verifica los parámetros del backend.';
+      showModal('error', `No se pudo crear el laboratorio: ${errorBackend}`);
     }
   };
 
   const handleIngresar = (id) => {
-    console.log("Ingresando a configurar laboratorio:", id);
+    navigate(`/profesor/mis-laboratorios/configurar/${id}`);
   };
 
   const handleEliminar = (id) => {
@@ -86,9 +94,7 @@ function MisLaboratoriosDocente() {
 
     try {
       setIsDeleting(true); 
-
       await EliminarLabService.eliminarInstancia(idLabAEliminar);
-
       setLaboratorios((prevLabs) => prevLabs.filter((lab) => lab.id !== idLabAEliminar));
       
       setIdLabAEliminar(null);
@@ -101,17 +107,15 @@ function MisLaboratoriosDocente() {
     }
   };
 
+  // 3. Cambio de estado con Actualización Optimista y Animación Nativa
   const handleToggleEstado = async (id) => {
-    // 1. Buscamos el laboratorio en el estado local para saber cómo está actualmente
     const laboratorioActual = laboratorios.find(lab => lab.id === id);
     if (!laboratorioActual) return;
 
-    // 2. Evaluamos su estado actual y calculamos el nuevo valor
     const esActivoActualmente = laboratorioActual.estado === true || laboratorioActual.estado === 'activo';
     const nuevoEstadoBooleano = !esActivoActualmente;
 
-    // PASO OPTIMISTA: Cambiamos la interfaz DE INMEDIATO con la animación suave
-    // El usuario verá que el switch se mueve al instante y la tarjeta empieza a bajar
+    // Cambia la interfaz al milisegundo de presionar el switch
     const aplicarCambioVisual = (estadoAAsignar) => {
       if (document.startViewTransition) {
         document.startViewTransition(() => {
@@ -126,26 +130,21 @@ function MisLaboratoriosDocente() {
       }
     };
 
-    // Aplicamos el cambio visual de inmediato para dar feedback instantáneo
     aplicarCambioVisual(nuevoEstadoBooleano);
 
     try {
-      // 3. La petición viaja al backend en segundo plano mientras el usuario ya ve el cambio
+      // Petición en segundo plano enviando el booleano que Django espera
       await ActualizarEstado(id, nuevoEstadoBooleano);
-      // Si el servidor responde bien, no hacemos nada más porque la interfaz ya se actualizó.
-
     } catch (error) {
       console.error("No se pudo guardar el estado en el servidor:", error);
       
-      // PLAN DE RESPALDO: Si el backend falla (ej. error 400, 500 o sin internet),
-      // deshacemos el cambio visual de inmediato regresando el switch a como estaba antes
+      // Si la red falla, revertimos el switch de inmediato a su posición original
       aplicarCambioVisual(esActivoActualmente);
-      
-      // Le avisamos al docente lo que pasó
       showModal('error', 'No se pudo guardar el cambio de estado en el servidor. Intenta nuevamente.');
     }
   };
 
+  // Renderizado del layout base durante la carga inicial
   if (loading) {
     return (
       <DocenteLayout>
@@ -172,13 +171,8 @@ function MisLaboratoriosDocente() {
         </header>
 
         <main className={laboratorios.length > 0 ? style.gridContainer : style.emptyContainer}>
-          {/* PRIMERA CONDICIÓN: Si sigue cargando, no mostramos nada de estados vacíos */}
-          {loading ? (
-            <div className={style.loadingState}>
-              <p>Cargando tus laboratorios...</p>
-            </div>
-          ) : laboratorios.length > 0 ? (
-            // SEGUNDA CONDICIÓN: Si ya no carga y sí hay tarjetas, las listamos
+          {laboratorios.length > 0 ? (
+            // Si el array ya tiene las tarjetas guardadas, las lista ordenadas de inmediato
             [...laboratorios]
               .sort((a, b) => {
                 const aActivo = a.estado === true || a.estado === 'activo';
@@ -201,7 +195,7 @@ function MisLaboratoriosDocente() {
                 </div>
               ))
           ) : (
-            // TERCERA CONDICIÓN: Si ya no carga y el array REALMENTE quedó vacío, mostramos el mensaje
+            // ÚNICAMENTE si loading ya es false Y el array está en cero, se muestra este mensaje
             <div className={style.emptyStateCard}>
               <div className={style.emptyIconBadge}>
                 <FlaskConical size={40} />
@@ -220,7 +214,7 @@ function MisLaboratoriosDocente() {
           plantillasRaw={plantillas}
         />
 
-        {/* MODAL DE CONFIRMACIÓN */}
+        {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
         {idLabAEliminar && (
           <div className={style.overlay} onClick={!isDeleting ? () => setIdLabAEliminar(null) : undefined}>
             <div className={style.modalConfirm} onClick={(e) => e.stopPropagation()}>
