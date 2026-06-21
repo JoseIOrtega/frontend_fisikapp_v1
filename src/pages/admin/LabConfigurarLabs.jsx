@@ -28,6 +28,9 @@ function LabConfigurarLabs() {
   const [tipoSeleccionado, setTipoSeleccionado] = useState("General");
   const [searchTerm, setSearchTerm] = useState("");
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
+
+  const [step, setStep] = useState(1);/// cristian
+  const [imagenPreview, setImagenPreview] = useState(null);
   const [busquedaCategoria, setBusquedaCategoria] = useState("");
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [indiceResaltado, setIndiceResaltado] = useState(-1);
@@ -276,75 +279,117 @@ function LabConfigurarLabs() {
     <AdminLayout>
       <div className={style.layout}>
         <div className={style.seccion_del_header}>
-          <h2 className={style.titulo_header_laboratorio}>Configurar Laboratorios</h2>
-          <div className={style.wrapper_botones_header}>
-            <button 
-              type="button" 
-              className={style.btn_ia_gradient} 
-              onClick={handleGenerarConIA}
-              disabled={isGeneratingIA}
-            >
-              <Sparkles size={16} className={style.icon_spark} /> 
-              {isGeneratingIA ? "Generando..." : "Generar con IA"}
-            </button>
-            <AdminCrateButton icon={Save} text="Agregar Laboratorio" onClick={handleSavePlantilla} />
-          </div>
+          
+      <div className={style.stepper}>
+
+         <div
+    className={style.progressBar}
+    style={{
+      width:
+        step === 1 ? "0%" :
+        step === 2 ? "25%" :
+        step === 3 ? "50%" :
+        step === 4 ? "75%" :
+        "100%"
+    }}
+  />
+  <div
+    className={`${style.stepItem} ${step >= 1 ? style.completedStep : ""}`}
+    onClick={() => setStep(1)}
+  >
+    <div className={style.stepCircle}>1</div>
+    <span>Información General</span>
+  </div>
+
+  <div
+    className={`${style.stepItem} ${step >= 2 ? style.completedStep : ""}`}
+    onClick={() => setStep(2)}
+  >
+    <div className={style.stepCircle}>2</div>
+    <span>Objetivos</span>
+  </div>
+
+  <div
+    className={`${style.stepItem} ${step >= 3 ? style.completedStep : ""}`}
+    onClick={() => setStep(3)}
+  >
+    <div className={style.stepCircle}>3</div>
+    <span>Contenido</span>
+  </div>
+
+  <div
+    className={`${style.stepItem} ${step >= 4 ? style.completedStep : ""}`}
+    onClick={() => setStep(4)}
+  >
+    <div className={style.stepCircle}>4</div>
+    <span>Desarrollo</span>
+  </div>
+
+  <div
+    className={`${style.stepItem} ${step >= 5 ? style.completedStep : ""}`}
+    onClick={() => setStep(5)}
+  >
+    <div className={style.stepCircle}>5</div>
+    <span>Revisión</span>
+  </div>
+</div>   
+
+          
         </div>
 
         <AdminCardContainer>
           <div className={style.form_container}>
-            
-            {/* SECCIÓN 1: CONFIGURACIÓN E INFORMACIÓN BÁSICA */}
-            <section className={style.form_section}>
-              <h3 className={style.subtitulo}>1. Información General</h3>
-              <div className={style.field}>
-                <label>Título del Laboratorio *</label>
-                <input 
-                  type="text" 
-                  name="titulo_lab" 
-                  className={style.input_diseno} 
-                  onChange={handleInputChange} 
-                  value={formData.titulo_lab} 
-                />
-              </div>
-            </section>
 
-            {/* SECCIÓN 2: CLASIFICACIÓN Y METADATOS (MOVIDO AQUÍ ABAJO DEL TITULO) */}
-            <section className={style.form_section}>
-              <h3 className={style.subtitulo}>2. Clasificación y Metadatos</h3>
-              <div className={style.grid_inputs}>
-                
-                {/* CATEGORÍA */}
-                <div className={style.field}>
-                  <label>Categoría Existente *</label>
-                  <div className={style.input_group_row} style={{ position: 'relative' }}>
-                    <input 
-                      type="text"
-                      className={style.input_diseno}
-                      placeholder="Escribe para buscar (ej: Mecánica Clásica)..."
-                      value={busquedaCategoria}
-                      onChange={(e) => {
-                        const texto = e.target.value;
-                        setBusquedaCategoria(texto);
-                        setMostrarDropdown(true);
-                        setIndiceResaltado(-1);
-                        
-                        // Si borras el texto por completo, se limpia la selección del formulario
-                        if (texto.trim() === "") {
-                          handleSelectChange({ target: { value: "" } }, 'categoria');
-                          if (typeof setSelectedCategoria === 'function') setSelectedCategoria(null);
-                        }
-                      }}
-                      onFocus={() => setMostrarDropdown(true)}
-                      onBlur={() => {
-                        // Pequeño retraso para dejar que el clic del mouse se procese antes de ocultar el menú
-                        setTimeout(() => setMostrarDropdown(false), 250);
-                      }}
-                      onKeyDown={handleKeyDownCategorias}
-                    />
-                    <button type="button" onClick={() => openModal("CAT")} className={style.btn_plus_secondary}>
-                      <Plus size={20}/>
-                    </button>
+            {step === 1 && (
+  <section className={style.form_section}>
+    
+    <h3 className={style.subtitulo}>
+      1. Información General
+    </h3>
+
+    <div className={style.gridInfoGeneral}>
+
+      {/* TITULO */}
+      <div className={style.field}>
+        <label>Título del Laboratorio *</label>
+        <input
+          type="text"
+          name="titulo_lab"
+          className={style.input_diseno}
+          onChange={handleInputChange}
+          value={formData.titulo_lab}
+        />
+      </div>
+
+       {/* CATEGORIA */}
+      <div className={style.field}>
+        <label>Categoría Existente *</label>
+
+        <div className={style.input_group_row} style={{ position: 'relative' }}>
+                    <div className={style.input_group_row}>
+  <select
+    className={style.input_diseno}
+    value={formData.categoria}
+    onChange={(e) => handleSelectChange(e, 'categoria')}
+  >
+    <option value="">Seleccione una categoría...</option>
+
+    {categorias.map((cat) => (
+      <option key={cat.id} value={cat.id}>
+        {cat.nombre}
+      </option>
+    ))}
+  </select>
+
+  <button
+    type="button"
+    onClick={() => openModal("CAT")}
+    className={style.btn_plus_secondary}
+  >
+    <Plus size={20} />
+  </button>
+</div>
+                    
 
                     {/* El menú de sugerencias controlado de manera asíncrona y por teclado */}
                     {mostrarDropdown && (
@@ -400,11 +445,140 @@ function LabConfigurarLabs() {
                     )}
                   </div>
                   
-                  {/* Muestra la descripción de la categoría seleccionada en tiempo real */}
-                  <div className={style.textarea_resumen}>
-                    {categorias.find(c => String(c.id) === String(formData.categoria))?.descripcion || "..."}
-                  </div>
+                  
                 </div>
+      </div>
+
+
+      <div className={style.wrapper_botones_header}>
+            <button 
+              type="button" 
+              className={style.btn_ia_gradient} 
+              onClick={handleGenerarConIA}
+              disabled={isGeneratingIA}
+            >
+              <Sparkles size={16} className={style.icon_spark} /> 
+              {isGeneratingIA ? "Generando..." : "Generar con IA"}
+            </button>
+           
+          </div>
+
+    
+
+    {/* DESCRIPCION CORTA */}
+    <div className={style.field}>
+      <label>Descripción corta *</label>
+
+      <textarea
+        name="resumen"
+        className={style.textarea_diseno}
+        value={formData.resumen}
+        onChange={handleInputChange}
+        placeholder="Describe brevemente el laboratorio..."
+      />
+    </div>
+    
+
+    <div className={style.uploadSection}>
+  <label>Imagen de portada (opcional)</label>
+
+  <div className={style.uploadContainer}>
+    
+    <div className={style.uploadBox}>
+  <label htmlFor="imagenPortada" className={style.uploadLabel}>
+    <div className={style.uploadContent}>
+      
+      <p>Arrastra una imagen o haz clic para seleccionar</p>
+      <span>PNG, JPG o WEBP</span>
+    </div>
+  </label>
+
+  <input
+  id="imagenPortada"
+  type="file"
+  accept="image/*"
+  hidden
+  onChange={(e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setImagenPreview(URL.createObjectURL(file));
+    }
+  }}
+/>
+</div>
+
+  <div className={style.previewBox}>
+  {imagenPreview ? (
+    <>
+      <img
+        src={imagenPreview}
+        alt="Vista previa"
+        className={style.previewImage}
+      />
+
+      <button
+        type="button"
+        className={style.btnEliminarImagen}
+        onClick={() => setImagenPreview(null)}
+      >
+        ✕
+      </button>
+    </>
+  ) : (
+    <span>Vista previa</span>
+  )}
+</div>
+
+  </div>
+</div>
+
+<div className={style.estadoGrid}>
+
+  <label className={style.estadoCard}>
+    <input
+      type="radio"
+      name="estado"
+      value="BORRADOR"
+    />
+
+    <div>
+      <h4>ACTIVO</h4>
+      <p>Solo tú puedes verlo y editarlo.</p>
+    </div>
+  </label>
+
+  <label className={style.estadoCard}>
+    <input
+      type="radio"
+      name="estado"
+      value="PUBLICADO"
+    />
+
+    <div>
+      <h4>INACTIVO</h4>
+      <p>Disponible para profesores.</p>
+    </div>
+  </label>
+
+</div>
+
+  </section>
+)}
+    
+    
+ 
+            
+          
+             {/* SECCIÓN 2: CLASIFICACIÓN Y METADATOS (MOVIDO AQUÍ ABAJO DEL TITULO) */}
+            {step === 2 && (
+
+           
+            <section className={style.form_section}>
+              <h3 className={style.subtitulo}>2. Clasificación y Metadatos</h3>
+              <div className={style.grid_inputs}>
+                
+                
 
                 {/* OBJETIVO */}
             <div className={style.field}>
@@ -468,7 +642,12 @@ function LabConfigurarLabs() {
               </div>
             </section>
 
-            {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
+          )}
+
+             {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
+            {step === 3 && (
+
+           
             <section className={style.form_section}>
               <h3 className={style.subtitulo}>3. Contenido Detallado {isGeneratingIA && " (Escribiendo automáticamente...)"}</h3>
               <div className={style.field}>
@@ -488,6 +667,41 @@ function LabConfigurarLabs() {
                 <textarea name="marco_teorico" className={style.textarea_diseno} onChange={handleInputChange} value={formData.marco_teorico} disabled={isGeneratingIA} />
               </div>
             </section>
+
+            )}
+
+
+            {step === 4 && (
+  <section className={style.form_section}>
+    <h3>4. Desarrollo</h3>
+    <p>Próximamente...</p>
+  </section>
+)}
+
+{step === 5 && (
+  <section className={style.form_section}>
+    <h3>5. Revisión</h3>
+    <p>Vista previa del laboratorio</p>
+  </section>
+)}
+
+              <div className={style.navigation}>
+  <button
+    type="button"
+    disabled={step === 1}
+    onClick={() => setStep(step - 1)}
+  >
+    Anterior
+  </button>
+
+  <button
+    type="button"
+    disabled={step === 5}
+    onClick={() => setStep(step + 1)}
+  >
+    Siguiente
+  </button>
+</div>
 
           </div>
         </AdminCardContainer>
@@ -519,12 +733,12 @@ function LabConfigurarLabs() {
             </div>
           )}
 
-          <div className={style.modal_field}>
-            <label>Descripción / Detalle</label>
-            <textarea className={style.textarea_diseno} value={newData.descripcion} onChange={e => setNewData({...newData, descripcion: e.target.value})} required />
-          </div>
+          
           <button type="submit" className={style.btn_guardar_modal}>Confirmar Guardado</button>
         </form>
+
+
+      
       </GenericModal>
     </AdminLayout>
   );
