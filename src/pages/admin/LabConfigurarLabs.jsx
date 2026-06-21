@@ -6,6 +6,7 @@ import GenericModal from "../../components/modals/GenericModal";
 import { useModal } from '../../context/ModalContext';
 import { Plus, Save, Sparkles } from 'lucide-react';
 import style from './LabConfigurarLabs.module.css';
+import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
 import { 
   getCategorias, crearCategoria, 
   getObjetivosGenerales, crearObjetivoGeneral,
@@ -340,232 +341,17 @@ function LabConfigurarLabs() {
         <AdminCardContainer>
           <div className={style.form_container}>
 
-            {step === 1 && (
-  <section className={style.form_section}>
-    
-    <h3 className={style.subtitulo}>
-      1. Información General
-    </h3>
-
-    <div className={style.gridInfoGeneral}>
-
-      {/* TITULO */}
-      <div className={style.field}>
-        <label>Título del Laboratorio *</label>
-        <input
-          type="text"
-          name="titulo_lab"
-          className={style.input_diseno}
-          onChange={handleInputChange}
-          value={formData.titulo_lab}
-        />
-      </div>
-
-       {/* CATEGORIA */}
-      <div className={style.field}>
-        <label>Categoría Existente *</label>
-
-        <div className={style.input_group_row} style={{ position: 'relative' }}>
-                    <div className={style.input_group_row}>
-  <select
-    className={style.input_diseno}
-    value={formData.categoria}
-    onChange={(e) => handleSelectChange(e, 'categoria')}
-  >
-    <option value="">Seleccione una categoría...</option>
-
-    {categorias.map((cat) => (
-      <option key={cat.id} value={cat.id}>
-        {cat.nombre}
-      </option>
-    ))}
-  </select>
-
-  <button
-    type="button"
-    onClick={() => openModal("CAT")}
-    className={style.btn_plus_secondary}
-  >
-    <Plus size={20} />
-  </button>
-</div>
-                    
-
-                    {/* El menú de sugerencias controlado de manera asíncrona y por teclado */}
-                    {mostrarDropdown && (
-                      <div style={{
-                        position: 'absolute', top: '100%', left: 0, right: '50px', 
-                        backgroundColor: '#fff', border: '1px solid #ccc', zIndex: 10,
-                        maxHeight: '150px', overflowY: 'auto', borderRadius: '4px', boxShadow: '0px 4px 6px rgba(0,0,0,0.1)'
-                      }}>
-                        {(() => {
-                          // Preparamos el filtro inteligente quitando acentos y espacios extras
-                          const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().split(/\s+/);
-                          
-                          const filtradas = categorias.filter(c => {
-                            const nombreBD = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                            return palabrasBuscadas.every(palabra => nombreBD.includes(palabra));
-                          });
-
-                          // Guardamos las categorías filtradas dinámicamente para que la función de las flechas las reconozca
-                          window.categoriasFiltradas = filtradas;
-
-                          if (filtradas.length === 0) {
-                            return (
-                              <div style={{ padding: '8px 12px', color: '#888', fontStyle: 'italic' }}>
-                                No se encontraron resultados. Dale al "+" para crearla.
-                              </div>
-                            );
-                          }
-
-                          return filtradas.map((c, index) => (
-                            <div 
-                              key={c.id || index} 
-                              style={{ 
-                                padding: '8px 12px', 
-                                cursor: 'pointer', 
-                                borderBottom: '1px solid #f0f0f0', 
-                                color: '#000',
-                                backgroundColor: index === indiceResaltado ? '#e6f7ff' : '#fff' // Resaltado con flechas
-                              }}
-                              // onMouseDown evita que el onBlur del input rompa el clic
-                              onMouseDown={() => {
-                                handleSelectChange({ target: { value: c.id } }, 'categoria');
-                                if (typeof setSelectedCategoria === 'function') setSelectedCategoria(c);
-                                setBusquedaCategoria(c.nombre);
-                                setMostrarDropdown(false);
-                              }}
-                              onMouseEnter={() => setIndiceResaltado(index)}
-                            >
-                              {c.nombre}
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                  
-                  
-                </div>
-      </div>
-
-
-      <div className={style.wrapper_botones_header}>
-            <button 
-              type="button" 
-              className={style.btn_ia_gradient} 
-              onClick={handleGenerarConIA}
-              disabled={isGeneratingIA}
-            >
-              <Sparkles size={16} className={style.icon_spark} /> 
-              {isGeneratingIA ? "Generando..." : "Generar con IA"}
-            </button>
-           
-          </div>
-
-    
-
-    {/* DESCRIPCION CORTA */}
-    <div className={style.field}>
-      <label>Descripción corta *</label>
-
-      <textarea
-        name="resumen"
-        className={style.textarea_diseno}
-        value={formData.resumen}
-        onChange={handleInputChange}
-        placeholder="Describe brevemente el laboratorio..."
-      />
-    </div>
-    
-
-    <div className={style.uploadSection}>
-  <label>Imagen de portada (opcional)</label>
-
-  <div className={style.uploadContainer}>
-    
-    <div className={style.uploadBox}>
-  <label htmlFor="imagenPortada" className={style.uploadLabel}>
-    <div className={style.uploadContent}>
-      
-      <p>Arrastra una imagen o haz clic para seleccionar</p>
-      <span>PNG, JPG o WEBP</span>
-    </div>
-  </label>
-
-  <input
-  id="imagenPortada"
-  type="file"
-  accept="image/*"
-  hidden
-  onChange={(e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      setImagenPreview(URL.createObjectURL(file));
-    }
-  }}
-/>
-</div>
-
-  <div className={style.previewBox}>
-  {imagenPreview ? (
-    <>
-      <img
-        src={imagenPreview}
-        alt="Vista previa"
-        className={style.previewImage}
-      />
-
-      <button
-        type="button"
-        className={style.btnEliminarImagen}
-        onClick={() => setImagenPreview(null)}
-      >
-        ✕
-      </button>
-    </>
-  ) : (
-    <span>Vista previa</span>
-  )}
-</div>
-
-  </div>
-</div>
-
-<div className={style.estadoGrid}>
-
-  <label className={style.estadoCard}>
-    <input
-      type="radio"
-      name="estado"
-      value="BORRADOR"
-    />
-
-    <div>
-      <h4>ACTIVO</h4>
-      <p>Solo tú puedes verlo y editarlo.</p>
-    </div>
-  </label>
-
-  <label className={style.estadoCard}>
-    <input
-      type="radio"
-      name="estado"
-      value="PUBLICADO"
-    />
-
-    <div>
-      <h4>INACTIVO</h4>
-      <p>Disponible para profesores.</p>
-    </div>
-  </label>
-
-</div>
-
-  </section>
+           {step === 1 && (
+  <InformacionGeneral
+    formData={formData}
+    handleInputChange={handleInputChange}
+    handleSelectChange={handleSelectChange}
+    categorias={categorias}
+    openModal={openModal}
+    imagenPreview={imagenPreview}
+    setImagenPreview={setImagenPreview}
+  />
 )}
-    
     
  
             
