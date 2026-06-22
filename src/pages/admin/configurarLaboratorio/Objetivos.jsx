@@ -1,11 +1,13 @@
-import { Plus } from "lucide-react";
+
 import style from "./Objetivos.module.css";
 import { useState } from "react";
+import { Plus, Sparkles } from "lucide-react";
 
 
 function Objetivos({
   objetivos,
-  selectedObjetivo
+  selectedObjetivo,
+  handleGenerarConIA
 }) {
 
     const [objetivosEspecificos, setObjetivosEspecificos] = useState([
@@ -35,11 +37,26 @@ const eliminarObjetivo = (index) => {
     
    <section className={style.form_section}>
 
-      <h1 className={style.subtitulo}>Objetivos</h1>
+      <div className={style.headerObjetivos}>
 
-      <p>
-        Define el objetivo general y los específicos del laboratorio
-      </p>
+  <div>
+    <h1 className={style.subtitulo}>Objetivos</h1>
+
+    <p>
+      Define el objetivo general y los específicos del laboratorio
+    </p>
+  </div>
+
+  <button
+  type="button"
+  className={style.btn_ia_gradient}
+  onClick={handleGenerarConIA}
+>
+  <Sparkles size={16} className={style.icon_spark} />
+  Generar con IA
+</button>
+
+</div>
 
       <div className={style.field}>
         <label>Objetivo General *</label>

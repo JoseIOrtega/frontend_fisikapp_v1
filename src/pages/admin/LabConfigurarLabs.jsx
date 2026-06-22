@@ -349,15 +349,16 @@ function LabConfigurarLabs() {
 
             {step === 2 && (
                <Objetivos
-               objetivos={objetivos}
-                palabrasClave={palabrasClave}
-                selectedObjetivo={selectedObjetivo}
+              objetivos={objetivos}
+              palabrasClave={palabrasClave}
+              selectedObjetivo={selectedObjetivo}
               selectedPalabra={selectedPalabra}
-               formData={formData}
-               handleSelectChange={handleSelectChange}
-                openModal={openModal}
+              formData={formData}
+              handleSelectChange={handleSelectChange}
+              openModal={openModal}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
+              handleGenerarConIA={handleGenerarConIA}
               />
 
            
