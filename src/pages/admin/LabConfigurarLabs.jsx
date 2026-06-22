@@ -7,6 +7,9 @@ import { useModal } from '../../context/ModalContext';
 import { Plus, Save, Sparkles } from 'lucide-react';
 import style from './LabConfigurarLabs.module.css';
 import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
+import Objetivos from "./configurarLaboratorio/Objetivos";
+import Contenido from "./configurarLaboratorio/Contenido";
+import Revision from "./configurarLaboratorio/VistaPrevia";
 import { 
   getCategorias, crearCategoria, 
   getObjetivosGenerales, crearObjetivoGeneral,
@@ -285,14 +288,13 @@ function LabConfigurarLabs() {
 
          <div
     className={style.progressBar}
-    style={{
-      width:
-        step === 1 ? "0%" :
-        step === 2 ? "25%" :
-        step === 3 ? "50%" :
-        step === 4 ? "75%" :
-        "100%"
-    }}
+   style={{
+  width:
+    step === 1 ? "0%" :
+    step === 2 ? "30%" :
+    step === 3 ? "60%" :
+    "90%"
+}}
   />
   <div
     className={`${style.stepItem} ${step >= 1 ? style.completedStep : ""}`}
@@ -323,15 +325,7 @@ function LabConfigurarLabs() {
     onClick={() => setStep(4)}
   >
     <div className={style.stepCircle}>4</div>
-    <span>Desarrollo</span>
-  </div>
-
-  <div
-    className={`${style.stepItem} ${step >= 5 ? style.completedStep : ""}`}
-    onClick={() => setStep(5)}
-  >
-    <div className={style.stepCircle}>5</div>
-    <span>Revisión</span>
+    <span>Vista Previa</span>
   </div>
 </div>   
 
@@ -342,131 +336,51 @@ function LabConfigurarLabs() {
           <div className={style.form_container}>
 
            {step === 1 && (
-  <InformacionGeneral
-    formData={formData}
-    handleInputChange={handleInputChange}
-    handleSelectChange={handleSelectChange}
-    categorias={categorias}
-    openModal={openModal}
-    imagenPreview={imagenPreview}
-    setImagenPreview={setImagenPreview}
-  />
-)}
-    
- 
-            
-          
-             {/* SECCIÓN 2: CLASIFICACIÓN Y METADATOS (MOVIDO AQUÍ ABAJO DEL TITULO) */}
+          <InformacionGeneral
+         formData={formData}
+         handleInputChange={handleInputChange}
+         handleSelectChange={handleSelectChange}
+         categorias={categorias}
+         openModal={openModal}
+         imagenPreview={imagenPreview}
+         setImagenPreview={setImagenPreview}
+        />
+          )}
+
             {step === 2 && (
+               <Objetivos
+               objetivos={objetivos}
+                palabrasClave={palabrasClave}
+                selectedObjetivo={selectedObjetivo}
+              selectedPalabra={selectedPalabra}
+               formData={formData}
+               handleSelectChange={handleSelectChange}
+                openModal={openModal}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              />
 
            
-            <section className={style.form_section}>
-              <h3 className={style.subtitulo}>2. Clasificación y Metadatos</h3>
-              <div className={style.grid_inputs}>
-                
-                
-
-                {/* OBJETIVO */}
-            <div className={style.field}>
-              <label>Objetivo Principal *</label>
-              <div className={style.input_group_row}>
-                <select 
-                  className={style.input_diseno} 
-                  onChange={(e) => handleSelectChange(e, 'objective' in formData ? 'objective' : 'objetivo')} 
-                  value={formData.objetivo || formData.objective || ""}
-                >
-                  <option value="">Seleccione...</option>
-                  {/* Filtramos la lista en tiempo real para eliminar duplicados por ID */}
-                  {objetivos
-                    .filter((obj, index, self) => self.findIndex(o => o.id === obj.id) === index)
-                    .map((obj) => (
-                      <option key={obj.id} value={obj.id}>
-                        {obj.descripcion}
-                      </option>
-                    ))
-                  }
-                </select>
-                <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}>
-                  <Plus size={20}/>
-                </button>
-              </div>
-              {/* Se mantiene la descripción vinculada al estado si se requiere mostrar detalles adicionales */}
-             <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion || "..."}</div>
-            </div>
-
-                {/* PALABRA CLAVE */}
-                <div className={style.field}>
-                  <label>Palabra Clave *</label>
-                  <div className={style.input_group_row}>
-                    <input
-                      list="palabras-list"
-                      className={style.input_diseno}
-                      placeholder="Escribe para buscar..."
-                      value={searchTerm} 
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSearchTerm(val);
-                        const coincidencia = palabrasClave.find(p => p.palabra_clave === val);
-                        if (coincidencia) {
-                          handleSelectChange({ target: { value: coincidencia.id } }, 'palabra_clave');
-                        }
-                      }}
-                      onBlur={() => {
-                        const actual = palabrasClave.find(p => String(p.id) === String(formData.palabra_clave));
-                        if (actual) setSearchTerm(actual.palabra_clave);
-                      }}
-                    />
-                    <datalist id="palabras-list">
-                         {palabrasClave.map(p => (
-                            <option key={p.id} value={p.palabra_clave} />
-                              ))}
-                    </datalist>
-                    <button type="button" onClick={() => openModal("PAL")} className={style.btn_plus_secondary}><Plus size={20}/></button>
-                  </div>
-                  <div className={style.textarea_resumen}>{selectedPalabra?.descripcion || "..."}</div>
-                </div>
-              </div>
-            </section>
+            
 
           )}
 
              {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
             {step === 3 && (
+               <Contenido
+              isGeneratingIA={isGeneratingIA}
+              handleInputChange={handleInputChange}
+              formData={formData}
+              />
+
+          )}
+
 
            
-            <section className={style.form_section}>
-              <h3 className={style.subtitulo}>3. Contenido Detallado {isGeneratingIA && " (Escribiendo automáticamente...)"}</h3>
-              <div className={style.field}>
-                <label>Resumen *</label>
-                <textarea name="resumen" className={style.textarea_diseno} onChange={handleInputChange} value={formData.resumen} disabled={isGeneratingIA} />
-              </div>
-              <div className={style.field}>
-                <label>Prólogo</label>
-                <textarea name="prologo" className={style.textarea_diseno} onChange={handleInputChange} value={formData.prologo} disabled={isGeneratingIA} />
-              </div>
-              <div className={style.field}>
-                <label>Introducción *</label>
-                <textarea name="introduccion" className={style.textarea_diseno} onChange={handleInputChange} value={formData.introduccion} disabled={isGeneratingIA} />
-              </div>
-              <div className={style.field}>
-                <label>Marco Teórico *</label>
-                <textarea name="marco_teorico" className={style.textarea_diseno} onChange={handleInputChange} value={formData.marco_teorico} disabled={isGeneratingIA} />
-              </div>
-            </section>
 
-            )}
-
-
-            {step === 4 && (
+{step === 4 && (
   <section className={style.form_section}>
-    <h3>4. Desarrollo</h3>
-    <p>Próximamente...</p>
-  </section>
-)}
-
-{step === 5 && (
-  <section className={style.form_section}>
-    <h3>5. Revisión</h3>
+    <h3>5. VistaPrevia</h3>
     <p>Vista previa del laboratorio</p>
   </section>
 )}
@@ -482,7 +396,7 @@ function LabConfigurarLabs() {
 
   <button
     type="button"
-    disabled={step === 5}
+    disabled={step === 4}
     onClick={() => setStep(step + 1)}
   >
     Siguiente
