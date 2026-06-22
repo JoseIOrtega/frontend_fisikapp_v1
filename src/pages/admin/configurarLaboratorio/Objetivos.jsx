@@ -1,93 +1,103 @@
 import { Plus } from "lucide-react";
-import style from "../LabConfigurarLabs.module.css";
+import style from "./Objetivos.module.css";
+import { useState } from "react";
+
 
 function Objetivos({
   objetivos,
-  palabrasClave,
-  selectedObjetivo,
-  selectedPalabra,
-  formData,
-  handleSelectChange,
-  openModal,
-  searchTerm,
-  setSearchTerm
+  selectedObjetivo
 }) {
 
+    const [objetivosEspecificos, setObjetivosEspecificos] = useState([
+  "",
+]);
+
+const agregarObjetivo = () => {
+  setObjetivosEspecificos([
+    ...objetivosEspecificos,
+    ""
+  ]);
+};
+
+const actualizarObjetivo = (index, valor) => {
+  const copia = [...objetivosEspecificos];
+  copia[index] = valor;
+  setObjetivosEspecificos(copia);
+};
+
+const eliminarObjetivo = (index) => {
+  const copia = [...objetivosEspecificos];
+  copia.splice(index, 1);
+  setObjetivosEspecificos(copia);
+};
+
   return (
-    <section className={style.form_section}>
+    
+   <section className={style.form_section}>
 
-      {
+      <h1 className={style.subtitulo}>Objetivos</h1>
 
-        <section className={style.form_section}>
-              <h3 className={style.subtitulo}>2. Clasificación y Metadatos</h3>
-              <div className={style.grid_inputs}>
-                
-                
+      <p>
+        Define el objetivo general y los específicos del laboratorio
+      </p>
 
-                {/* OBJETIVO */}
-            <div className={style.field}>
-              <label>Objetivo Principal *</label>
-              <div className={style.input_group_row}>
-                <select 
-                  className={style.input_diseno} 
-                  onChange={(e) => handleSelectChange(e, 'objective' in formData ? 'objective' : 'objetivo')} 
-                  value={formData.objetivo || formData.objective || ""}
-                >
-                  <option value="">Seleccione...</option>
-                  {/* Filtramos la lista en tiempo real para eliminar duplicados por ID */}
-                  {objetivos
-                    .filter((obj, index, self) => self.findIndex(o => o.id === obj.id) === index)
-                    .map((obj) => (
-                      <option key={obj.id} value={obj.id}>
-                        {obj.descripcion}
-                      </option>
-                    ))
-                  }
-                </select>
-                <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}>
-                  <Plus size={20}/>
-                </button>
-              </div>
-              {/* Se mantiene la descripción vinculada al estado si se requiere mostrar detalles adicionales */}
-             <div className={style.textarea_resumen}>{selectedObjetivo?.descripcion || "..."}</div>
-            </div>
+      <div className={style.field}>
+        <label>Objetivo General *</label>
 
-                {/* PALABRA CLAVE */}
-                <div className={style.field}>
-                  <label>Palabra Clave *</label>
-                  <div className={style.input_group_row}>
-                    <input
-                      list="palabras-list"
-                      className={style.input_diseno}
-                      placeholder="Escribe para buscar..."
-                      value={searchTerm} 
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setSearchTerm(val);
-                        const coincidencia = palabrasClave.find(p => p.palabra_clave === val);
-                        if (coincidencia) {
-                          handleSelectChange({ target: { value: coincidencia.id } }, 'palabra_clave');
-                        }
-                      }}
-                      onBlur={() => {
-                        const actual = palabrasClave.find(p => String(p.id) === String(formData.palabra_clave));
-                        if (actual) setSearchTerm(actual.palabra_clave);
-                      }}
-                    />
-                    <datalist id="palabras-list">
-                         {palabrasClave.map(p => (
-                            <option key={p.id} value={p.palabra_clave} />
-                              ))}
-                    </datalist>
-                    <button type="button" onClick={() => openModal("PAL")} className={style.btn_plus_secondary}><Plus size={20}/></button>
-                  </div>
-                  <div className={style.textarea_resumen}>{selectedPalabra?.descripcion || "..."}</div>
-                </div>
-              </div>
-            </section>
-      }
+        <div className={style.textarea_resumen}>
+          {selectedObjetivo?.descripcion || "Seleccione un objetivo general"}
+        </div>
+      </div>
 
+      <div className={style.objetivosHeader}>
+  <h3 className={style.tituloObjetivosEspecificos}>
+    Objetivos específicos *
+  </h3>
+
+  <button
+    type="button"
+    className={style.btnAgregarObjetivo}
+    onClick={agregarObjetivo}
+  >
+    <Plus size={16} />
+    Agregar objetivo
+  </button>
+</div>
+
+<div className={style.listaObjetivos}>
+
+  {objetivosEspecificos.map((objetivo, index) => (
+    <div key={index} className={style.objetivoItem}>
+
+      <span className={style.numeroObjetivo}>
+        {index + 1}.
+      </span>
+
+      <input
+        type="text"
+        value={objetivo}
+        onChange={(e) =>
+          actualizarObjetivo(index, e.target.value)
+        }
+        className={style.inputObjetivo}
+      />
+
+      <button
+  type="button"
+  className={style.btnEliminar}
+  onClick={() => eliminarObjetivo(index)}
+>
+  🗑️
+</button>
+
+    </div>
+  ))}
+
+</div>
+
+     
     </section>
+
   );
 }
 
