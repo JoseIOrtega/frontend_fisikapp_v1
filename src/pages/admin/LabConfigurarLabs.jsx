@@ -9,7 +9,7 @@ import style from './LabConfigurarLabs.module.css';
 import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
 import Objetivos from "./configurarLaboratorio/Objetivos";
 import Contenido from "./configurarLaboratorio/Contenido";
-import Revision from "./configurarLaboratorio/VistaPrevia";
+import VistaPrevia from "./configurarLaboratorio/VistaPrevia";
 import { 
   getCategorias, crearCategoria, 
   getObjetivosGenerales, crearObjetivoGeneral,
@@ -43,6 +43,9 @@ function LabConfigurarLabs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); 
   const [newData, setNewData] = useState({ nombre: '', descripcion: '', categoriaId: '', tipo_objetivo: '' });
+
+  // -- cristian--
+  const [objetivosEspecificos, setObjetivosEspecificos] = useState([ "" ]);
 
   // --- FORMULARIO PRINCIPAL ---
   const [formData, setFormData] = useState({
@@ -348,7 +351,7 @@ function LabConfigurarLabs() {
           )}
 
             {step === 2 && (
-               <Objetivos
+              <Objetivos
               objetivos={objetivos}
               palabrasClave={palabrasClave}
               selectedObjetivo={selectedObjetivo}
@@ -359,12 +362,11 @@ function LabConfigurarLabs() {
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
               handleGenerarConIA={handleGenerarConIA}
+              objetivosEspecificos={objetivosEspecificos}
+              setObjetivosEspecificos={setObjetivosEspecificos}
+              handleInputChange={handleInputChange}
               />
-
-           
-            
-
-          )}
+            )}
 
              {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
             {step === 3 && (
@@ -380,13 +382,16 @@ function LabConfigurarLabs() {
            
 
 {step === 4 && (
-  <section className={style.form_section}>
-    <h3>5. VistaPrevia</h3>
-    <p>Vista previa del laboratorio</p>
-  </section>
+ <VistaPrevia
+    formData={formData}
+    selectedObjetivo={selectedObjetivo}
+    objetivosEspecificos={objetivosEspecificos}
+    imagenPreview={imagenPreview}
+    categorias={categorias}
+  />
 )}
 
-              <div className={style.navigation}>
+    <div className={style.navigation}>
   <button
     type="button"
     disabled={step === 1}

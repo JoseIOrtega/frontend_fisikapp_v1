@@ -7,12 +7,12 @@ import { Plus, Sparkles } from "lucide-react";
 function Objetivos({
   objetivos,
   selectedObjetivo,
-  handleGenerarConIA
+  formData,
+  handleInputChange,
+  handleGenerarConIA,
+  objetivosEspecificos,
+  setObjetivosEspecificos
 }) {
-
-    const [objetivosEspecificos, setObjetivosEspecificos] = useState([
-  "",
-]);
 
 const agregarObjetivo = () => {
   setObjetivosEspecificos([
@@ -61,9 +61,13 @@ const eliminarObjetivo = (index) => {
       <div className={style.field}>
         <label>Objetivo General *</label>
 
-        <div className={style.textarea_resumen}>
-          {selectedObjetivo?.descripcion || "Seleccione un objetivo general"}
-        </div>
+        <textarea
+        name="objetivo_general"
+        className={style.textarea_resumen}
+        value={formData.objetivo_general || ""}
+        onChange={handleInputChange}
+        placeholder="Escribe el objetivo general..."
+        />
       </div>
 
       <div className={style.objetivosHeader}>
