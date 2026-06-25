@@ -75,12 +75,12 @@ function InformacionGeneral({
       <label>Descripción corta *</label>
 
       <textarea
-        name="resumen"
-        className={style.textarea_diseno}
-        value={formData.resumen}
-        onChange={handleInputChange}
-        placeholder="Describe brevemente el laboratorio..."
-      />
+    name="descripcion_corta"
+    className={style.textarea_diseno}
+    value={formData.descripcion_corta || ""}
+    onChange={handleInputChange}
+    placeholder="Describe brevemente el laboratorio..."
+/>
     </div>
 
     <div className={style.wrapper_botones_header}>

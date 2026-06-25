@@ -47,14 +47,7 @@ const eliminarObjetivo = (index) => {
     </p>
   </div>
 
-  <button
-  type="button"
-  className={style.btn_ia_gradient}
-  onClick={handleGenerarConIA}
->
-  <Sparkles size={16} className={style.icon_spark} />
-  Generar con IA
-</button>
+
 
 </div>
 
@@ -62,12 +55,13 @@ const eliminarObjetivo = (index) => {
         <label>Objetivo General *</label>
 
         <textarea
-        name="objetivo_general"
-        className={style.textarea_resumen}
-        value={formData.objetivo_general || ""}
-        onChange={handleInputChange}
-        placeholder="Escribe el objetivo general..."
+         name="objetivo"
+         className={style.textarea_resumen}
+         value={formData.objetivo || ""}
+         onChange={handleInputChange}
+         placeholder="Escribe el objetivo general..."
         />
+      
       </div>
 
       <div className={style.objetivosHeader}>

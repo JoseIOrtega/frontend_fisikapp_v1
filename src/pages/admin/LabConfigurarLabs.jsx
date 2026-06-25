@@ -16,7 +16,10 @@ import {
   getPalabrasClave, crearPalabraClave,
   crearLaboratorio 
 } from "../../services/admin/ConfigLabServices";
-import { generarContenidoLaboratorioIA } from "../../services/ia/iaService";
+import { generarPortadaIA,
+         generarImagenPortadaIA,
+         generarContenidoLaboratorioIA }
+ from "../../services/ia/iaService";
 
 function LabConfigurarLabs() {
   // --- ESTADOS DE DATOS ---
@@ -50,6 +53,7 @@ function LabConfigurarLabs() {
   // --- FORMULARIO PRINCIPAL ---
   const [formData, setFormData] = useState({
     titulo_lab: '',
+    descripcion_corta: "",
     resumen: '',
     prologo: '',
     introduccion: '',
@@ -152,40 +156,63 @@ function LabConfigurarLabs() {
 
   // --- LÓGICA DE INTEGRACIÓN CON IA ---
   const handleGenerarConIA = async () => {
-    if (!formData.titulo_lab || !formData.categoria || !formData.objetivo) {
-      showModal('error', '⚠️ Por favor rellene el Título, Categoría y Objetivo antes de usar la IA.');
-      return;
+
+    if (!formData.titulo_lab || !formData.categoria) {
+        showModal(
+            "error",
+            "⚠️ Por favor rellene el Título y la Categoría antes de usar la IA."
+        );
+        return;
     }
 
     try {
-      setIsGeneratingIA(true);
-      
-      // Mapeamos los textos reales que la IA necesita en lugar de los IDs numéricos
-      const payloadIA = {
-        titulo: formData.titulo_lab,
-        categoria: selectedCategoria ? selectedCategoria.nombre : "",
-        objetivo: selectedObjetivo ? selectedObjetivo.descripcion : "",
-        palabras_clave: searchTerm || (selectedPalabra ? selectedPalabra.palabra_clave : "")
-      };
 
-      const resultado = await generarContenidoLaboratorioIA(payloadIA);
+        setIsGeneratingIA(true);
 
-      if (resultado) {
-        setFormData(prev => ({
-          ...prev,
-          introduccion: resultado.introduccion || prev.introduccion,
-          resumen: resultado.resumen || prev.resumen,
-          prologo: resultado.prologo || prev.prologo,
-          marco_teorico: resultado.marco_teorico || prev.marco_teorico
-        }));
-        showModal('success', '✨ ¡Contenido generado y completado por la IA con éxito!');
-      }
+        const payloadPortada = {
+            titulo: formData.titulo_lab,
+            categoria: selectedCategoria
+                ? selectedCategoria.nombre
+                : ""
+        };
+
+        const portada = await generarPortadaIA(payloadPortada);
+
+        console.log("PORTADA:", portada);
+
+        if (portada) {
+
+            setFormData(prev => ({
+            ...prev,
+             descripcion_corta: portada.descripcion_corta || "",
+             objetivo: portada.objetivo_general || ""
+            }));
+
+            setObjetivosEspecificos(
+                portada.objetivos_especificos || []
+            );
+
+            showModal(
+                "success",
+                "✨ ¡Portada generada correctamente!"
+            );
+        }
+
     } catch (error) {
-      showModal('error', '❌ Ocurrió un error al comunicarse con el Agente de IA.');
+
+        console.error(error);
+
+        showModal(
+            "error",
+            "❌ Ocurrió un error al generar la portada."
+        );
+
     } finally {
-      setIsGeneratingIA(false);
+
+        setIsGeneratingIA(false);
+
     }
-  };
+};
 
   const openModal = (type) => {
     setModalType(type);
@@ -340,14 +367,16 @@ function LabConfigurarLabs() {
 
            {step === 1 && (
           <InformacionGeneral
-         formData={formData}
-         handleInputChange={handleInputChange}
-         handleSelectChange={handleSelectChange}
-         categorias={categorias}
-         openModal={openModal}
-         imagenPreview={imagenPreview}
-         setImagenPreview={setImagenPreview}
-        />
+    formData={formData}
+    handleInputChange={handleInputChange}
+    handleSelectChange={handleSelectChange}
+    categorias={categorias}
+    openModal={openModal}
+    imagenPreview={imagenPreview}
+    setImagenPreview={setImagenPreview}
+    handleGenerarConIA={handleGenerarConIA}
+    isGeneratingIA={isGeneratingIA}
+  />
           )}
 
             {step === 2 && (
@@ -361,7 +390,6 @@ function LabConfigurarLabs() {
               openModal={openModal}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              handleGenerarConIA={handleGenerarConIA}
               objetivosEspecificos={objetivosEspecificos}
               setObjetivosEspecificos={setObjetivosEspecificos}
               handleInputChange={handleInputChange}
