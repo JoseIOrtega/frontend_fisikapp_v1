@@ -61,6 +61,12 @@
     outline: none;
     transition: border 0.3s ease;
 }
+select.input_diseno {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 
 .input_diseno:focus, .textarea_diseno:focus {
     border-color: #18ffba;

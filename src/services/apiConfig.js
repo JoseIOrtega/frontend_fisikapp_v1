@@ -17,15 +17,15 @@ export const API_CONFIG = {
     // Centralizamos todas las Rutas
     ENDPOINTS: {
         AUTH: {
-            LOGIN: `${BASE_URL}/users/login/`,                            // Para Login.jsx
-            REGISTER: `${BASE_URL}/users/register/`,                      // Para RegistrarUsuario.jsx
+            LOGIN: `${BASE_URL}/users/login/`,                                 // Para Login.jsx
+            REGISTER: `${BASE_URL}/users/register/`,                           // Para RegistrarUsuario.jsx
             RECUPERAR: `${BASE_URL}/users/recuperar-contrasena/`,         // Para RecuperarContrasena.jsx
             RESETEAR: `${BASE_URL}/users/restablecer-contrasena/`,        // Para RestablecerContrasena.jsx
         },
 
         ADMIN: {
-            PERFIL:`${BASE_URL}/users/perfil/`,                             // Solo uso exclusivo para perfil  
-            CHANGE_PASSWORD: `${BASE_URL}/users/change-password/`,          // Para cambiar la contraseña en el perfil                 
+            PERFIL:`${BASE_URL}/users/perfil/`,                                 // Solo uso exclusivo para perfil  
+            CHANGE_PASSWORD: `${BASE_URL}/users/change-password/`,          // Para cambiar la contraseña en el perfil                                 
             USUARIO_DETALLE: (id) => `${BASE_URL}/users/usuarios/${id}/`,  // Para usuario por id.jsx
             USUARIOS_BASE: `${BASE_URL}/users/usuarios/`,                  // Para todos los usuarios
            
@@ -39,10 +39,17 @@ export const API_CONFIG = {
                 LIST: `${BASE_URL}/categorias/`, 
                 CREATE: `${BASE_URL}/categorias/`,
             },
-            OBJETIVOS: {
+            
+            // 🔄 NUEVOS ENDPOINTS SEPARADOS SEGÚN SWAGGER
+            OBJETIVOS_GENERALES: {
                 LIST: `${BASE_URL}/plantilla-objetivos-generales/`,
-                CREATE: `${BASE_URL}/objetivos/`,
+                CREATE: `${BASE_URL}/plantilla-objetivos-generales/`,
             },
+            OBJETIVOS_ESPECIFICOS: {
+                LIST: `${BASE_URL}/plantilla-objetivos-especificos/`,
+                CREATE: `${BASE_URL}/plantilla-objetivos-especificos/`,
+            },
+
             PALABRAS_CLAVE: {
                 LIST: `${BASE_URL}/palabras-clave/`,
                 CREATE: `${BASE_URL}/palabras-clave/`,
@@ -61,9 +68,10 @@ export const API_CONFIG = {
             CREAR_LABORATORIO: `${BASE_URL}/laboratorio-profesor/`,
             ACTUALIZAR_ESTADO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
             ELIMINAR_LABORATORIO:(id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
-            DETALLE_LABORATORIO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,  //para configurar laboratorio
-        },
 
+            // 📊 NUEVO ENDPOINT PARA HISTORIAL DE REPORTES
+            HISTORIAL_REPORTES: `${BASE_URL}/reportes/historial/`,
+        },
 
     }
 };

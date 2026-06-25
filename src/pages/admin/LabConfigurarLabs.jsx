@@ -6,11 +6,16 @@ import GenericModal from "../../components/modals/GenericModal";
 import { useModal } from '../../context/ModalContext';
 import { Plus, Save, Sparkles } from 'lucide-react';
 import style from './LabConfigurarLabs.module.css';
-import { 
-  getCategorias, crearCategoria, 
-  getObjetivos, crearObjetivo,
-  getPalabrasClave, crearPalabraClave,
-  crearLaboratorio 
+import {
+    getCategorias,
+    crearCategoria,
+    getPalabrasClave,
+    crearPalabraClave,
+    crearLaboratorio,
+    getObjetivosGenerales,
+    getObjetivosEspecificos,
+    crearObjetivoGeneral,
+    crearObjetivoEspecifico
 } from "../../services/admin/ConfigLabServices";
 import { generarContenidoLaboratorioIA } from "../../services/ia/iaService";
 
@@ -18,7 +23,9 @@ function LabConfigurarLabs() {
   // --- ESTADOS DE DATOS ---
   const { showModal } = useModal();
   const [categorias, setCategorias] = useState([]);
-  const [objetivos, setObjetivos] = useState([]);
+  // Nuevos estados independientes con valores iniciales de arreglos vacíos
+const [objetivosGenerales, setObjetivosGenerales] = useState([]);
+const [objetivosEspecificos, setObjetivosEspecificos] = useState([]);
   const [palabrasClave, setPalabrasClave] = useState([]);
   
   // --- ESTADOS DE SELECCIÓN ---
@@ -100,22 +107,42 @@ function LabConfigurarLabs() {
         }
     };
 
-  const cargarTodosLosDatos = async () => {
+const cargarTodosLosDatos = async () => {
     try {
-      const [cats, objs, pals] = await Promise.all([
-        getCategorias(), getObjetivos(), getPalabrasClave()
-      ]);
-      setCategorias(cats);
-      setObjetivos(objs);
-      setPalabrasClave(pals);
-      
-      if (formData.categoria) setSelectedCategoria(cats.find(c => String(c.id) === String(formData.categoria)));
-      if (formData.objetivo) setSelectedObjetivo(objs.find(o => String(o.id) === String(formData.objetivo)));
-      if (formData.palabra_clave) setSelectedPalabra(pals.find(p => String(p.id) === String(formData.palabra_clave)));
+        // 1. Llamamos a los 4 métodos de servicios en paralelo
+        const [cats, pals, objsGenerales, objsEspecificos] = await Promise.all([
+            getCategorias(),
+            getPalabrasClave(),
+            getObjetivosGenerales(), // Reemplaza al viejo getObjetivos
+            getObjetivosEspecificos() // Trae los específicos por separado
+        ]);
+
+        // 2. Guardamos en los estados correspondientes
+        setCategorias(cats);
+        setPalabrasClave(pals);
+        
+        // Suponiendo que renombraste tus useState para soportar ambos:
+        setObjetivosGenerales(objsGenerales);
+        setObjetivosEspecificos(objsEspecificos);
+
+        // 3. Mantenemos la lógica de selección inicial si existen datos en el formulario
+        if (formData.categoria) {
+            setSelectedCategoria(cats.find(c => String(c.id) === String(formData.categoria)));
+        }
+        
+        // Mapea con la lista general para no romper el flujo existente
+        if (formData.objetivo) {
+            setSelectedObjetivo(objsGenerales.find(o => String(o.id) === String(formData.objetivo)));
+        }
+        
+        if (formData.palabra_clave) {
+            setSelectedPalabra(pals.find(p => String(p.id) === String(formData.palabra_clave)));
+        }
+
     } catch (error) {
-      console.error("Error cargando datos");
+        console.error("Error cargando datos detallado:", error);
     }
-  };
+};
 
   useEffect(() => { cargarTodosLosDatos(); }, []);
 
@@ -417,14 +444,18 @@ function LabConfigurarLabs() {
                 >
                   <option value="">Seleccione...</option>
                   {/* Filtramos la lista en tiempo real para eliminar duplicados por ID */}
-                  {objetivos
+                {/* Combinamos las dos listas nuevas para mantener el flujo del componente sin romper nada */}
+                {[
+                    ...objetivosGenerales.map(o => ({ ...o, tipo_objetivo: "General" })),
+                    ...objetivosEspecificos.map(o => ({ ...o, tipo_objetivo: "Específico" }))
+                ]
                     .filter((obj, index, self) => self.findIndex(o => o.id === obj.id) === index)
                     .map((obj) => (
                       <option key={obj.id} value={obj.id}>
-                        {obj.tipo_objetivo === "General" ? "Objetivo General" : "Objetivo Específico"}
+                        {obj.descripcion} - ({obj.tipo_objetivo === "General" ? "Objetivo General" : "Objetivo Específico"})
                       </option>
                     ))
-                  }
+                }
                 </select>
                 <button type="button" onClick={() => openModal("OBJ")} className={style.btn_plus_secondary}>
                   <Plus size={20}/>

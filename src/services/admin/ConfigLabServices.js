@@ -13,9 +13,24 @@ const fetchGet = async (url) => {
     }
 };
 
+// =========================================================
+// 🔄 MÉTODOS GET (LISTAR)
+// =========================================================
+
 export const getCategorias = () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.LIST);
-export const getObjetivos = () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS.LIST);
 export const getPalabrasClave = () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.PALABRAS_CLAVE.LIST);
+
+// Nuevos métodos GET para objetivos separados
+export const getObjetivosGenerales = () => 
+    fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS_GENERALES.LIST);
+
+export const getObjetivosEspecificos = () => 
+    fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS_ESPECIFICOS.LIST);
+
+
+// =========================================================
+// ➕ MÉTODOS POST (CREAR)
+// =========================================================
 
 export const crearCategoria = async (data) => {
     const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.CREATE, {
@@ -34,16 +49,35 @@ export const crearCategoria = async (data) => {
     return result;
 };
 
-export const crearObjetivo = async (data) => {
-    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS.CREATE, {
+// 1. Crear Objetivo General (Adaptado a Swagger: descripcion y plantilla)
+export const crearObjetivoGeneral = async (data) => {
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS_GENERALES.CREATE, {
         method: "POST",
         headers: {
             ...API_CONFIG.getHeaders(),
-            "Content-Type": "application/json" // Inyección manual para evitar error 415
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            tipo_objetivo: data.nombre,
-            descripcion_objetivo: data.descripcion
+            descripcion: data.descripcion,
+            plantilla: data.plantillaId // ID numérico de la plantilla
+        }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw result;
+    return result;
+};
+
+// 2. Crear Objetivo Específico (Adaptado a Swagger: descripcion y objetivo_general)
+export const crearObjetivoEspecifico = async (data) => {
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS_ESPECIFICOS.CREATE, {
+        method: "POST",
+        headers: {
+            ...API_CONFIG.getHeaders(),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            descripcion: data.descripcion,
+            objetivo_general: data.objetivoGeneralId // ID numérico del objetivo general
         }),
     });
     const result = await response.json();
