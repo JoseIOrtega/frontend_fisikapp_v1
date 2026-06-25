@@ -9,8 +9,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
@@ -18,27 +17,13 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-/* Estado Específico: Archivada */
-.cardArchivada {
-  background-color: #fcfcfd;
-  border: 1px solid #e2e8f0;
-  box-shadow: none;
-  opacity: 0.85;
-}
-
-.cardArchivada:hover {
-  transform: translateY(-2px);
-  opacity: 1;
-}
-
-/* Estado Específico: Inactiva (Pausada o Bloqueada) */
 .cardInactiva {
   background: #f8fafc;
   border: 1px dashed #cbd5e1;
 }
 
 /* ==========================================================================
-   HEADER Y ELEMENTOS SUPERIORES
+   HEADER Y SWITCH
    ========================================================================== */
 .header {
   display: flex;
@@ -54,102 +39,57 @@
   border-radius: 10px;
 }
 
-.adminLock {
-  background: #fff1f2;
-  color: #e11d48;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.6rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1; transition: .4s; border-radius: 34px;
 }
+.slider:before {
+  position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+  background-color: white; transition: .4s; border-radius: 50%;
+}
+.switch input:checked + .slider { background-color: #1e3a8a; }
+.switch input:checked + .slider:before { transform: translateX(14px); }
 
 /* ==========================================================================
-   CONTENIDO (TÍTULO Y CATEGORÍA)
+   CONTENIDO (TÍTULO, CATEGORÍA Y FECHA)
    ========================================================================== */
 .content {
   margin-top: 10px;
   margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .title {
   color: #1e293b;
   font-size: 1.1rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 8px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
-  display: block;
 }
 
-.cardArchivada .title {
-  color: #475569;
+.schoolInfo {
+  display: flex;
+  flex-direction: column; /* Apila categoría y fecha */
+  gap: 2px;
 }
 
 .category {
-  color: #94a3b8;
-  font-size: 0.8rem;
-  margin: 2px 0 0 0;
-}
-
-.adminMsg {
-  color: #e11d48;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-top: 4px;
-}
-
-.inactiveMsg {
-  color: #64748b;
-  font-size: 0.8rem;
-  margin-top: 4px;
-}
-
-/* ==========================================================================
-   🚀 SECCIÓN DE INFORMACIÓN ESCOLAR (NUEVO REGISTRO EN FILA CONSECUTIVA)
-   ========================================================================== */
-.schoolInfo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  flex-wrap: wrap;
-}
-
-.badge {
-  background-color: #f1f5f9;
-  color: #475569;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-}
-
-.separator {
-  color: #cbd5e1;
-  font-size: 0.7rem;
+  color: #555;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .dateLabel {
   color: #94a3b8;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  margin-left: 2px; /* Alineado de corrido junto a la jornada */
 }
 
 /* ==========================================================================
-   SECCIÓN DEL CÓDIGO DE ACCESO
+   CÓDIGO DE ACCESO / ESTADO
    ========================================================================== */
 .codeSection {
   background: #f0f9ff;
@@ -158,13 +98,15 @@
   padding: 12px;
   margin-bottom: 1rem;
   text-align: center;
-  transition: all 0.3s ease;
 }
 
-.codeDisabled {
-  background: #f1f5f9 !important;
-  border-color: #e2e8f0 !important;
-  opacity: 0.7;
+.codeSectionPending {
+  background-color: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .codeHint {
@@ -181,51 +123,6 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: #1e3a8a;
-  letter-spacing: 1px;
-}
-
-.cardArchivada .codeValue {
-  color: #94a3b8;
-  font-style: italic;
-}
-
-/* Texto de alerta debajo del título */
-.pendingMsg {
-  color: #D46B08;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Contenedor central cuando el laboratorio está incompleto */
-.codeSectionPending {
-  background-color: #F8FAFC;
-  border: 1px dashed #CBD5E1;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-  margin: 15px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 54px;
-  box-sizing: border-box;
-}
-
-.codeHintPending {
-  font-size: 0.7rem;
-  color: #64748B;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-}
-
-.codeValuePending {
-  font-size: 1rem;
-  color: #475569;
-  font-weight: 600;
-  letter-spacing: 0.3px;
 }
 
 /* ==========================================================================
@@ -248,14 +145,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   transition: all 0.2s;
 }
 
-.deleteBtn:hover {
-  background: #ef4444;
-  color: white;
-}
+.deleteBtn:hover { background: #ef4444; color: white; }
 
 .enterBtn {
   flex: 1;
@@ -271,98 +164,6 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.2s;
 }
 
-.enterBtn:hover:not(:disabled) {
-  background: #172554;
-}
-
-.enterBtn:disabled {
-  background: #cbd5e1;
-  cursor: not-allowed;
-}
-
-/* Botón específico para Archivados */
-.reuseBtn {
-  flex: 1;
-  height: 40px;
-  background: #f0f9ff;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.reuseBtn:hover {
-  background: #e0f2fe;
-  color: #0c4a6e;
-  border-color: #7dd3fc;
-}
-
-.reuseBtn svg {
-  transition: transform 0.4s ease;
-}
-
-.reuseBtn:hover svg {
-  transform: rotate(180deg);
-}
-
-/* 🚀 Cuando la tarjeta está inactiva, el botón cambia de color a gris sutil */
-.cardInactiva .enterBtn {
-  background-color: #cbd5e1 !important;
-  color: #64748b !important;
-  border: 1px solid #cbd5e1;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.cardInactiva .enterBtn:hover {
-  background-color: #cbd5e1 !important;
-}
-
-/* ==========================================================================
-   SWITCH DE ESTADO
-   ========================================================================== */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 34px;
-  height: 20px;
-}
-
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #cbd5e1;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px; width: 14px;
-  left: 3px; bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-.switch input:checked + .slider {
-  background-color: #1e3a8a;
-}
-
-.switch input:checked + .slider:before {
-  transform: translateX(14px);
-}
+.enterBtn:hover { background: #172554; }

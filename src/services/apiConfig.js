@@ -54,6 +54,9 @@ export const API_CONFIG = {
 
         },
         DOCENTE: {
+            // para que el docente pueda ver la información antes de empezar a trabajar
+            DETALLE_PLANTILLA: (id) => `${BASE_URL}/plantillas/${id}/`,
+
             // Ruta para listar los laboratorios que pertenecen al docente
             LABORATORIOS_DOCENTE: `${BASE_URL}/laboratorio-profesor/mis_laboratorios/`,
             

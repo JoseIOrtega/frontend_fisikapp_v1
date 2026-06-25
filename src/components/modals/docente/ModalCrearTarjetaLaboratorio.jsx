@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { X, PlusCircle, Loader2 } from 'lucide-react'; 
+import { X, PlusCircle } from 'lucide-react'; 
 import style from './ModalCrearTarjetaLaboratorio.module.css';
-import { CrearTarjetaLaboratorio } from '../../../services/docente/CrearTarjetaLabService'; 
 
 function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, plantillasRaw }) {
   const [categoriaSel, setCategoriaSel] = useState("");
   const [plantillasFiltradas, setPlantillasFiltradas] = useState([]);
   const [plantillaFinal, setPlantillaFinal] = useState(null);
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 1. Filtrar plantillas por área/categoría
-  // 2. Filtrar plantillas por área/categoría
   useEffect(() => {
     if (categoriaSel && plantillasRaw) {
       const idSeleccionado = parseInt(categoriaSel, 10);
-      
-      const filtradas = plantillasRaw.filter(p => {
-        // En tu JSON, el campo se llama simplemente 'categoria' y es un número
-        const idCat = parseInt(p.categoria, 10);
-        return idCat === idSeleccionado;
-      });
-
+      const filtradas = plantillasRaw.filter(p => parseInt(p.categoria, 10) === idSeleccionado);
       setPlantillasFiltradas(filtradas);
       setPlantillaFinal(null); 
     } else {
@@ -30,32 +20,19 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
     }
   }, [categoriaSel, plantillasRaw]);
 
-  // Limpiar el formulario y estados al cerrar
+  // Limpiar estados al cerrar
   useEffect(() => {
     if (!isOpen) {
       setCategoriaSel("");
       setPlantillasFiltradas([]);
       setPlantillaFinal(null);
-      setIsSubmitting(false);
     }
   }, [isOpen]);
 
-  // MANEJADOR INTERNO: Solo enviamos el ID de la plantilla
-  const handleFormSubmit = async () => {
-    if (!plantillaFinal || isSubmitting) return;
-    
-    try {
-      setIsSubmitting(true);
-
-      const tarjetaNuevaData = {
-        id_padre: plantillaFinal.id
-      };
-
-      // Pasamos el objeto adaptado al componente padre
-      await onConfirm(tarjetaNuevaData);
-    } catch (err) {
-      console.error("Error al confirmar la creación de la tarjeta:", err);
-      setIsSubmitting(false);
+  // MANEJADOR SIMPLIFICADO: Solo enviamos la plantilla completa al padre
+  const handleConfirmar = () => {
+    if (plantillaFinal) {
+      onConfirm(plantillaFinal);
     }
   };
 
@@ -69,7 +46,7 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
             <div className={style.iconBadge}><PlusCircle size={20} /></div>
             <h2>Nuevo Laboratorio</h2>
           </div>
-          <button onClick={onClose} disabled={isSubmitting} className={style.closeBtn}>
+          <button onClick={onClose} className={style.closeBtn}>
             <X size={20} />
           </button>
         </header>
@@ -79,7 +56,6 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
           <div className={style.inputGroup}>
             <label>1. Área / Categoría</label>
             <select 
-              disabled={isSubmitting}
               value={categoriaSel} 
               onChange={(e) => setCategoriaSel(e.target.value)}
               className={style.select}
@@ -92,10 +68,10 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
           </div>
 
           {/* PASO 2: LABORATORIO */}
-          <div className={`${style.inputGroup} ${(!categoriaSel || isSubmitting) ? style.disabled : ''}`}>
+          <div className={`${style.inputGroup} ${!categoriaSel ? style.disabled : ''}`}>
             <label>2. Nombre del Laboratorio</label>
             <select 
-              disabled={!categoriaSel || isSubmitting}
+              disabled={!categoriaSel}
               value={plantillaFinal?.id || ""} 
               onChange={(e) => {
                 const p = plantillasFiltradas.find(item => item.id === parseInt(e.target.value, 10));
@@ -105,7 +81,6 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
             >
               <option value="">{categoriaSel ? "Elige el experimento..." : "Primero elige un área"}</option>
               {plantillasFiltradas.map(p => (
-                // AQUÍ ESTÁ EL CAMBIO: usa p.titulo en lugar de p.titulo_lab
                 <option key={p.id} value={p.id}>{p.titulo}</option> 
               ))}
             </select>
@@ -113,22 +88,15 @@ function ModalCrearTarjetaLaboratorio({ isOpen, onClose, onConfirm, categorias, 
         </div>
 
         <footer className={style.footer}>
-          <button onClick={onClose} disabled={isSubmitting} className={style.cancelBtn}>
+          <button onClick={onClose} className={style.cancelBtn}>
             Cancelar
           </button>
           <button 
-            onClick={handleFormSubmit} 
+            onClick={handleConfirmar} 
             className={style.confirmBtn}
-            disabled={!plantillaFinal || isSubmitting}
+            disabled={!plantillaFinal}
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={16} className={style.spinner} />
-                Creando...
-              </>
-            ) : (
-              "Crear Tarjeta"
-            )}
+            Crear Tarjeta
           </button>
         </footer>
       </div>
