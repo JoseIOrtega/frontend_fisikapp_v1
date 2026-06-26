@@ -617,15 +617,123 @@ textarea:disabled {
   box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
 
-.uploadBox{
-  flex:1;
-  min-height:140px;
-  border:2px dashed #dbe3f0;
-  border-radius:12px;
-  background:#fafcff;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
+.uploadBox {
+  flex: 1;
+  height: 160px;
+  border: 2px dashed #dbe3f0;
+  border-radius: 12px;
+  background: #fafcff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
+
+
+
+
+
+
+.generandoImagen {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.generandoImagen h4 {
+    margin: 15px 0 10px;
+    color: #1e3a8a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.generandoImagen p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.generandoImagen span {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #dbeafe;
+    border-top: 5px solid #4f46e5;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.iconUpload{
+    color:#6366f1;
+    margin-bottom:12px;
+}
+
+.uploadContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.uploadContent h4{
+    margin:0;
+    color:#1e3a8a;
+    font-size:18px;
+    font-weight:600;
+}
+
+.uploadContent p{
+    margin:0;
+    color:#475569;
+    font-size:14px;
+}
+
+.uploadContent span{
+    color:#64748b;
+    font-size:13px;
+}
+
+.uploadContent small{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.uploadLabel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+

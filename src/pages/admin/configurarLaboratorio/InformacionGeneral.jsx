@@ -1,4 +1,4 @@
- import { Plus, Sparkles } from "lucide-react";
+ import { Plus, Sparkles, ImagePlus} from "lucide-react";
 import style from "../LabConfigurarLabs.module.css";
 
 function InformacionGeneral({
@@ -8,6 +8,7 @@ function InformacionGeneral({
   handleSelectChange,
   openModal,
   imagenPreview,
+  isGeneratingImagen,
   setImagenPreview,
   handleGenerarConIA,
   isGeneratingIA,
@@ -105,10 +106,27 @@ function InformacionGeneral({
     <div className={style.uploadBox}>
   <label htmlFor="imagenPortada" className={style.uploadLabel}>
     <div className={style.uploadContent}>
-      
-      <p>Arrastra una imagen o haz clic para seleccionar</p>
-      <span>PNG, JPG o WEBP</span>
-    </div>
+
+    <ImagePlus
+        size={42}
+        className={style.iconUpload}
+    />
+
+    <h4>Agregar portada</h4>
+
+    <p>
+        Arrastra una imagen o haz clic para seleccionarla
+    </p>
+
+    <span>
+        PNG · JPG · WEBP
+    </span>
+
+    <small>
+        Máximo 20 MB
+    </small>
+
+</div>
   </label>
 
   <input
@@ -127,7 +145,25 @@ function InformacionGeneral({
 </div>
 
   <div className={style.previewBox}>
-  {imagenPreview ? (
+
+  {isGeneratingImagen ? (
+
+    <div className={style.generandoImagen}>
+
+      <div className={style.spinner}></div>
+
+      <h4>Creando una portada personalizada</h4>
+
+      <p>
+        La IA está generando una ilustración para este laboratorio.
+      </p>
+
+      <span>Esto puede tardar unos segundos...</span>
+
+    </div>
+
+  ) : imagenPreview ? (
+
     <>
       <img
         src={imagenPreview}
@@ -143,9 +179,13 @@ function InformacionGeneral({
         ✕
       </button>
     </>
+
   ) : (
+
     <span>Vista previa</span>
+
   )}
+
 </div>
 
   </div>

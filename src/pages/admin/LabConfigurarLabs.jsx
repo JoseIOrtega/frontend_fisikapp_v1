@@ -49,6 +49,7 @@ function LabConfigurarLabs() {
 
   // -- cristian--
   const [objetivosEspecificos, setObjetivosEspecificos] = useState([ "" ]);
+  const [isGeneratingImagen, setIsGeneratingImagen] = useState(false);
 
   // --- FORMULARIO PRINCIPAL ---
   const [formData, setFormData] = useState({
@@ -201,6 +202,7 @@ const handleGenerarConIA = async () => {
             // ==========================
             // IMAGEN (NO BLOQUEA)
             // ==========================
+            setIsGeneratingImagen(true);
 
             generarImagenPortadaIA(payloadPortada)
                 .then((resultado) => {
@@ -222,6 +224,12 @@ const handleGenerarConIA = async () => {
                         "Error generando imagen:",
                         error
                     );
+
+                })
+
+                .finally(() => {
+
+              setIsGeneratingImagen(false);
 
                 });
 
@@ -261,17 +269,22 @@ const handleGenerarConIA = async () => {
 
         console.error(error);
 
+        
+
         showModal(
             "error",
             "❌ Ocurrió un error al generar el laboratorio."
         );
 
-    } finally {
+    } 
+    finally {
 
         setIsGeneratingIA(false);
 
     }
 };
+
+
 
   const openModal = (type) => {
     setModalType(type);
@@ -435,6 +448,7 @@ const handleGenerarConIA = async () => {
     setImagenPreview={setImagenPreview}
     handleGenerarConIA={handleGenerarConIA}
     isGeneratingIA={isGeneratingIA}
+    isGeneratingImagen={isGeneratingImagen}
   />
           )}
 
