@@ -23,17 +23,7 @@ function Contenido({
         />
       </div>
 
-      <div className={style.field}>
-        <label>Prólogo</label>
-        <textarea
-          name="prologo"
-          className={style.textarea_diseno}
-          onChange={handleInputChange}
-          value={formData.prologo}
-          disabled={isGeneratingIA}
-        />
-      </div>
-
+    
       <div className={style.field}>
         <label>Introducción *</label>
         <textarea

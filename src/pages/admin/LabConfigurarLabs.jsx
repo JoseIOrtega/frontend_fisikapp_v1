@@ -155,7 +155,7 @@ function LabConfigurarLabs() {
   };
 
   // --- LÓGICA DE INTEGRACIÓN CON IA ---
-  const handleGenerarConIA = async () => {
+const handleGenerarConIA = async () => {
 
     if (!formData.titulo_lab || !formData.categoria) {
         showModal(
@@ -168,6 +168,10 @@ function LabConfigurarLabs() {
     try {
 
         setIsGeneratingIA(true);
+
+        // ==========================
+        // PORTADA
+        // ==========================
 
         const payloadPortada = {
             titulo: formData.titulo_lab,
@@ -182,19 +186,74 @@ function LabConfigurarLabs() {
 
         if (portada) {
 
+            // Llenar descripción y objetivo
             setFormData(prev => ({
-            ...prev,
-             descripcion_corta: portada.descripcion_corta || "",
-             objetivo: portada.objetivo_general || ""
+                ...prev,
+                descripcion_corta: portada.descripcion_corta || "",
+                objetivo: portada.objetivo_general || ""
             }));
 
+            // Llenar objetivos específicos
             setObjetivosEspecificos(
                 portada.objetivos_especificos || []
             );
 
+            // ==========================
+            // IMAGEN (NO BLOQUEA)
+            // ==========================
+
+            generarImagenPortadaIA(payloadPortada)
+                .then((resultado) => {
+
+                    console.log("IMAGEN:", resultado);
+
+                    if (resultado.imagen) {
+
+                        setImagenPreview(
+                            `data:image/png;base64,${resultado.imagen}`
+                        );
+
+                    }
+
+                })
+                .catch((error) => {
+
+                    console.error(
+                        "Error generando imagen:",
+                        error
+                    );
+
+                });
+
+            // ==========================
+            // CONTENIDO
+            // ==========================
+
+            const payloadContenido = {
+                titulo: formData.titulo_lab,
+                categoria: selectedCategoria
+                    ? selectedCategoria.nombre
+                    : "",
+                objetivo: portada.objetivo_general,
+                palabras_clave: ""
+            };
+
+            const contenido = await generarContenidoLaboratorioIA(
+                payloadContenido
+            );
+
+            console.log("CONTENIDO:", contenido);
+
+            setFormData(prev => ({
+                ...prev,
+                resumen: contenido.resumen || "",
+                introduccion: contenido.introduccion || "",
+                marco_teorico: contenido.marco_teorico || ""
+            }));
+
             showModal(
                 "success",
-                "✨ ¡Portada generada correctamente!"
+                "✨ ¡Laboratorio generado correctamente!"
             );
         }
 
@@ -204,7 +263,7 @@ function LabConfigurarLabs() {
 
         showModal(
             "error",
-            "❌ Ocurrió un error al generar la portada."
+            "❌ Ocurrió un error al generar el laboratorio."
         );
 
     } finally {

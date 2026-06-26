@@ -153,31 +153,9 @@ function InformacionGeneral({
 
 <div className={style.estadoGrid}>
 
-  <label className={style.estadoCard}>
-    <input
-      type="radio"
-      name="estado"
-      value="BORRADOR"
-    />
+  
 
-    <div>
-      <h4>ACTIVO</h4>
-      <p>Solo tú puedes verlo y editarlo.</p>
-    </div>
-  </label>
-
-  <label className={style.estadoCard}>
-    <input
-      type="radio"
-      name="estado"
-      value="PUBLICADO"
-    />
-
-    <div>
-      <h4>INACTIVO</h4>
-      <p>Disponible para profesores.</p>
-    </div>
-  </label>
+  
 
 </div>
 
