@@ -1,114 +1,542 @@
 /* --- COMPLEMENTOS PARA EL DASHBOARD DE PROFESOR --- */
 
 .welcomeBannerContainer {
-    background-color: #0D274F;
-    color: #FFFFFF;
-    border-radius: 24px;
-    padding: 36px 40px;
-    box-shadow: 0px 4px 20px rgba(13, 39, 79, 0.05);
+    background-color: #142050; 
+    color: #FFFFFF; 
+    border-radius: 24px; 
+    padding: 36px 40px; 
+    box-shadow: 0px 4px 20px rgba(13, 39, 79, 0.05); 
 }
 
 .welcomeTitle {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0 0 12px 0;
-    letter-spacing: -0.02em;
+    font-size: 32px; 
+    font-weight: 700; 
+    margin: 0 0 12px 0; 
+    letter-spacing: -0.02em; 
 }
 
 .welcomeSubtitle {
-    color: #A3B1CC;
-    font-size: 15px;
-    margin: 0 0 28px 0;
-    max-width: 800px;
-    line-height: 1.5;
-    font-weight: 500;
+    color: #A3B1CC; 
+    font-size: 15px; 
+    margin: 0 0 28px 0; 
+    max-width: 800px; 
+    line-height: 1.5; 
+    font-weight: 500; 
 }
 
 .welcomeButtonGroup {
-    display: flex;
-    gap: 16px;
+    display: flex; 
+    gap: 16px; 
 }
 
 .btnMint {
-    background-color: #32EEB5;
-    color: #0D274F;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    background-color: #32EEB5; 
+    color: #0D274F; 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 12px; 
+    font-weight: 700; 
+    font-size: 14px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    transition: background-color 0.2s ease, transform 0.1s ease; 
 }
 
 .btnMint:hover {
-    background-color: #29cfa0;
+    background-color: #29cfa0; 
 }
 
 .btnMint:active {
-    transform: scale(0.98);
+    transform: scale(0.98); 
 }
 
 .btnDarkBorder {
-    background-color: rgba(255, 255, 255, 0.06);
-    color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.06); 
+    color: #FFFFFF; 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    padding: 12px 24px; 
+    border-radius: 12px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: background-color 0.2s ease, border-color 0.2s ease; 
 }
 
 .btnDarkBorder:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.12); 
+    border-color: rgba(255, 255, 255, 0.25); 
 }
 
 .breadcrumbText {
-    font-size: 12px;
-    color: #94a3b8;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: 0.02em;
+    font-size: 12px; 
+    color: #94a3b8; 
+    font-weight: 700; 
+    text-transform: none; 
+    letter-spacing: 0.02em; 
 }
 
-.breadcrumbDivider {
-    margin: 0 4px;
-    color: #cbd5e1;
+.breadcrumbDivider {margin: 0 4px; 
+    color: #cbd5e1; 
 }
 
 .breadcrumbCurrent {
-    color: #475569;
-    font-weight: 500;
+    color: #475569; 
+    font-weight: 500; 
 }
 
 .btnActionFilter {
+    background-color: #FFFFFF; 
+    color: #142050; 
+    border: 1px solid #e2e8f0; 
+    padding: 10px 18px; 
+    border-radius: 10px; 
+    font-size: 14px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.01); 
+    transition: background-color 0.2s ease, border-color 0.2s ease; 
+}
+
+.btnActionFilter:hover {
+    background-color: #f8fafc; 
+    border-color: #cbd5e1; 
+}
+
+.iconSvg {
+    display: inline-block; 
+    vertical-align: middle; 
+}
+
+/* ========================================================== */
+/* NUEVOS ESTILOS DE ENTORNO CLARO BASADOS EN LA SEGUNDA IMAGEN*/
+/* ========================================================== */
+
+.imgMetricsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.imgMiniCard {
     background-color: #FFFFFF;
-    color: #142050;
-    border: 1px solid #e2e8f0;
-    padding: 10px 18px;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.imgCardTopFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.imgIconWrapper {
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Colores suaves para los íconos */
+.bgIconLightBlue { background-color: #eff6ff; }
+.bgIconLightMint { background-color: #ecfdf5; }
+.bgIconLightPink { background-color: #fdf2f8; }
+.bgIconLightGray { background-color: #f3f4f6; }
+
+.imgBadgeGreen {
+    background-color: #e6fbf4;
+    color: #059669;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.imgBadgeCyan {
+    background-color: #ecfeff;
+    color: #0891b2;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.imgTextRightLabel {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.imgCardMetaLabel {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.imgCardValue {
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+/* Estructura inferior de Gráficos */
+.imgBottomGrid {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.imgBigCard {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.imgGraphHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.imgCardTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.imgLegendsGroup {
+    display: flex;
+    gap: 14px;
+}
+
+.imgLegendItem {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.legendDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dotDarkBlue { background-color: #0f172a; }
+.dotMint { background-color: #22d3ee; }
+.dotLila { background-color: #c084fc; }
+.dotPink { background-color: #f472b6; }
+
+.imgLineGraphArea {
+    width: 100%;
+    height: 160px;
+    margin-top: 10px;
+}
+
+.imgMonthsXAxis {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-top: 8px;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Anillo Circular del Estatus */
+.imgCircleWrapperCenter {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 24px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgCircularSvg {
+    transform: rotate(-90deg);
+}
+
+.imgCircleBack {
+    fill: none;
+    stroke: #e0e7ff;
+    stroke-width: 3.5;
+}
+
+.imgCircleFront {
+    fill: none;
+    stroke: #22d3ee;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+}
+
+.imgCircleTextInside {
+    position: absolute;
+    text-align: center;
+}
+
+.imgPercentNumber {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.imgPercentSub {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Listado Inferior de Estados */
+.imgStatusList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.imgStatusRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.imgStatusRow strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* --- CONTROLADOR DE PAGINACIÓN DE FASES (TABS) --- */
+
+.paginationTabsContainer {
+    display: flex;
+    background-color: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.tabNavButton {
+    background-color: transparent;
+    color: #475569;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.01);
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
-.btnActionFilter:hover {
+.tabActive {
+    background-color: #FFFFFF;
+    color: #0f172a;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tabBadgeNotification {
+    background-color: #ef4444;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 8px;
+    line-height: 1;
+}
+
+/* --- ESTILOS ADICIONALES PARA FASE 2 (image_284400.png) --- */
+
+.phase2CardTitle {
+    font-size: 19px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.btnLinkText {
+    background: none;
+    border: none;
+    color: #0d9488;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.phase2TableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.phase2Table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.phase2Table th {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
     background-color: #f8fafc;
-    border-color: #cbd5e1;
 }
 
-.iconSvg {
-    display: inline-block;
+.phase2Table td {
+    padding: 18px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
     vertical-align: middle;
+}
+
+.tableTdId {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.studentUserFlex {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.studentAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justifyContent: center;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Paletas de Colores de Avatares */
+.avatarMA { background-color: #e0f2fe; color: #0369a1; }
+.avatarSR { background-color: #e0e7ff; color: #4338ca; }
+.avatarJV { background-color: #fce7f3; color: #be185d; }
+
+.studentNameText {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.tableTdDate { color: #64748b; font-weight: 500; }
+.tableTdLab { color: #475569; font-weight: 500; }
+
+/* Píldoras de Estado (Badges) */
+.pillStatusBase {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.badgePending { background-color: #fff1f2; color: #e11d48; }
+.badgeReviewed { background-color: #ecfeff; color: #0891b2; }
+.badgeFeedback { background-color: #f1f5f9; color: #475569; }
+
+/* Panel de Actividad Derecha */
+.activityFeedContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activityFeedItem {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.activityIconBox {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justifyContent: center;
+    flex-shrink: 0;
+}
+
+.activityMintIcon { background-color: #e6fbf4; }
+.activityBlueIcon { background-color: #eff6ff; }
+.activityRedIcon { background-color: #fef2f2; }
+
+.activityTextContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activityRowPara {
+    margin: 0;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.4;
+}
+
+.activityRowPara strong {
+    color: #0f172a;
+}
+
+.activityTimeSpan {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.btnDottedHistory {
+    width: 100%;
+    background-color: #FFFFFF;
+    color: #1e293b;
+    border: 1px dashed #cbd5e1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background-color 0.2s ease;
+}
+
+.btnDottedHistory:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
 }
