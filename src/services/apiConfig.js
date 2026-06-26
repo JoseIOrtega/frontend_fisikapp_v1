@@ -34,6 +34,9 @@ export const API_CONFIG = {
 
             LOGS: `${BASE_URL}/logs/`,
             LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
+            LABS_AUDITORIA:`${BASE_URL}/laboratorio-admin/`,
+            // 🔹 Centralizamos la ruta dinámica por ID alineada con el Swagger de tu backend
+            LABS_AUDITORIA_DETALLE: (id) => `${BASE_URL}/laboratorio-admin/${id}/`,
 
             CATEGORIAS: {
                 LIST: `${BASE_URL}/categorias/`, 

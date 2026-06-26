@@ -8,6 +8,7 @@ import UsuariosAdmin from "../pages/admin/UsuariosAdmin";
 import PerfilAdmin from "../pages/admin/PerfilAdmin";
 import GestionAdmin from "../pages/admin/GestionAdmin";
 import ConfiguracionAdmin from "../pages/admin/ConfiguracionAdmin";
+import LabDetalleAuditoria from "../pages/admin/LabDetalleAuditoria";
 
 function AdminRoutes() {
   return (
@@ -22,6 +23,7 @@ function AdminRoutes() {
       <Route path="perfil" element={<PerfilAdmin />} />
       <Route path="gestionadmin" element={<GestionAdmin />} />
       <Route path="configuracion" element={<ConfiguracionAdmin />} />
+      <Route path="laboratorio/auditoria_contenido/:id" element={<LabDetalleAuditoria />} />
 
       <Route path="/" element={<Navigate to="dashboard" />} />
     </Routes>
