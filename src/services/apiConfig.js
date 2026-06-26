@@ -68,6 +68,8 @@ export const API_CONFIG = {
             ACTUALIZAR_ESTADO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
             ELIMINAR_LABORATORIO:(id) => `${BASE_URL}/laboratorio-profesor/${id}/`,
             DETALLE_LABORATORIO: (id) => `${BASE_URL}/laboratorio-profesor/${id}/`,  //para configurar laboratorio
+
+            HISTORIAL_REPORTES: `${BASE_URL}/reportes/historial/`,
         },
 
 
