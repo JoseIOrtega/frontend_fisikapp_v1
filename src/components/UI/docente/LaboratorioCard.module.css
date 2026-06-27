@@ -54,7 +54,7 @@
 
 /* ==========================================================================
    CONTENIDO (TÍTULO, CATEGORÍA Y FECHA)
-   ========================================================================== */
+========================================================================== */
 .content {
   margin-top: 10px;
   margin-bottom: 1rem;
@@ -64,27 +64,27 @@
   color: #1e293b;
   font-size: 1.1rem;
   font-weight: 700;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0; /* Un margen pequeño abajo del título */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.schoolInfo {
+.metaInfo {
   display: flex;
-  flex-direction: column; /* Apila categoría y fecha */
-  gap: 2px;
+  flex-direction: column; /* Esto pone la fecha debajo de la categoría */
+  gap: 2px; /* Espacio mínimo entre categoría y fecha */
 }
 
 .category {
   color: #555;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.85rem; /* Un poco más pequeño que el título */
+  font-weight: 600;
 }
 
 .dateLabel {
   color: #94a3b8;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Más pequeño para que no compita con la categoría */
   font-weight: 500;
 }
 

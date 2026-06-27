@@ -38,7 +38,7 @@ function LaboratorioCard({
         <div className={style.iconContainer}>
           <Beaker size={18} />
         </div>
-        <label className={style.switch} title={estado ? 'Desactivar' : 'Activar'}>
+        <label className={style.switch} title={estado ? 'Inactivo' : 'Activar'}>
           <input 
             type="checkbox" 
             checked={!!estado} 
@@ -52,18 +52,19 @@ function LaboratorioCard({
       </header>
 
       <div className={style.content}>
-        {/* 1. Título arriba */}
+        {/* 1. Título destacado */}
         <h3 className={style.title} title={titulo_lab}>
           {titulo_lab}
         </h3>
 
-        {/* 2. Fecha y Categoría juntos */}
-        <div className={style.schoolInfo}>
+        {/* 2. Categoría y fecha agrupadas verticalmente */}
+        <div className={style.metaInfo}>
+          <span className={style.category}>
+            {categoria_nombre ? categoria_nombre : "Sin categoría"}
+          </span>
           <span className={style.dateLabel}>
             {formatearFecha(fecha_creacion)}
           </span>
-          {categoria_nombre && <span className={style.separator}>•</span>}
-          <span className={style.category}>{categoria_nombre}</span>
         </div>
       </div>
 
@@ -78,13 +79,13 @@ function LaboratorioCard({
       </div>
 
       <footer className={style.actions}>
-        <button 
+        {/* <button 
           className={style.deleteBtn} 
           onClick={() => onEliminar(id)}
           title="Eliminar"
         >
           <Trash2 size={18} />
-        </button>
+        </button> */}
         
         <button 
           className={style.enterBtn} 

@@ -68,18 +68,20 @@ export const CrearTarjetaLaboratorio = {
 };
 
 export const ActualizarEstado = async (id, nuevoEstado) => {
-    // Ajustado a "ACTIVO" para coincidir con la respuesta de tu backend
-    const estado = typeof nuevoEstado === 'boolean' ? (nuevoEstado ? 'ACTIVO' : 'BORRADOR') : nuevoEstado;
+    // En el Estado Convertimos a 1 (para activo) o 0 (para Inactivo)
+    const valorParaBD = (nuevoEstado === true || nuevoEstado === 'activo') ? 1 : 0;
     
     const respuesta = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
-        method: 'PATCH', 
-        headers: { ...API_CONFIG.getHeaders(), "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: estado })
+        method: 'PATCH',
+        headers: { 
+            ...API_CONFIG.getHeaders(), 
+            "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({ estado: valorParaBD }) // Enviamos 1 o 0
     });
     
     if (!respuesta.ok) {
-        const errorDetalle = await respuesta.json().catch(() => ({}));
-        throw errorDetalle;
+        throw new Error("No se pudo actualizar el estado");
     }
     return await respuesta.json();
 };
