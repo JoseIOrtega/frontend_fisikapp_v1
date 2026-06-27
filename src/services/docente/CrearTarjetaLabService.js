@@ -1,12 +1,12 @@
 import { API_CONFIG } from '../apiConfig';
 
+// Función genérica para obtener datos (GET)
 const fetchGet = async (url) => {
     try {
         const response = await fetch(url, { headers: API_CONFIG.getHeaders() });
-        if (!response.ok) throw new Error(`Error ${response.status} en la petición`);
+        if (!response.ok) throw new Error(`Error ${response.status}`);
         const data = await response.json();
-        if (data.results && Array.isArray(data.results)) return data.results;
-        return Array.isArray(data) ? data : [];
+        return (data.results && Array.isArray(data.results)) ? data.results : (Array.isArray(data) ? data : []);
     } catch (error) {
         console.error(`Error en GET ${url}:`, error);
         return [];
@@ -14,78 +14,87 @@ const fetchGet = async (url) => {
 };
 
 export const CrearTarjetaLaboratorio = {
+    // Consultas generales
     obtenerCategorias: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.CATEGORIAS.LIST),
     obtenerPlantillasBase: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.LABORATORIOS.LIST),
-    obtenerObjetivos: () => fetchGet(API_CONFIG.ENDPOINTS.ADMIN.OBJETIVOS.LIST),
     obtenerMisLaboratorios: () => fetchGet(API_CONFIG.ENDPOINTS.DOCENTE.LABORATORIOS_DOCENTE),
 
-    // 🚀 MODIFICADO: Ahora recibe grado y jornada como parámetros adicionales
-    crearInstancia: async (plantillaId, tituloPersonalizado, grado, jornada) => {
+    // Nueva función para traer el detalle completo de la plantilla por ID
+    obtenerDetallePlantilla: async (id) => {
+        const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.DETALLE_PLANTILLA(id), { 
+            headers: API_CONFIG.getHeaders() 
+        });
+        
+        if (!response.ok) {
+            const errorDetalle = await response.json().catch(() => ({}));
+            throw errorDetalle;
+        }
+        return await response.json();
+    },
+
+    crearInstancia: async (plantillaSeleccionada) => {
+        // Probamos con la estructura mínima posible para evitar conflictos en el backend.
+        const body = {
+            plantilla: plantillaSeleccionada.id,
+            estado: "ACTIVO"
+            // Eliminamos: resumen, introduccion, marco_teorico, objetivo_general y conceptos_basicos
+            // Si el backend los necesita, al borrarlos nos dará error de "campo requerido", 
+            // pero si el error 500 desaparece, sabremos que el conflicto estaba en esos campos.
+        };
+
         const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.CREAR_LABORATORIO, {
             method: "POST",
             headers: {
                 ...API_CONFIG.getHeaders(),
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ 
-                laboratorio: plantillaId, 
-                titulo_lab: tituloPersonalizado, // El nombre limpio que el docente digite
-                grado: grado || null,            // Enviamos el grado directamente a su nuevo campo
-                jornada: jornada || null,        // Enviamos la jornada directamente a su nuevo campo
-                estado: true                     // El laboratorio inicia activo por defecto
-            }),
+            body: JSON.stringify(body), 
         });
 
-        // CONTROL DE ERRORES: Si el backend falla con 500 HTML, evitamos el SyntaxError
+        // Manejo de error más robusto para capturar el HTML que está rompiendo el JSON
         if (!response.ok) {
-            let errorDetalle;
+            const text = await response.text(); // Leemos como texto primero
             try {
-                errorDetalle = await response.json(); // Intentamos leer el JSON si Django mandó un error controlado
-            } catch {
-                errorDetalle = { message: `Error de servidor (${response.status}). No se devolvió un JSON válido.` };
+                const errorDetalle = JSON.parse(text);
+                console.error("Error del servidor (JSON):", errorDetalle);
+                throw errorDetalle;
+            } catch (e) {
+                console.error("Error del servidor (HTML/No JSON):", text);
+                throw new Error("El servidor devolvió un error grave (500)");
             }
-            throw errorDetalle; // Lanza el error capturado para que caiga en el catch de tu vista
         }
-
-        return await response.json(); // Si todo salió bien (Status 201/200), procesamos el objeto real creado
+        return await response.json(); 
     }
 };
 
 export const ActualizarEstado = async (id, nuevoEstado) => {
-  //Usamos FETCH apuntando al ID de la tarjeta que queremos cambiar
-  const respuesta = await  fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
-    method: 'PATCH', // Usamos PATCH porque solo vamos a modificar el campo 'estado'
-    headers: {
-      ...API_CONFIG.getHeaders(),
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      estado: nuevoEstado
-    })
-  });
-
-  if (!respuesta.ok) {
-    throw new Error('Error al actualizar el estado en el servidor');
-  }
-
-  return await respuesta.json();
+    // Ajustado a "ACTIVO" para coincidir con la respuesta de tu backend
+    const estado = typeof nuevoEstado === 'boolean' ? (nuevoEstado ? 'ACTIVO' : 'BORRADOR') : nuevoEstado;
+    
+    const respuesta = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ACTUALIZAR_ESTADO(id), {
+        method: 'PATCH', 
+        headers: { ...API_CONFIG.getHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: estado })
+    });
+    
+    if (!respuesta.ok) {
+        const errorDetalle = await respuesta.json().catch(() => ({}));
+        throw errorDetalle;
+    }
+    return await respuesta.json();
 };
 
-// Ponemos "export" directamente aquí también
 export const EliminarLabService = {
-  eliminarInstancia: async (id) => {
-    const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ELIMINAR_LABORATORIO(id), {
-      method: 'DELETE',
-      headers: {
-        ...API_CONFIG.getHeaders(),
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('No se pudo eliminar el laboratorio en el servidor.');
+    eliminarInstancia: async (id) => {
+        const response = await fetch(API_CONFIG.ENDPOINTS.DOCENTE.ELIMINAR_LABORATORIO(id), {
+            method: 'DELETE',
+            headers: { ...API_CONFIG.getHeaders() }
+        });
+        
+        if (!response.ok) {
+            const errorDetalle = await response.json().catch(() => ({}));
+            throw errorDetalle;
+        }
+        return true;
     }
-
-    return true;
-  }
 };

@@ -16,6 +16,7 @@ function DocenteLayout({ children, onSearch }) {
     "/profesor/dashboard": "Dashboard",
     "/profesor/mis-laboratorios": "Laboratorios",
     "/profesor/archivados": "Laboratorios Archivados",
+    "/profesor/sesiones-docente": "Sesiones", 
     "/profesor/mis-estudiantes": "Mis Estudiantes", 
     "/profesor/reportes": "Historial de Reportes",   
     "/profesor/perfil": "Mi Perfil",

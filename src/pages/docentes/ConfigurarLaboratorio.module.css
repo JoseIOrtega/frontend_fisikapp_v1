@@ -259,3 +259,145 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.labSubtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
+  display: flex; /* Cambiamos a flex para separar las pildoritas */
+  flex-wrap: wrap;
+  gap: 0.75rem; /* Espacio elegante entre categoría, grado y jornada */
+}
+
+/* ==========================================
+   ESTADOS DINÁMICOS COMPLEMENTARIOS
+   ========================================== */
+
+/* Cuando el botón de habilitar está apagado/deshabilitado por falta de configuración */
+.actionBtn:disabled {
+  background: #f1f5f9;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Estado inactivo cuando está listo para habilitarse pero aún está apagado */
+.btnInactivo {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btnInactivo:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Texto de estado "● Configurado" en verde para las etapas listas */
+.statusReadyTxt {
+  font-size: 0.8rem;
+  color: #16a34a; /* Un verde elegante que haga contraste con el naranja */
+  font-weight: 500;
+}
+
+
+/* ==========================================================
+   ESTILOS DINÁMICOS BASADOS EN LOS 3 ESTADOS DEL FLUJO
+   ========================================================== */
+
+/* 1. Estilos para los Banners */
+.bannerIncomplete {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.bannerReady {
+  background-color: #f0fdfa; /* Fondo verde/turquesa sutil */
+  border: 1px solid #ccfbf1;
+}
+.bannerActive {
+  background-color: #f0fdfa;
+  border: 1px solid #ccfbf1;
+}
+
+/* Iconos */
+.iconIncomplete { color: #94a3b8; margin-top: 2px; }
+.iconReady { color: #0d9488; margin-top: 2px; }
+.iconActive { color: #0d9488; margin-top: 2px; }
+
+/* Contenedor interno del Banner Activo */
+.bannerContentArea {
+  width: 100%;
+}
+.bannerActiveLayout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1.5rem;
+}
+
+/* 2. Caja contenedora del código generado (Captura 3) */
+.codeBoxContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  border: 1px dashed #2dd4bf;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.codeLabel {
+  font-size: 0.85rem;
+  color: #475569;
+}
+.codeValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+/* Botón copiar código */
+.copyBtn {
+  background: #00f2fe; /* El tono turquesa brillante de la captura */
+  color: #0f172a;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+.copyBtn:hover {
+  background: #01d6df;
+}
+
+/* 3. Estilos del Botón de Acción Principal Superior */
+.btnDeshabilitadoTxt {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+}
+.btnListoParaHabilitar {
+  background: #00f2fe !important; /* Turquesa encendido */
+  color: #0f172a !important;
+  font-weight: 700;
+}
+.btnListoParaHabilitar:hover {
+  background: #01d6df !important;
+}
+.btnDeshabilitar {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+.btnDeshabilitar:hover {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+}

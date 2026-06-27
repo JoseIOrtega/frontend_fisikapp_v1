@@ -1,0 +1,193 @@
+.container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+.title {
+    color: #1a237e;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.tabla_container {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabla th {
+    border-bottom: 2px solid #eee;
+    padding: 12px;
+    color: #555;
+}
+
+.tabla td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.btn_ver {
+    background-color: #00d1b2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.status_done {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.contenedorFiltros {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px; /* Separa el buscador de la tabla */
+}
+
+.campoFecha {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputFecha {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px; /* Bordes redondeados como tu barra superior */
+  color: #1e293b;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.botonLimpiar {
+  position: absolute;
+  right: 35px; /* Se posiciona sutilmente al lado del icono del calendario nativo */
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* --- ESTILOS ADICIONALES PARA TEXTOS DE CARGA --- */
+.text_center {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+
+/* --- ESTILOS DE LOS MODALES (PASO 4) --- */
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); /* Fondo oscuro con transparencia */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal_content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal_content h3 {
+  margin-top: 0;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+/* Tabla interna para el detalle de estudiantes */
+.tabla_modal {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.tabla_modal th, .tabla_modal td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 14px;
+}
+
+.tabla_modal th {
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+/* Texto de las observaciones */
+.observacion_parrafo {
+  color: #334155;
+  line-height: 1.6;
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #00b4d8;
+  margin-bottom: 20px;
+}
+
+/* Botón de cerrar modal */
+.btn_cerrar {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  float: right;
+  transition: background-color 0.2s;
+}
+
+.btn_cerrar:hover {
+  background-color: #dc2626;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Estilos para asegurar la visibilidad en las celdas de la tabla del modal */
+.tabla_modal tbody tr {
+    background-color: #f9f9f9; /* Un gris muy sutil para dar contraste a las filas */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tabla_modal tbody tr:hover {
+    background-color: #f1f1f1; /* Efecto hover elegante al pasar el mouse */
+}
+
+.tabla_modal tbody td {
+    color: #333333; /* Forzamos un color gris oscuro/negro visible */
+    padding: 12px 10px;
+    text-align: left;
+    display: table-cell; /* Asegura el comportamiento de celda estándar */
+    font-size: 14px;
+}
