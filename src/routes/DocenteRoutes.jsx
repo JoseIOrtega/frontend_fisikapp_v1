@@ -2,12 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardDocente from "../pages/docentes/DashboardDocente";
 import MisLaboratoriosDocente from "../pages/docentes/MisLaboratoriosDocente";
 import MisEstudiantesDocente from "../pages/docentes/MisEstudiantesDocente";
-<<<<<<< HEAD
-import HistorialReportes from "../pages/admin/HistorialReportesDocente";
-=======
 import SesionesDocente from "../pages/docentes/SesionesDocente";
 import HistorialReportes from "../pages/docentes/HistorialReportesDocente";
->>>>>>> main
 import PerfilDocente from "../pages/docentes/PerfilDocente";
 import ConfiguracionDocente from "../pages/docentes/ConfiguracionDocente";
 import DocenteLayout from "../layouts/DocenteLayout";

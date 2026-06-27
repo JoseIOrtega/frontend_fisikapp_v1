@@ -99,12 +99,6 @@ function MisEstudiantesDocente() {
   };
 
   return (
-<<<<<<< HEAD
-    <div className={style["layout"]} style={{ padding: '20px' }}>
-        <h2>Mis Estudiantes</h2>
-        {/* Aquí va el resto de tu código, como la tabla de alumnos */}
-    </div>
-=======
     <DocenteLayout onSearch={(v) => { setSearchTerm(v); setPaginaActual(1); }}>
       <div className={style.layout}>
         <div className={style.contentWrapper}>
@@ -163,7 +157,6 @@ function MisEstudiantesDocente() {
         estudianteId={idSeleccionado}
       />
     </DocenteLayout>
->>>>>>> main
   );
 }
 
