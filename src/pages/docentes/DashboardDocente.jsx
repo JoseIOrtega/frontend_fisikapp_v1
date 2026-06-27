@@ -3,11 +3,12 @@ import style from './DashboardDocente.module.css'
 
 function DashboardDocente() {
   return (
-      <div className={style["layout"]} style={{ padding: '20px' }}>
-          <h2>Dashboard</h2>
-          {/* Aquí va el resto de tu código, como la tabla de alumnos */}
-      </div>
-    );
-  }
+    <DocenteLayout>
+        <div className={style["layout"]}>
+            <h2>Dashboard Profesor</h2>
+        </div>
+    </DocenteLayout>
+  )
+}
 
 export default DashboardDocente
