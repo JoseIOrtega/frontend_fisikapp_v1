@@ -59,7 +59,7 @@ function LabConfigurarLabs() {
     introduccion: '',
     marco_teorico: '',
     categoria: '',
-    objetivo: '',
+    objetivo_general: '',
     estado: true,
     ra: false
   });
@@ -208,7 +208,7 @@ const handleGenerarConIA = async () => {
             setFormData(prev => ({
                 ...prev,
                 descripcion_corta: portada.descripcion_corta || "",
-                objetivo: portada.objetivo_general || ""
+                objetivo_general: portada.objetivo_general || ""
             }));
 
             // Llenar objetivos específicos
