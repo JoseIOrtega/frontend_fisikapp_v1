@@ -735,5 +735,89 @@ textarea:disabled {
   cursor: pointer;
 }
 
+.autocompleteContainer{
+    width:100%;
+    position:relative;
+}
+
+.dropdownCategorias{
+    position:absolute;
+    top:105%;
+    left:0;
+    width:100%;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    max-height:220px;
+    overflow-y:auto;
+    z-index:100;
+}
+
+.itemCategoria{
+    padding: 12px 16px;
+    cursor: pointer;
+    color: #1e293b;
+    font-size: 15px;
+    transition: .2s;
+}
+
+.itemCategoria:hover{
+    background:#eef4ff;
+}
+
+.activo{
+    background:#1f4ed8;
+    color:white;
+}
+
+.noResultados{
+    padding:15px;
+    color:#888;
+    text-align:center;
+}
+
+.modalLogo{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.modalLogo h2{
+    margin:10px 0 6px;
+    font-size:24px;
+}
+
+.modalLogo p{
+    color:#64748b;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.logoModal{
+    width:90px;
+    height:auto;
+    margin-bottom:14px;
+}
+
+.modalLogo{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.modalLogo h2{
+    margin-bottom:8px;
+    color:#1e293b;
+    font-size:24px;
+    font-weight:700;
+}
+
+.modalLogo p{
+    color:#64748b;
+    font-size:14px;
+    line-height:1.5;
+    max-width:320px;
+    margin:0 auto;
+}
+
 
 

@@ -10,11 +10,13 @@ import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
 import Objetivos from "./configurarLaboratorio/Objetivos";
 import Contenido from "./configurarLaboratorio/Contenido";
 import VistaPrevia from "./configurarLaboratorio/VistaPrevia";
-import { 
-  getCategorias, crearCategoria, 
-  getObjetivosGenerales, crearObjetivoGeneral,
-  getPalabrasClave, crearPalabraClave,
-  crearLaboratorio 
+import logoFisikapp from "../../assets/images/logosinfondo.png";
+import {
+  getCategorias,
+  crearCategoria,
+  getObjetivosGenerales,
+  crearObjetivoGeneral,
+  crearLaboratorio,
 } from "../../services/admin/ConfigLabServices";
 import { generarPortadaIA,
          generarImagenPortadaIA,
@@ -26,21 +28,19 @@ function LabConfigurarLabs() {
   const { showModal } = useModal();
   const [categorias, setCategorias] = useState([]);
   const [objetivos, setObjetivos] = useState([]);
-  const [palabrasClave, setPalabrasClave] = useState([]);
+
   
   // --- ESTADOS DE SELECCIÓN ---
   const [selectedCategoria, setSelectedCategoria] = useState(null);
   const [selectedObjetivo, setSelectedObjetivo] = useState(null);
-  const [selectedPalabra, setSelectedPalabra] = useState(null);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("General");
-  const [searchTerm, setSearchTerm] = useState("");
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
+  const [indiceResaltado, setIndiceResaltado] = useState(-1);
 
   const [step, setStep] = useState(1);/// cristian
   const [imagenPreview, setImagenPreview] = useState(null);
   const [busquedaCategoria, setBusquedaCategoria] = useState("");
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  const [indiceResaltado, setIndiceResaltado] = useState(-1);
   
   // --- ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,22 +56,28 @@ function LabConfigurarLabs() {
     titulo_lab: '',
     descripcion_corta: "",
     resumen: '',
-    prologo: '',
     introduccion: '',
     marco_teorico: '',
     categoria: '',
     objetivo: '',
-    palabra_clave: '',
     estado: true,
     ra: false
   });
 
   // Maneja la selección limpia de una categoría desde el dropdown
     const handleSeleccionarCategoria = (categoria) => {
-        setBusquedaCategoria(categoria.nombre); // Rellena el input con el texto
-        setFormData({ ...formData, categoriaId: categoria.id }); // Guarda el ID en tu formulario
-        setMostrarDropdown(false); // Cierra la lista
-        setIndiceResaltado(-1); // Resetea el teclado
+      setBusquedaCategoria(categoria.nombre);
+
+      setFormData((prev) => ({
+        ...prev,
+        categoria: categoria.id,
+      }));
+
+      setSelectedCategoria(categoria);
+
+      setMostrarDropdown(false);
+
+      setIndiceResaltado(-1);
     };
 
     // Maneja el movimiento de flechas y Enter dentro del buscador
@@ -117,22 +123,30 @@ function LabConfigurarLabs() {
 
   const cargarTodosLosDatos = async () => {
     try {
-      const [cats, objs, pals] = await Promise.all([
-        getCategorias(), getObjetivosGenerales(), getPalabrasClave()
+      const [cats, objs] = await Promise.all([
+        getCategorias(),
+        getObjetivosGenerales(),
       ]);
+
       setCategorias(cats);
       setObjetivos(objs);
-      setPalabrasClave(pals);
       
       if (formData.categoria) setSelectedCategoria(cats.find(c => String(c.id) === String(formData.categoria)));
       if (formData.objetivo) setSelectedObjetivo(objs.find(o => String(o.id) === String(formData.objetivo)));
-      if (formData.palabra_clave) setSelectedPalabra(pals.find(p => String(p.id) === String(formData.palabra_clave)));
     } catch (error) {
       console.error("Error cargando datos");
     }
   };
 
-  useEffect(() => { cargarTodosLosDatos(); }, []);
+  useEffect(() => {
+    cargarTodosLosDatos();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCategoria) {
+      setBusquedaCategoria(selectedCategoria.nombre);
+    }
+  }, [selectedCategoria]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -141,19 +155,22 @@ function LabConfigurarLabs() {
 
   const handleSelectChange = (e, tipo) => {
     const id = e.target.value;
-    setFormData(prev => ({ ...prev, [tipo]: id }));
-    
-    if (tipo === 'categoria') {
-      setSelectedCategoria(categorias.find(c => String(c.id) === String(id)) || null);
-      setFormData(prev => ({ ...prev, palabra_clave: '' }));
-      setSelectedPalabra(null);
-      setSearchTerm("");
-    } else if (tipo === 'objetivo') {
-      setSelectedObjetivo(objetivos.find(o => String(o.id) === String(id)) || null);
-    } else if (tipo === 'palabra_clave') {
-      setSelectedPalabra(palabrasClave.find(p => String(p.id) === String(id)) || null);
+
+    setFormData(prev => ({
+        ...prev,
+        [tipo]: id
+    }));
+
+    if (tipo === "categoria") {
+        setSelectedCategoria(
+            categorias.find(c => String(c.id) === String(id)) || null
+        );
+    } else if (tipo === "objetivo") {
+        setSelectedObjetivo(
+            objetivos.find(o => String(o.id) === String(id)) || null
+        );
     }
-  };
+};
 
   // --- LÓGICA DE INTEGRACIÓN CON IA ---
 const handleGenerarConIA = async () => {
@@ -309,14 +326,7 @@ const handleGenerarConIA = async () => {
         descripcion: newData.descripcion 
     });
 
-      } else if (modalType === "PAL") {
-        if (!newData.categoriaId) return alert("Seleccione una categoría");
-        res = await crearPalabraClave({ 
-          nombre: newData.nombre, 
-          descripcion: newData.descripcion,
-          categoria_id: parseInt(newData.categoriaId) 
-        });
-      }
+      } 
 
       if (typeof cargarTodosLosDatos === 'function') {
             await cargarTodosLosDatos();
@@ -325,27 +335,27 @@ const handleGenerarConIA = async () => {
             closeModal();
         }
 
-
-      const palsActualizadas = await getPalabrasClave();
-      setPalabrasClave(palsActualizadas);
-
       if (res && res.id) {
         const nuevoId = String(res.id);
-        if (modalType === "PAL") {
-          setFormData(prev => ({ ...prev, palabra_clave: nuevoId }));
-          setSelectedPalabra(palsActualizadas.find(p => String(p.id) === nuevoId));
-          const match = palsActualizadas.find(p => String(p.id) === nuevoId);
-          if (match) setSearchTerm(match.palabra_clave);
-        } else if (modalType === "CAT") {
-          setFormData(prev => ({ ...prev, categoria: nuevoId }));
+
+        if (modalType === "CAT") {
+          setFormData((prev) => ({ ...prev, categoria: nuevoId }));
+
           const catsActualizadas = await getCategorias();
           setCategorias(catsActualizadas);
-          setSelectedCategoria(catsActualizadas.find(c => String(c.id) === nuevoId));
+
+          setSelectedCategoria(
+            catsActualizadas.find((c) => String(c.id) === nuevoId),
+          );
         } else if (modalType === "OBJ") {
-          setFormData(prev => ({ ...prev, objetivo: nuevoId }));
+          setFormData((prev) => ({ ...prev, objetivo: nuevoId }));
+
           const objsActualizados = await getObjetivosGenerales();
           setObjetivos(objsActualizados);
-          setSelectedObjetivo(objsActualizados.find(o => String(o.id) === nuevoId));
+
+          setSelectedObjetivo(
+            objsActualizados.find((o) => String(o.id) === nuevoId),
+          );
         }
       }
       
@@ -360,15 +370,14 @@ const handleGenerarConIA = async () => {
         const userId = localStorage.getItem("user_id");
 
         const payload = {
-            titulo: formData.titulo_lab,
-            resumen: formData.resumen,
-            prologo: formData.prologo,
-            introduccion: formData.introduccion,
-            marco_teorico: formData.marco_teorico,
-            categoria: parseInt(formData.categoriaId || formData.categoria),
-            creado_por: parseInt(userId),
-            estado: "BORRADOR",
-            simulacion: false
+          titulo: formData.titulo_lab,
+          resumen: formData.resumen,
+          introduccion: formData.introduccion,
+          marco_teorico: formData.marco_teorico,
+          categoria: parseInt(formData.categoriaId || formData.categoria),
+          creado_por: parseInt(userId),
+          estado: "ACTIVO",
+          simulacion: false,
         };
 
         console.log("PAYLOAD:", payload);
@@ -376,8 +385,8 @@ const handleGenerarConIA = async () => {
         await crearLaboratorio(payload);
         showModal('success', '✅ Plantilla agregada correctamente');
     } catch (err) {
-        console.error("Error detallado al guardar:", err);
-        showModal('error', '❌ Verifique los campos obligatorios (*)');
+    console.error("ERROR:", err);
+    console.error("RESPUESTA:", err.response?.data);
     }
 };
 
@@ -385,167 +394,210 @@ const handleGenerarConIA = async () => {
     <AdminLayout>
       <div className={style.layout}>
         <div className={style.seccion_del_header}>
-          
-      <div className={style.stepper}>
+          <div className={style.stepper}>
+            <div
+              className={style.progressBar}
+              style={{
+                width:
+                  step === 1
+                    ? "0%"
+                    : step === 2
+                      ? "30%"
+                      : step === 3
+                        ? "60%"
+                        : "90%",
+              }}
+            />
+            <div
+              className={`${style.stepItem} ${step >= 1 ? style.completedStep : ""}`}
+              onClick={() => setStep(1)}
+            >
+              <div className={style.stepCircle}>1</div>
+              <span>Información General</span>
+            </div>
 
-         <div
-    className={style.progressBar}
-   style={{
-  width:
-    step === 1 ? "0%" :
-    step === 2 ? "30%" :
-    step === 3 ? "60%" :
-    "90%"
-}}
-  />
-  <div
-    className={`${style.stepItem} ${step >= 1 ? style.completedStep : ""}`}
-    onClick={() => setStep(1)}
-  >
-    <div className={style.stepCircle}>1</div>
-    <span>Información General</span>
-  </div>
+            <div
+              className={`${style.stepItem} ${step >= 2 ? style.completedStep : ""}`}
+              onClick={() => setStep(2)}
+            >
+              <div className={style.stepCircle}>2</div>
+              <span>Objetivos</span>
+            </div>
 
-  <div
-    className={`${style.stepItem} ${step >= 2 ? style.completedStep : ""}`}
-    onClick={() => setStep(2)}
-  >
-    <div className={style.stepCircle}>2</div>
-    <span>Objetivos</span>
-  </div>
+            <div
+              className={`${style.stepItem} ${step >= 3 ? style.completedStep : ""}`}
+              onClick={() => setStep(3)}
+            >
+              <div className={style.stepCircle}>3</div>
+              <span>Contenido</span>
+            </div>
 
-  <div
-    className={`${style.stepItem} ${step >= 3 ? style.completedStep : ""}`}
-    onClick={() => setStep(3)}
-  >
-    <div className={style.stepCircle}>3</div>
-    <span>Contenido</span>
-  </div>
-
-  <div
-    className={`${style.stepItem} ${step >= 4 ? style.completedStep : ""}`}
-    onClick={() => setStep(4)}
-  >
-    <div className={style.stepCircle}>4</div>
-    <span>Vista Previa</span>
-  </div>
-</div>   
-
-          
+            <div
+              className={`${style.stepItem} ${step >= 4 ? style.completedStep : ""}`}
+              onClick={() => setStep(4)}
+            >
+              <div className={style.stepCircle}>4</div>
+              <span>Vista Previa</span>
+            </div>
+          </div>
         </div>
 
         <AdminCardContainer>
           <div className={style.form_container}>
-
-           {step === 1 && (
-          <InformacionGeneral
-    formData={formData}
-    handleInputChange={handleInputChange}
-    handleSelectChange={handleSelectChange}
-    categorias={categorias}
-    openModal={openModal}
-    imagenPreview={imagenPreview}
-    setImagenPreview={setImagenPreview}
-    handleGenerarConIA={handleGenerarConIA}
-    isGeneratingIA={isGeneratingIA}
-    isGeneratingImagen={isGeneratingImagen}
-  />
-          )}
-
-            {step === 2 && (
-              <Objetivos
-              objetivos={objetivos}
-              palabrasClave={palabrasClave}
-              selectedObjetivo={selectedObjetivo}
-              selectedPalabra={selectedPalabra}
-              formData={formData}
-              handleSelectChange={handleSelectChange}
-              openModal={openModal}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              objetivosEspecificos={objetivosEspecificos}
-              setObjetivosEspecificos={setObjetivosEspecificos}
-              handleInputChange={handleInputChange}
+            {step === 1 && (
+              <InformacionGeneral
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleSelectChange={handleSelectChange}
+                categorias={categorias}
+                openModal={openModal}
+                imagenPreview={imagenPreview}
+                setImagenPreview={setImagenPreview}
+                handleGenerarConIA={handleGenerarConIA}
+                isGeneratingIA={isGeneratingIA}
+                isGeneratingImagen={isGeneratingImagen}
+                busquedaCategoria={busquedaCategoria}
+                setBusquedaCategoria={setBusquedaCategoria}
+                mostrarDropdown={mostrarDropdown}
+                setMostrarDropdown={setMostrarDropdown}
+                indiceResaltado={indiceResaltado}
+                handleSeleccionarCategoria={handleSeleccionarCategoria}
+                handleKeyDownCategorias={handleKeyDownCategorias}
               />
             )}
 
-             {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
-            {step === 3 && (
-               <Contenido
-              isGeneratingIA={isGeneratingIA}
-              handleInputChange={handleInputChange}
-              formData={formData}
+            {step === 2 && (
+              <Objetivos
+                objetivos={objetivos}
+                selectedObjetivo={selectedObjetivo}
+                formData={formData}
+                handleSelectChange={handleSelectChange}
+                openModal={openModal}
+                objetivosEspecificos={objetivosEspecificos}
+                setObjetivosEspecificos={setObjetivosEspecificos}
+                handleInputChange={handleInputChange}
               />
+            )}
 
-          )}
+            {/* SECCIÓN 3: CONTENIDO DETALLADO (AUTOMATIZADO POR IA) */}
+            {step === 3 && (
+              <Contenido
+                isGeneratingIA={isGeneratingIA}
+                handleInputChange={handleInputChange}
+                formData={formData}
+              />
+            )}
 
+            {step === 4 && (
+              <VistaPrevia
+                formData={formData}
+                selectedObjetivo={selectedObjetivo}
+                objetivosEspecificos={objetivosEspecificos}
+                imagenPreview={imagenPreview}
+                categorias={categorias}
+                onGuardar={handleSavePlantilla}
+              />
+            )}
 
-           
+            <div className={style.navigation}>
+              <button
+                type="button"
+                disabled={step === 1}
+                onClick={() => setStep(step - 1)}
+              >
+                Anterior
+              </button>
 
-{step === 4 && (
- <VistaPrevia
-    formData={formData}
-    selectedObjetivo={selectedObjetivo}
-    objetivosEspecificos={objetivosEspecificos}
-    imagenPreview={imagenPreview}
-    categorias={categorias}
-  />
-)}
-
-    <div className={style.navigation}>
-  <button
-    type="button"
-    disabled={step === 1}
-    onClick={() => setStep(step - 1)}
-  >
-    Anterior
-  </button>
-
-  <button
-    type="button"
-    disabled={step === 4}
-    onClick={() => setStep(step + 1)}
-  >
-    Siguiente
-  </button>
-</div>
-
+              {step !== 4 && (
+                <button type="button" onClick={() => setStep(step + 1)}>
+                  Siguiente
+                </button>
+              )}
+            </div>
           </div>
         </AdminCardContainer>
       </div>
 
-      <GenericModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        title={modalType === "PAL" ? "Nueva Palabra Clave" : "Nuevo Registro"}
+      <GenericModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalType === "CAT" ? "Crear nueva categoría" : "Nuevo objetivo"}
       >
         <form onSubmit={handleCreateInModal} className={style.modal_form}>
-          <div className={style.modal_field}>
-            <label>{modalType === "OBJ" ? "Tipo de Objetivo" : "Nombre/Tipo"}</label>
-            <input 
-              className={style.input_diseno} 
-              value={newData.nombre} 
-              onChange={e => setNewData({...newData, nombre: e.target.value})} 
-              required 
-            />
-          </div>
+          {modalType === "CAT" && (
+            <>
+              <div className={style.modalLogo}>
+                <img
+                  src={logoFisikapp}
+                  alt="FisikApp"
+                  className={style.logoModal}
+                />
 
-          {modalType === "PAL" && (
+                <h2>Crear nueva categoría</h2>
+
+                <p>
+                  Organiza tus laboratorios creando categorías para que los
+                  docentes puedan utilizarlas en sus prácticas.
+                </p>
+              </div>
+
+              <div className={style.modal_field}>
+                <label>Nombre *</label>
+
+                <input
+                  className={style.input_diseno}
+                  value={newData.nombre}
+                  onChange={(e) =>
+                    setNewData({
+                      ...newData,
+                      nombre: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+
+              <div className={style.modal_field}>
+                <label>Descripción</label>
+
+                <textarea
+                  className={style.textarea_diseno}
+                  rows={4}
+                  value={newData.descripcion}
+                  onChange={(e) =>
+                    setNewData({
+                      ...newData,
+                      descripcion: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </>
+          )}
+
+          {modalType === "OBJ" && (
             <div className={style.modal_field}>
-              <label>Categoría</label>
-              <select className={style.input_diseno} value={newData.categoriaId} onChange={e => setNewData({...newData, categoriaId: e.target.value})} required>
-                <option value="">Seleccione...</option>
-                {categorias.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-              </select>
+              <label>Descripción</label>
+
+              <textarea
+                className={style.textarea_diseno}
+                rows={4}
+                value={newData.descripcion}
+                onChange={(e) =>
+                  setNewData({
+                    ...newData,
+                    descripcion: e.target.value,
+                  })
+                }
+                required
+              />
             </div>
           )}
 
-          
-          <button type="submit" className={style.btn_guardar_modal}>Confirmar Guardado</button>
+          <button type="submit" className={style.btn_guardar_modal}>
+            {modalType === "CAT" ? "Crear categoría" : "Guardar"}
+          </button>
         </form>
-
-
-      
       </GenericModal>
     </AdminLayout>
   );

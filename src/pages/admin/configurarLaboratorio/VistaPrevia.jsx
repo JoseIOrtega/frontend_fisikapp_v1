@@ -31,7 +31,6 @@ function VistaPrevia({
   subtitulo: (() => {
     const campos = [
       formData.resumen && "Resumen",
-      formData.prologo && "Prólogo",
       formData.introduccion && "Introducción",
       formData.marco_teorico && "Marco teórico",
     ].filter(Boolean);
@@ -53,7 +52,7 @@ function VistaPrevia({
           {items.map((item, i) => (
             <div key={i} className={style.itemResumen}>
               <div className={style.itemResumenLeft}>
-               <div className={style.textoItem}>
+                <div className={style.textoItem}>
                   <strong>{item.titulo}</strong>
                   <span>{item.subtitulo}</span>
                 </div>
@@ -64,30 +63,6 @@ function VistaPrevia({
               }
             </div>
           ))}
-        </div>
-
-        {/* Estado de la plantilla */}
-        <div className={style.estadoSeccion}>
-          <p className={style.estadoTitulo}>Estado de la plantilla</p>
-          <p className={style.estadoSubtitulo}>
-            Selecciona el estado con el que deseas guardar o publicar tu plantilla.
-          </p>
-          <div className={style.estadoOpciones}>
-            <div className={`${style.opcionEstado} ${style.activa}`}>
-              <div className={style.opcionHeader}>
-                <div className={style.radio} />
-                <strong>Borrador</strong>
-              </div>
-              <p>Guarda tu trabajo y continúa editándolo más tarde.</p>
-            </div>
-            <div className={style.opcionEstado}>
-              <div className={style.opcionHeader}>
-                <div className={style.radio} />
-                <strong>Publicada</strong>
-              </div>
-              <p>Publica tu plantilla y estará disponible para que los docentes la puedan utilizar.</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -123,12 +98,6 @@ function VistaPrevia({
             {formData.resumen || "Sin descripción"}
           </p>
 
-          {formData.prologo && (
-            <>
-              <h3 className={style.seccionTitulo}>Prólogo</h3>
-              <p className={style.objetivoGeneral}>{formData.prologo}</p>
-            </>
-          )}
 
           {formData.introduccion && (
             <>
@@ -163,10 +132,10 @@ function VistaPrevia({
 
       {/* ── BOTONES DE ACCIÓN ── */}
       <div className={style.botonesAccion}>
-        <button className={style.btnBorrador} onClick={() => onGuardar("borrador")}>
-          Guardar borrador
-        </button>
-        <button className={style.btnPublicar} onClick={() => onGuardar("publicada")}>
+        <button
+          className={style.btnPublicar}
+          onClick={onGuardar}
+        >
           Publicar plantilla
         </button>
       </div>
