@@ -53,10 +53,26 @@ function LabRepositorioDeLabs() {
   ];
 
   const filteredLaboratorios = laboratorios.filter((laboratorio) =>
-    laboratorio.nombre_de_laboratorio.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    laboratorio.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    laboratorio.estado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    new Date(laboratorio.fecha_creacion).toLocaleString().toLowerCase().includes(searchTerm.toLowerCase())
+    (() => {
+      const term = (searchTerm || "").trim().toLowerCase();
+      if (!term) return true; // si no hay término, mantener todos
+
+      const nombre = (laboratorio.nombre_de_laboratorio || "").toLowerCase();
+      const categoria = (laboratorio.categoria || "").toLowerCase();
+      const estado = (laboratorio.estado || "").toLowerCase();
+      const fecha = laboratorio.fecha_creacion ? new Date(laboratorio.fecha_creacion).toLocaleString().toLowerCase() : "";
+      const codigo = (laboratorio.codigo_lab || "").toString().toLowerCase();
+      const resumen = (laboratorio.resumen || "").toLowerCase();
+
+      return (
+        nombre.includes(term) ||
+        categoria.includes(term) ||
+        estado.includes(term) ||
+        fecha.includes(term) ||
+        codigo.includes(term) ||
+        resumen.includes(term)
+      );
+    })()
   );
 
   // --- LÓGICA DE CÁLCULO DE PAGINACIÓN ---
@@ -134,6 +150,13 @@ function LabRepositorioDeLabs() {
               </tr>
             )}
           />
+
+          {/* Mensaje cuando la búsqueda no arroja resultados */}
+          {filteredLaboratorios.length === 0 && !loading && (
+            <div style={{ textAlign: 'center', padding: '1.5rem', color: '#666' }}>
+              No se encontraron resultados para "{searchTerm}".
+            </div>
+          )}
 
           {/* --- BLOQUE DE PAGINACIÓN --- */}
           {totalPages > 1 && (

@@ -1,6 +1,6 @@
 // src/services/admin/DashboardService.js
 import { API_CONFIG } from "../apiConfig";
-import { getLaboratoriosAPI } from "./adminLab";
+import { getLaboratoriosAPI, getLaboratorios } from "./adminLab";
 
 const fetchJson = async (url) => {
   const response = await fetch(url, { headers: API_CONFIG.getHeaders() });
@@ -13,12 +13,25 @@ const fetchJson = async (url) => {
 
 export const getDashboardStats = async () => {
   try {
-    // 1. Obtener laboratorios (plantillas base)
-    const allLabsData = await getLaboratoriosAPI();
-    const allLabs = Array.isArray(allLabsData) ? allLabsData : (allLabsData.results || []);
+    // 1. Obtener laboratorios (plantillas base) - usamos la versión transformada como preferencia
+    let allLabs = [];
+    try {
+      const transformed = await getLaboratorios(); // devuelve objetos con `estado` como "Activo"/"Inactivo"
+      if (Array.isArray(transformed) && transformed.length > 0) {
+        allLabs = transformed;
+      } else {
+        const allLabsData = await getLaboratoriosAPI();
+        allLabs = Array.isArray(allLabsData) ? allLabsData : (allLabsData.results || []);
+      }
+    } catch (e) {
+      const allLabsData = await getLaboratoriosAPI();
+      allLabs = Array.isArray(allLabsData) ? allLabsData : (allLabsData.results || []);
+    }
+
     const totalLaboratorios = allLabs.length;
-    const activeLabsCount = allLabs.filter(lab => lab.estado === true).length;
-    const inactiveLabsCount = allLabs.filter(lab => lab.estado === false).length;
+    const isActiveFlag = (lab) => lab.estado === true || lab.estado === 'Activo' || lab.estado === 'activo' || lab.estado === 1;
+    const activeLabsCount = allLabs.filter(lab => isActiveFlag(lab)).length;
+    const inactiveLabsCount = totalLaboratorios - activeLabsCount;
     const activePercentage = totalLaboratorios > 0 ? Math.round((activeLabsCount / totalLaboratorios) * 100) : 0;
     const inactivePercentage = 100 - activePercentage;
     const laboratoriosEliminados = inactiveLabsCount;
@@ -32,8 +45,8 @@ export const getDashboardStats = async () => {
     const allLabsProfesor = Array.isArray(labsProfesorData) ? labsProfesorData : (labsProfesorData.results || []);
 
     // Laboratorios generados con IA (generado_ia=true y activos)
-    const aiLabs = allLabsProfesor.filter(lab => lab.generado_ia === true && lab.estado === true).length;
-    const profesorActiveCount = allLabsProfesor.filter(lab => lab.estado === true).length;
+    const aiLabs = allLabsProfesor.filter(lab => lab.generado_ia === true && isActiveFlag(lab)).length;
+    const profesorActiveCount = allLabsProfesor.filter(lab => isActiveFlag(lab)).length;
     const eficienciaIA = profesorActiveCount > 0 ? Math.round((aiLabs / profesorActiveCount) * 100) : 0;
 
     // 4. Tendencias: anual y últimos 12 meses

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importamos useNavigate para la redirección
+import { useNavigate } from 'react-router-dom'; 
 import { 
   FlaskConical, 
   Users, 
@@ -17,7 +17,7 @@ import { getLaboratorios } from "../../services/admin/adminLab";
 import style from "./DashboardAdmin.module.css";
 
 function DashboardAdmin() {
-  const navigate = useNavigate(); // 2. Inicializamos el hook de navegación
+  const navigate = useNavigate(); 
   
   const [dashboardMetrics, setDashboardMetrics] = useState({
     totalLaboratorios: 0,
@@ -33,9 +33,20 @@ function DashboardAdmin() {
   });
   
   const [dashboardError, setDashboardError] = useState(null);
-  
   const [laboratoriosReales, setLaboratoriosReales] = useState([]);
   const [loadingLabs, setLoadingLabs] = useState(true);
+
+  // --- ESTADO NUEVO: DATOS DEL PERFIL ---
+  const [profileUser, setProfileUser] = useState({
+    nombre: "Ana García",
+    rol: "Administrador",
+    estado: "ACTIVO",
+    imagen: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
+    loginTime: Date.now() - (12 * 60 * 60 * 1000 + 45 * 60 * 1000) // Simula que inició sesión hace 12h 45m
+  });
+
+  // --- ESTADO NUEVO: TIEMPO DE SESIÓN FORMATEADO ---
+  const [sessionDuration, setSessionDuration] = useState("00:00h");
 
   const fetchDashboardMetrics = async () => {
     try {
@@ -66,6 +77,7 @@ function DashboardAdmin() {
     }
   };
 
+  // --- EFECTO: CONTROLLERS DE DATOS Y POLLING ---
   useEffect(() => {
     fetchDashboardMetrics();
     fetchLaboratoriosReales(false);
@@ -78,9 +90,28 @@ function DashboardAdmin() {
     return () => clearInterval(intervalId);
   }, []);
 
+  // --- EFECTO NUEVO: TEMPORIZADOR DE SESIÓN EN TIEMPO REAL ---
+  useEffect(() => {
+    const updateSessionTime = () => {
+      const diffMs = Date.now() - profileUser.loginTime;
+      const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      
+      // Formatea cadenas con ceros a la izquierda si es necesario (ej: 12:45h)
+      const formattedHours = String(diffHrs).padStart(2, '0');
+      const formattedMinutes = String(diffMins).padStart(2, '0');
+      
+      setSessionDuration(`${formattedHours}:${formattedMinutes}h`);
+    };
+
+    updateSessionTime(); // Ejecución inicial
+    const sessionInterval = setInterval(updateSessionTime, 60000); // Actualiza cada minuto
+
+    return () => clearInterval(sessionInterval);
+  }, [profileUser.loginTime]);
+
   // --- COMPORTAMIENTO DE ACCIONES (INTEGRACIÓN) ---
   const handleEdit = (lab) => {
-    // Guarda el objeto en localStorage idéntico a RepositorioDeLabs para no romper la edición de tu compañero
     localStorage.setItem("fisikapp_laboratorio_en_edicion", JSON.stringify(lab));
     navigate("/admin/laboratorio/configurar_labs");
   };
@@ -172,28 +203,34 @@ function DashboardAdmin() {
         {/* 2. SECCIÓN CENTRAL: PERFIL + GRÁFICOS */}
         <div className={style.chartsSectionGrid}>
           
-          {/* Tarjeta Perfil */}
+          {/* Tarjeta Perfil (AHORA DINÁMICA) */}
           <div className={style.profileCard}>
             <div className={style.avatarWrapper}>
               <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" 
-                alt="Ana García" 
+                src={profileUser.imagen} 
+                alt={profileUser.nombre} 
                 className={style.avatarImg}
               />
-              <CheckCircle2 className={style.statusBadgeIcon} size={20} />
+              <CheckCircle2 
+                className={style.statusBadgeIcon} 
+                size={20} 
+                color={profileUser.estado === "ACTIVO" ? "#00cc99" : "#94a3b8"} 
+              />
             </div>
             <div className={style.profileInfo}>
-              <h4>Ana García</h4>
-              <p>Administrador</p>
+              <h4>{profileUser.nombre}</h4>
+              <p>{profileUser.rol}</p>
             </div>
             <div className={style.profileFooter}>
               <div className={style.footerGroupLeft}>
                 <span className={style.footerLabel}>Estado</span>
-                <span className={style.statusBadgeActive}>ACTIVO</span>
+                <span className={profileUser.estado === "ACTIVO" ? style.statusBadgeActive : style.statusBadgeInactive}>
+                  {profileUser.estado}
+                </span>
               </div>
               <div className={style.footerGroupRight}>
                 <span className={style.footerLabel}>Sesión</span>
-                <span className={style.sessionTime}>12:45h</span>
+                <span className={style.sessionTime}>{sessionDuration}</span>
               </div>
             </div>
           </div>
@@ -333,7 +370,6 @@ function DashboardAdmin() {
                     <td className={style.cellNameStyle}>{lab.nombre_de_laboratorio}</td>
                     <td className={style.cellDateStyle}>{formatearFecha(lab.fecha_creacion)}</td>
                     <td className={style.actionsCell}>
-                      {/* CAMBIO: Botones con eventos onClick enlazados y control de estado de bloqueo */}
                       <AdminIconButton 
                         icon={Pencil} 
                         type="edit" 

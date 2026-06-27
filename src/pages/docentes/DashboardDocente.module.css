@@ -540,3 +540,329 @@
     background-color: #f8fafc;
     border-color: #94a3b8;
 }
+
+/* --- NUEVA DISTRIBUCIÓN RECONFIGURADA PARA 5 CONTENEDORES --- */
+.imgMetricsRow {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+/* Nuevas combinaciones cromáticas de fondos para Iconos */
+.bgIconLightPurple {
+    background-color: #f5f3ff;
+}
+
+.bgIconLightOrange {
+    background-color: #fff7ed;
+}
+
+/* --- CONTROLADOR DE PAGINACIÓN DE FASES (TABS) --- */
+.paginationTabsContainer {
+    display: flex;
+    background-color: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.tabNavButton {
+    background-color: transparent;
+    color: #475569;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.tabActive {
+    background-color: #FFFFFF;
+    color: #0f172a;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tabBadgeNotification {
+    background-color: #ef4444;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 8px;
+    line-height: 1;
+}
+
+/* --- ESTILOS ADICIONALES PARA FASE 2 --- */
+.phase2CardTitle {
+    font-size: 19px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.btnLinkText {
+    background: none;
+    border: none;
+    color: #0d9488;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.phase2TableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.phase2Table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.phase2Table th {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    background-color: #f8fafc;
+}
+
+.phase2Table td {
+    padding: 18px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.tableTdId {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.studentUserFlex {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.studentAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.avatarMA { background-color: #e0f2fe; color: #0369a1; }
+.avatarSR { background-color: #e0e7ff; color: #4338ca; }
+.avatarJV { background-color: #fce7f3; color: #be185d; }
+
+.studentNameText {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.tableTdDate { color: #64748b; font-weight: 500; }
+.tableTdLab { color: #475569; font-weight: 500; }
+
+.pillStatusBase {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.badgePending { background-color: #fff1f2; color: #e11d48; }
+.badgeReviewed { background-color: #ecfeff; color: #0891b2; }
+.badgeFeedback { background-color: #f1f5f9; color: #475569; }
+
+.activityFeedContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activityFeedItem {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.activityIconBox {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justifyContent: center;
+    flex-shrink: 0;
+}
+
+.activityMintIcon { background-color: #e6fbf4; }
+.activityBlueIcon { background-color: #eff6ff; }
+.activityRedIcon { background-color: #fef2f2; }
+
+.activityTextContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activityRowPara {
+    margin: 0;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.4;
+}
+
+.activityRowPara strong {
+    color: #0f172a;
+}
+
+.activityTimeSpan {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.btnDottedHistory {
+    width: 100%;
+    background-color: #FFFFFF;
+    color: #1e293b;
+    border: 1px dashed #cbd5e1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background-color 0.2s ease;
+}
+
+.btnDottedHistory:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* --- DONUT CHART Y CONTENEDORES (image_8a6c0a.png) --- */
+
+.imgCircleWrapperCenter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px auto;
+    width: 150px;
+    height: 150px;
+}
+
+.imgCircularSvg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Rota el origen arriba al centro */
+}
+
+.donutBgBase {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 3.8;
+}
+
+.donutSegmentCompleted {
+    fill: none;
+    stroke: #ee3280; /* Color Mint original */
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.donutSegmentActive {
+    fill: none;
+    stroke: #0083fe; /* Color Cyan/Azul neón de la imagen */
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.imgCircleTextInside {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.imgPercentNumber {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1b2559;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.imgPercentSub {
+    font-size: 12px;
+    color: #a3aed0;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* --- FILAS DE ESTADO INFERIORES --- */
+
+.imgStatusList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    width: 100%;
+}
+
+.imgStatusRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.legendItemLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legendDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dotMint { background-color: #ee3280; }
+.dotBlue { background-color: #0083fe; }
+
+.legendName {
+    font-size: 14px;
+    color: #a3aed0;
+    font-weight: 600;
+}
+
+.legendVal {
+    font-size: 14px;
+    color: #1b2559;
+    font-weight: 700;
+}
