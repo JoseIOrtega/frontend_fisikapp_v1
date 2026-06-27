@@ -14,6 +14,7 @@ import ModalVerProgresoEstudiante from '../../components/modals/ModalVerProgreso
 // IMPORTA TU NUEVO MODAL (Deberás crearlo en la carpeta de modals)
 
 
+// MisEstudiantesDocente.jsx corregido
 function MisEstudiantesDocente() {
   const [estudiantes, setEstudiantes] = useState([]);
   const [cargando, setCargando] = useState(true);

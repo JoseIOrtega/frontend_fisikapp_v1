@@ -2,21 +2,37 @@
     padding: 20px;
 }
 
-.seccion_del_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.seccion_del_header{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
 }
 
-.titulo_header_laboratorio {
-    color: #1B2559;
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
+.titulo_header_laboratorio{
+    flex-shrink:0;
+    margin:0;
+    color:#1B2559;
+    font-size:24px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.stepper{
+    flex:1;
+    margin:0;
+    
 }
 
 /* Estructura del Formulario */
+.form_bubble {
+    background: #ffffff;
+    border-radius: 32px;
+    padding: 30px;
+    box-shadow: 0 24px 80px rgba(24, 255, 186, 0.12);
+    border: 1px solid rgba(24, 255, 186, 0.15);
+}
+
 .form_container {
     display: flex;
     flex-direction: column;
@@ -69,6 +85,7 @@
 .textarea_diseno {
     min-height: 100px;
     resize: vertical;
+    
 }
 
 .btn_plus {
@@ -352,3 +369,455 @@
   border-left: 4px solid #10b981; /* Línea verde de tu diseño */
   padding-left: 10px;
 }
+
+/* Estilo para que los campos bloqueados mantengan el diseño estándar */
+.input_diseno[readonly] {
+    background-color: #f9f9f9; /* Un gris muy sutil para indicar bloqueo */
+    color: #334155;            /* El color de fuente oscuro de tu estándar */
+    cursor: not-allowed;       /* Cambia el cursor para indicar que no se edita */
+    border: 1px solid #e2e8f0; /* El borde suave que usas en los demás inputs */
+}
+
+/* --- NUEVOS ESTILOS PARA LA INTEGRACIÓN CON IA --- */
+
+.wrapper_botones_header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn_ia_gradient {
+    background: linear-gradient(135deg, #7300ff 0%, #1B2559 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(115, 0, 255, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn_ia_gradient:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(115, 0, 255, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn_ia_gradient:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.icon_spark {
+    color: #18ffba; /* Destello en el color turquesa de Fisikapp */
+}
+
+/* Animación sutil de respiración para los cuadros mientras la IA escribe */
+textarea:disabled {
+    background-color: #f8fafc;
+    color: #94a3b8;
+    border-color: #cbd5e1;
+    cursor: wait;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.stepCircle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #d1d5db;
+  color: white;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .3s;
+}
+
+.stepItem span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.activeStep .stepCircle {
+  background: #01024d;
+}
+
+.navigation{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:20px;
+}
+.stepper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+}
+
+.stepper::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 65px;
+  right: 65px;
+  height: 4px;
+  background: #d1d5db;
+  z-index: 0;
+}
+
+.progressBar {
+  position: absolute;
+  top: 16px;
+  left: 65px;
+  height: 4px;
+  background: #01024d;
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
+.stepItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+.navigation {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.navigation button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.navigation button:last-child {
+  background: #10b981;
+  color: white;
+}
+
+.gridInfoGeneral {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.completedStep .stepCircle {
+  background: #01024d;
+  color: white;
+}
+
+.completedStep span {
+  color: #01024d;
+  font-weight: 600;
+}
+
+.uploadContainer{
+  display:flex;
+  gap:20px;
+  margin-top:10px;
+}
+
+.uploadBox,
+.previewBox{
+  flex:1;
+  height:140px;
+  max-height:140px;
+  overflow:hidden;
+  border:2px dashed #dbe3f0;
+  border-radius:12px;
+  position:relative;
+  background:#fafcff;
+}
+
+.estadoGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:10px;
+}
+
+.estadoCard{
+  border:1px solid #dbe3f0;
+  border-radius:12px;
+  padding:15px;
+  cursor:pointer;
+}
+
+.estadoCard {
+  border: 1px solid #dbe3f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.estadoCard:hover {
+  border-color: #18ffba;
+}
+
+.estadoCard h4 {
+  margin: 0;
+  color: #1B2559;
+  font-size: 14px;
+}
+
+.estadoCard p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.previewImage{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.btnEliminarImagen{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:white;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:bold;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+.uploadBox {
+  flex: 1;
+  height: 160px;
+  border: 2px dashed #dbe3f0;
+  border-radius: 12px;
+  background: #fafcff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+
+
+
+
+
+.generandoImagen {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.generandoImagen h4 {
+    margin: 15px 0 10px;
+    color: #1e3a8a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.generandoImagen p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.generandoImagen span {
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #dbeafe;
+    border-top: 5px solid #4f46e5;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.iconUpload{
+    color:#6366f1;
+    margin-bottom:12px;
+}
+
+.uploadContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.uploadContent h4{
+    margin:0;
+    color:#1e3a8a;
+    font-size:18px;
+    font-weight:600;
+}
+
+.uploadContent p{
+    margin:0;
+    color:#475569;
+    font-size:14px;
+}
+
+.uploadContent span{
+    color:#64748b;
+    font-size:13px;
+}
+
+.uploadContent small{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.uploadLabel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.autocompleteContainer{
+    width:100%;
+    position:relative;
+}
+
+.dropdownCategorias{
+    position:absolute;
+    top:105%;
+    left:0;
+    width:100%;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    max-height:220px;
+    overflow-y:auto;
+    z-index:100;
+}
+
+.itemCategoria{
+    padding: 12px 16px;
+    cursor: pointer;
+    color: #1e293b;
+    font-size: 15px;
+    transition: .2s;
+}
+
+.itemCategoria:hover{
+    background:#eef4ff;
+}
+
+.activo{
+    background:#1f4ed8;
+    color:white;
+}
+
+.noResultados{
+    padding:15px;
+    color:#888;
+    text-align:center;
+}
+
+.modalLogo{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.modalLogo h2{
+    margin:10px 0 6px;
+    font-size:24px;
+}
+
+.modalLogo p{
+    color:#64748b;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.logoModal{
+    width:90px;
+    height:auto;
+    margin-bottom:14px;
+}
+
+.modalLogo{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.modalLogo h2{
+    margin-bottom:8px;
+    color:#1e293b;
+    font-size:24px;
+    font-weight:700;
+}
+
+.modalLogo p{
+    color:#64748b;
+    font-size:14px;
+    line-height:1.5;
+    max-width:320px;
+    margin:0 auto;
+}
+
+
+

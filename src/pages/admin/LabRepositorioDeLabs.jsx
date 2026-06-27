@@ -1,155 +1,174 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
-import AdminDataTable from "../../components/UI/admin/AdminDataTable";
-import AdminIconButton from "../../components/UI/admin/AdminIconButton";
-import AdminCreateButton from "../../components/UI/admin/AdminCreateButton";
-import { Beaker, Edit, Eye, Trash2, CheckCircle, FilePlus } from "lucide-react";
-import { getLaboratorios } from "../../services/admin/LabService";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useModal } from '../../context/ModalContext';
-import PaginationControls from '../../components/UI/paginacion/PaginationControls';
-
-// Reutilizamos tu CSS de UsuariosAdmin
-import style from "./UsuariosAdmin.module.css"; 
+import AdminLayout from "../../layouts/AdminLayout"
+import AdminDataTable from "../../components/UI/admin/AdminDataTable"
+import AdminIconButton from "../../components/UI/admin/AdminIconButton";
+import { Edit, Eye, UserX, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getRelativeTime } from '../../utils/dateHelpers';
+import { 
+  getLaboratorios, 
+  patchLaboratorioAPI
+} from '../../services/admin/adminLab';
+import style from './LabRepositorioDeLabs.module.css'
 
 function LabRepositorioDeLabs() {
-  const [laboratorios, setLaboratorios] = useState([]);
-  const [cargando, setCargando] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [laboratorios, setLaboratorios] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { showModal } = useModal();
-  
-  const [paginaActual, setPaginaActual] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const scrollRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Columnas adaptadas a Laboratorios
-  const columnas = [
-    { label: "Laboratorio" }, // Aquí irá Código y Título (como Nombre y Correo)
-    { label: "Resumen" },
-    { label: "Estado" },
-    { label: "Acciones" }
-  ];
+  // --- ESTADO DE PAGINACIÓN ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-  const fetchDatos = useCallback(async () => {
-    try {
-      setCargando(true);
-      
-      // Llamada al servicio que creamos
-      const data = await getLaboratorios(paginaActual, searchTerm);
-      
-      const listaLabs = data.results || [];
-
-      if (data.count) {
-        // Asumiendo que el backend pagina de a 10
-        setTotalPaginas(Math.ceil(data.count / 10));
-      }
-
-      // Mapeo básico para asegurar el booleano del estado
-      const resultado = listaLabs.map(lab => ({
-        ...lab,
-        estado: Boolean(lab.estado)
-      }));
-
-      setLaboratorios(resultado); 
-    } catch (error) {
-      console.error("Error al cargar laboratorios:", error);
-      showModal('error', 'Error al sincronizar los laboratorios.');
-    } finally {
-      setCargando(false);
-    }
-  }, [paginaActual, searchTerm, showModal]);
+  // Resetear a pág 1 cuando se busca
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   useEffect(() => {
-    fetchDatos();
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [fetchDatos]);
+    const loadLaboratorios = async () => {
+      try {
+        setLoading(true);
+        const data = await getLaboratorios();
+        setLaboratorios(data || []);
+      } catch (error) {
+        console.error("Error al cargar laboratorios:", error);
+        setLaboratorios([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLaboratorios();
+  }, []);
 
-  const handleBusqueda = (valor) => {
-    setSearchTerm(valor);
-    setPaginaActual(1); 
+  const columnas = [
+    { label: "Nombre de Laboratorio" },
+    { label: "Categoría" },
+    { label: "Estado" },
+    { label: "Creado" },
+    { label: "Acciones", style: { textAlign: 'center' } }
+  ];
+
+  const filteredLaboratorios = laboratorios.filter((laboratorio) =>
+    laboratorio.nombre_de_laboratorio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    laboratorio.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    laboratorio.estado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    new Date(laboratorio.fecha_creacion).toLocaleString().toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // --- LÓGICA DE CÁLCULO DE PAGINACIÓN ---
+  const totalPages = Math.ceil(filteredLaboratorios.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredLaboratorios.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // --- NUEVA LÓGICA INTEGRADA DE EDICIÓN (SIN TOCAR ARCHIVO DE TU COMPAÑERO) ---
+  const handleEdit = (laboratorio) => {
+    // 1. Guardamos temporalmente el objeto completo en el storage como puente de comunicación
+    localStorage.setItem("fisikapp_laboratorio_en_edicion", JSON.stringify(laboratorio));
+    
+    // 2. Redirige limpiamente al archivo de configuración
+    navigate("/admin/laboratorio/configurar_labs");
+  };
+
+  const handleView = (laboratorio) => {
+    navigate(`/admin/laboratorio/repositorio_labs/${laboratorio.id}`);
+  };
+
+  const toggleBloqueo = async (laboratorio) => {
+    const nuevoEstado = laboratorio.estado === "Activo" ? "Inactivo" : "Activo";
+    try {
+      const resultado = await patchLaboratorioAPI(laboratorio.id, {
+        estado: nuevoEstado === "Activo"
+      });
+      if (!resultado?.success) throw new Error(resultado?.error || "Error");
+      setLaboratorios(prevLabs =>
+        prevLabs.map(lab => lab.id === laboratorio.id ? { ...lab, estado: nuevoEstado } : lab)
+      );
+      showModal('success', `Laboratorio ${nuevoEstado === "Activo" ? "desbloqueado" : "bloqueado"} exitosamente.`);
+    } catch (error) {
+      showModal('error', "No se pudo actualizar el estado.");
+    }
   };
 
   return (
-    <AdminLayout onSearch={handleBusqueda}>
-      <div className={style.layout}>
-        <div className={style.contentWrapper}>
-          
-          {cargando && (
-            <div className={style.overlayCarga}>
-              <span>Sincronizando laboratorios...</span>
+    <AdminLayout onSearch={setSearchTerm}>
+      <div className={style["layout"]}>
+        <div className={style["seccion_del_header"]}>
+          <h2 className={style.titulo_header_laboratorio}>Repositorio de Laboratorios</h2>
+          {loading && <span className={style.loadingText}>Cargando...</span>}
+        </div>
+
+        {laboratorios.length === 0 && !loading && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+            No hay laboratorios disponibles
+          </div>
+        )}
+
+        {laboratorios.length > 0 && (
+          <>
+          <AdminDataTable
+            columns={columnas}
+            data={currentItems}
+            renderRow={(laboratorio) => (
+              <tr key={laboratorio.id}>
+                <td className={style.nombre_laboratorio}>{laboratorio.nombre_de_laboratorio}</td>
+                <td>{laboratorio.categoria}</td>
+                <td><span className={laboratorio.estado === "Activo" ? style.statusActive : style.statusInactive}>{laboratorio.estado}</span></td>
+                <td title={new Date(laboratorio.fecha_creacion).toLocaleString()} style={{ cursor: 'help' }}>{getRelativeTime(laboratorio.fecha_creacion)}</td>
+                <td className={style.actionsDetails}>
+                  <AdminIconButton icon={Edit} title="editar" type="edit" onClick={() => handleEdit(laboratorio)} disabled={laboratorio.estado !== "Activo"} />
+                  <AdminIconButton icon={Eye} title="ver" type="detail" onClick={() => handleView(laboratorio)} />
+                  <AdminIconButton 
+                    icon={laboratorio.estado === "Activo" ? UserX : UserCheck} 
+                    title={laboratorio.estado === "Activo" ? "bloquear" : "desbloquear"} 
+                    type={laboratorio.estado === "Inactivo" ? "blocked" : "delete"}
+                    onClick={() => toggleBloqueo(laboratorio)}
+                  />
+                </td>
+              </tr>
+            )}
+          />
+
+          {/* --- BLOQUE DE PAGINACIÓN --- */}
+          {totalPages > 1 && (
+            <div className={style.paginationContainer}>
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === 1}
+                onClick={() => paginate(currentPage - 1)}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              <div className={style.pageNumbers}>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => paginate(i + 1)}
+                    className={`${style.pageBtn} ${currentPage === i + 1 ? style.activePage : ''}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                className={style.paginationBtn} 
+                disabled={currentPage === totalPages}
+                onClick={() => paginate(currentPage + 1)}
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           )}
-
-          <div className={style.headerSection}>
-            <h2 className={style.title}>Repositorio de Laboratorios</h2>
-            
-          </div>
-
-          <div className={style.tableContainer} ref={scrollRef}>
-            <AdminDataTable 
-              columns={columnas} 
-              data={laboratorios}
-              renderRow={(lab) => (
-                <tr key={lab.id}>
-                  {/* Celda Principal: Código y Título (Estilo userInfoContainer) */}
-                  <td className={style.userCell}>
-                    <div className={style.userInfoContainer}>
-                      <span className={style.nameText}>{lab.codigo_lab}</span>
-                      <span className={style.emailText}>{lab.titulo_lab}</span>
-                    </div>
-                  </td>
-
-                  {/* Resumen o Categoría */}
-                  <td>
-                    <span className={style.emailText}>
-                        {lab.resumen?.length > 40 ? `${lab.resumen.substring(0, 40)}...` : lab.resumen}
-                    </span>
-                  </td>
-
-                  {/* Estado con tus clases de CSS */}
-                  <td>
-                    <span className={lab.estado ? style.statusActive : style.statusInactive}>
-                      {lab.estado ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-
-                  {/* Acciones */}
-                  <td className={style.actionsCell}>
-                    <AdminIconButton 
-                      icon={Edit} 
-                      type="edit" 
-                      title="Editar" 
-                      onClick={() => console.log("Edit", lab.id)} 
-                    />
-                    
-                    <AdminIconButton 
-                      icon={Eye} 
-                      type="detail" 
-                      title="Ver simulador" 
-                      onClick={() => console.log("Ver", lab.id)} 
-                    />
-
-                    <AdminIconButton 
-                      icon={lab.estado ? Trash2 : CheckCircle} 
-                      type={lab.estado ? "delete" : "success"} 
-                      title={lab.estado ? "Desactivar" : "Activar"} 
-                      onClick={() => console.log("Toggle", lab.id)} 
-                    />
-                  </td>
-                </tr>
-              )}
-            />
-          </div>
-          
-          <footer className={style.paginationContainer}>
-            <PaginationControls 
-              paginaActual={paginaActual}
-              totalPaginas={totalPaginas} 
-              onPaginaChange={(nueva) => setPaginaActual(nueva)} 
-            />
-          </footer>
-        </div>
+          </>
+        )}
       </div>
     </AdminLayout>
   );

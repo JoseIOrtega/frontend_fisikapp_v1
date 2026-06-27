@@ -33,26 +33,27 @@ export const API_CONFIG = {
             CREAR_PROFESOR_ESTUDIANTE: `${BASE_URL}/users/crear-profesor/`, // Para crear un usuario como profesor o estudiante
 
             LOGS: `${BASE_URL}/logs/`,
-            LABS: `${BASE_URL}/laboratorios/`,                                // Para Laboratorio
-            LABS_AUDITORIA:`${BASE_URL}/laboratorio-admin/`,
-            // 🔹 Centralizamos la ruta dinámica por ID alineada con el Swagger de tu backend
-            LABS_AUDITORIA_DETALLE: (id) => `${BASE_URL}/laboratorio-admin/${id}/`,
+            LABS: `${BASE_URL}/plantillas/`,                                // Para Laboratorio
 
             CATEGORIAS: {
                 LIST: `${BASE_URL}/categorias/`, 
                 CREATE: `${BASE_URL}/categorias/`,
             },
-            OBJETIVOS: {
+            OBJETIVOS_GENERALES: {
                 LIST: `${BASE_URL}/plantilla-objetivos-generales/`,
-                CREATE: `${BASE_URL}/objetivos/`,
+                CREATE: `${BASE_URL}/plantilla-objetivos-generales/`,
             },
+            OBJETIVOS_ESPECIFICOS: {
+                LIST: `${BASE_URL}/plantilla-objetivos-especificos/`,
+                CREATE: `${BASE_URL}/plantilla-objetivos-especificos/`,
+},
             PALABRAS_CLAVE: {
                 LIST: `${BASE_URL}/palabras-clave/`,
                 CREATE: `${BASE_URL}/palabras-clave/`,
             },
             LABORATORIOS: {
                 LIST: `${BASE_URL}/plantillas/`,
-                CREATE: `${BASE_URL}/laboratorios/`,
+                CREATE: `${BASE_URL}/plantillas/`,
             }
 
         },

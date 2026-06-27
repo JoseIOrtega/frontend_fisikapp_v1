@@ -60,7 +60,10 @@ function AdminNavbar({ pageTitle, onSearch }) {
                 <h1 className={style.title}>{pageTitle}</h1>
             </div>
             <div className={style.rightSection}>
-                <AdminSearchBar onSearch={onSearch} />
+               {/* Pega esto dentro de AdminNavbar.jsx */}
+    {window.location.pathname !== '/admin/dashboard' && (
+        <AdminSearchBar onSearch={onSearch} />
+    )}
                 <div className={style.actions}>
                     {/* 5. Le pasamos la foto al menú (el círculo rojo) */}
                     <AdminUserMenu userName={nombreUsuario} userPhoto={fotoUsuario} /> 

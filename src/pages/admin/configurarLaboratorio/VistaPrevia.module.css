@@ -1,0 +1,366 @@
+/* Layout principal: dos columnas */
+.layoutPreview {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* COLUMNA IZQUIERDA */
+.panelResumen {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.itemResumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.itemResumen:last-child {
+  border-bottom: none;
+}
+
+.itemResumenLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.iconoItem {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.textoItem strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.textoItem span {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 1px;
+}
+
+.checkVerde {
+  color: #16a34a;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.chevron {
+  color: #aaa;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Estado de la plantilla */
+.estadoSeccion {
+  margin-top: 24px;
+}
+
+.estadoTitulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.estadoSubtitulo {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+.estadoOpciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.opcionEstado {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.opcionEstado.activa {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.opcionEstado .opcionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.opcionEstado .opcionHeader .radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opcionEstado.activa .radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #16a34a;
+  border-radius: 50%;
+}
+
+.opcionEstado strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.opcionEstado p {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* COLUMNA DERECHA — Preview del laboratorio */
+.panelPreview {
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.imagenPortadaWrapper {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.imagenPortada {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagenOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.tituloLaboratorio {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.badgeCategoria {
+  display: inline-block;
+  background: #16a34a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+/* Sin imagen */
+.imagenPlaceholder {
+  height: 200px;
+  background: linear-gradient(135deg, #1a3c2b 0%, #2d5a3d 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+/* Contenido del preview */
+.contenidoPreview {
+  padding: 20px 24px;
+}
+
+.descripcionPreview {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.metricasRow {
+  display: flex;
+  gap: 24px;
+  padding: 14px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+
+.metrica {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metricaIcono {
+  font-size: 18px;
+  color: #16a34a;
+}
+
+.metricaTexto {
+  display: flex;
+  flex-direction: column;
+}
+
+.metricaLabel {
+  font-size: 11px;
+  color: #999;
+}
+
+.metricaValor {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.seccionTitulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.objetivoGeneral {
+  font-size: 14px;
+  color: #444;
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+.listaObjetivosPreview {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0 0 20px;
+}
+
+.listaObjetivosPreview li {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+/* Stats finales */
+.statsRow {
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.statIcono {
+  font-size: 16px;
+  color: #16a34a;
+}
+
+.statValor {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.botonesAccion {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.btnSecundario {
+  padding: 10px 20px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  color: #444;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.btnCancelar {
+  padding: 10px 20px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  color: #444;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btnBorrador {
+  padding: 10px 20px;
+  border: 2px solid #16a34a;
+  border-radius: 8px;
+  background: #fff;
+  color: #16a34a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnPublicar {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

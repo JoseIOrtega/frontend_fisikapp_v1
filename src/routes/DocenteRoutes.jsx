@@ -6,6 +6,8 @@ import SesionesDocente from "../pages/docentes/SesionesDocente";
 import HistorialReportes from "../pages/docentes/HistorialReportesDocente";
 import PerfilDocente from "../pages/docentes/PerfilDocente";
 import ConfiguracionDocente from "../pages/docentes/ConfiguracionDocente";
+import DocenteLayout from "../layouts/DocenteLayout";
+
 // 1. Importa tu nuevo componente/página para configurar el laboratorio
 import ConfigurarLaboratorio from "../pages/docentes/ConfigurarLaboratorio";
 import ConfigurarEtapaConceptosBasicos from "../pages/docentes/ConfigurarEtapaConceptosBasicos"; 
@@ -13,6 +15,13 @@ import ConfigurarEtapaConceptosBasicos from "../pages/docentes/ConfigurarEtapaCo
 function DocenteRoutes() {
   return (
     <Routes>
+      <Route element={<DocenteLayout />}>
+        <Route path="dashboard" element={<DashboardDocente />} />
+        <Route path="mis-laboratorios" element={<MisLaboratoriosDocente/>} />
+        <Route path="mis-estudiantes" element={<MisEstudiantesDocente/>} />
+        <Route path="reportes" element={<HistorialReportes/>} />
+        <Route path="perfil" element={<PerfilDocente/>} />
+        <Route path="configuracion" element={<ConfiguracionDocente />} />
       <Route path="dashboard" element={<DashboardDocente />} />
       <Route path="mis-laboratorios" element={<MisLaboratoriosDocente />} />
       
@@ -26,7 +35,8 @@ function DocenteRoutes() {
       <Route path="perfil" element={<PerfilDocente />} />
       <Route path="configuracion" element={<ConfiguracionDocente />} />
 
-      <Route path="/" element={<Navigate to="dashboard" />} />
+        <Route path="/" element={<Navigate to="dashboard" />} />
+      </Route>
     </Routes>
   );
 }
