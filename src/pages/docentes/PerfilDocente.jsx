@@ -218,6 +218,7 @@ function PerfilDocente() {
 
     return (
         <DocenteLayout>
+            
             <div className={style["layout"]}>
                 <h2 className={style.title}>Configuración</h2>
                 <div className={style["headerPerfil"]}>
