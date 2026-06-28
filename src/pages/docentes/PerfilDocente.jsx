@@ -217,7 +217,7 @@ function PerfilDocente() {
     const tieneImagenValida = previewImage || formData.foto;
 
     return (
-        //<DocenteLayout>
+        <DocenteLayout>
             <div className={style["layout"]}>
                 <h2 className={style.title}>Configuración</h2>
                 <div className={style["headerPerfil"]}>
@@ -329,7 +329,7 @@ function PerfilDocente() {
                     </div>
                 </div>
             </div>
-        //</DocenteLayout>
+        </DocenteLayout>
     );
 }
 
