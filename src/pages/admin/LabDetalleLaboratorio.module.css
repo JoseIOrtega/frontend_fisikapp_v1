@@ -67,6 +67,18 @@
     padding-bottom: 10px;
 }
 
+.portadaContainer{
+    margin-bottom:2rem;
+}
+
+.portadaContainer img{
+    width:100%;
+    height:240px;
+    object-fit:cover;
+    object-position:center;
+    border-radius:18px;
+}
+
 /* ==========================================================================
    CAMPOS, FILAS Y GRIDS (Simulando LabConfigurarLabs)
    ========================================================================== */

@@ -127,3 +127,30 @@ export const crearLaboratorio = async (formData) => {
 
     return result;
     };
+
+// =====================================================
+// ACTUALIZAR LABORATORIO
+// =====================================================
+export const actualizarLaboratorio = async (id, formData) => {
+
+    const response = await fetch(
+        `${API_CONFIG.ENDPOINTS.ADMIN.LABORATORIOS.CREATE}${id}/`,
+        {
+            method: "PATCH",
+
+            headers: {
+                ...API_CONFIG.getHeaders(),
+            },
+
+            body: formData,
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw result;
+    }
+
+    return result;
+};
