@@ -10,6 +10,7 @@ function InformacionGeneral({
   imagenPreview,
   isGeneratingImagen,
   setImagenPreview,
+  setFormData,
   handleGenerarConIA,
   isGeneratingIA,
 
@@ -18,7 +19,6 @@ function InformacionGeneral({
   mostrarDropdown,
   setMostrarDropdown,
   handleSeleccionarCategoria,
-
 }) {
   return (
     <section className={style.form_section}>
@@ -64,7 +64,7 @@ function InformacionGeneral({
                     .filter((cat) =>
                       cat.nombre
                         .toLowerCase()
-                        .includes(busquedaCategoria.toLowerCase())
+                        .includes(busquedaCategoria.toLowerCase()),
                     )
                     .map((cat) => (
                       <div
@@ -79,7 +79,7 @@ function InformacionGeneral({
                   {categorias.filter((cat) =>
                     cat.nombre
                       .toLowerCase()
-                      .includes(busquedaCategoria.toLowerCase())
+                      .includes(busquedaCategoria.toLowerCase()),
                   ).length === 0 && (
                     <div className={style.noResultados}>
                       No se encontraron categorías
@@ -97,11 +97,10 @@ function InformacionGeneral({
             >
               <Plus size={20} />
             </button>
-
           </div>
         </div>
       </div>
-              
+
       {/* DESCRIPCION CORTA */}
       <div className={style.field}>
         <label>Descripción corta *</label>
@@ -145,19 +144,27 @@ function InformacionGeneral({
             </label>
 
             <input
-              id="imagenPortada"
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(e) => {
-                const file = e.target.files[0];
+                id="imagenPortada"
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
 
-                if (file) {
-                  setImagenPreview(URL.createObjectURL(file));
-                }
-              }}
+                    const file = e.target.files[0];
+
+                    if (!file) return;
+
+                    setImagenPreview(URL.createObjectURL(file));
+
+                    setFormData(prev => ({
+                        ...prev,
+                        imagen_portada: file
+                    }));
+
+                }}
             />
-          </div>
+
+            </div>   
 
           <div className={style.previewBox}>
             {isGeneratingImagen ? (
@@ -183,7 +190,18 @@ function InformacionGeneral({
                 <button
                   type="button"
                   className={style.btnEliminarImagen}
-                  onClick={() => setImagenPreview(null)}
+                  onClick={() => {
+
+                      setImagenPreview(null);
+
+                      setFormData(prev => ({
+                          ...prev,
+                          imagen_portada: null
+                      }));
+
+                      document.getElementById("imagenPortada").value = "";
+
+                  }}
                 >
                   ✕
                 </button>

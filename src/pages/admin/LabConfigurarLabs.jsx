@@ -10,6 +10,7 @@ import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
 import Objetivos from "./configurarLaboratorio/Objetivos";
 import Contenido from "./configurarLaboratorio/Contenido";
 import VistaPrevia from "./configurarLaboratorio/VistaPrevia";
+import { useNavigate } from "react-router-dom";
 import logoFisikapp from "../../assets/images/logosinfondo.png";
 import {
   getCategorias,
@@ -26,6 +27,7 @@ import { generarPortadaIA,
 function LabConfigurarLabs() {
   // --- ESTADOS DE DATOS ---
   const { showModal } = useModal();
+  const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const [objetivos, setObjetivos] = useState([]);
 
@@ -36,6 +38,7 @@ function LabConfigurarLabs() {
   const [tipoSeleccionado, setTipoSeleccionado] = useState("General");
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
   const [indiceResaltado, setIndiceResaltado] = useState(-1);
+  
 
   const [step, setStep] = useState(1);/// cristian
   const [imagenPreview, setImagenPreview] = useState(null);
@@ -60,6 +63,7 @@ function LabConfigurarLabs() {
     marco_teorico: '',
     categoria: '',
     objetivo_general: '',
+    imagen_portada: null,
     estado: true,
     ra: false
   });
@@ -367,28 +371,71 @@ const handleGenerarConIA = async () => {
 
   const handleSavePlantilla = async () => {
     try {
-        const userId = localStorage.getItem("user_id");
+      const userId = localStorage.getItem("user_id");
 
-        const payload = {
-          titulo: formData.titulo_lab,
-          resumen: formData.resumen,
-          introduccion: formData.introduccion,
-          marco_teorico: formData.marco_teorico,
-          categoria: parseInt(formData.categoriaId || formData.categoria),
-          creado_por: parseInt(userId),
-          estado: "ACTIVO",
-          simulacion: false,
-        };
+      const form = new FormData();
 
-        console.log("PAYLOAD:", payload);
+      form.append("titulo", formData.titulo_lab);
+      form.append("resumen", formData.resumen);
+      form.append("introduccion", formData.introduccion);
+      form.append("marco_teorico", formData.marco_teorico);
+      form.append(
+        "categoria",
+        parseInt(formData.categoriaId || formData.categoria),
+      );
 
-        await crearLaboratorio(payload);
-        showModal('success', '✅ Plantilla agregada correctamente');
-    } catch (err) {
-    console.error("ERROR:", err);
-    console.error("RESPUESTA:", err.response?.data);
-    }
-};
+      form.append("creado_por", userId);
+
+      form.append("estado", "ACTIVO");
+
+      form.append("simulacion", false);
+
+      if (formData.imagen_portada) {
+        form.append("imagen_portada", formData.imagen_portada);
+      }
+
+      await crearLaboratorio(form);
+
+      showModal("success", "✅ Plantilla agregada correctamente");
+
+      setTimeout(() => {
+        navigate("/admin/laboratorio/repositorio_labs");
+      }, 1200);
+
+      // Limpiar
+          setFormData({
+              titulo_lab: "",
+              descripcion_corta: "",
+              resumen: "",
+              introduccion: "",
+              marco_teorico: "",
+              categoria: "",
+              objetivo_general: "",
+              imagen_portada: null,
+              estado: true,
+              ra: false
+          });
+
+          setImagenPreview(null);
+          setObjetivosEspecificos([]);
+          setSelectedCategoria(null);
+          setBusquedaCategoria("");
+
+          // Redirigir
+          navigate("/admin/laboratorio/repositorio_labs"); 
+
+      } catch (err) {
+
+          console.error(err);
+
+          showModal(
+              "error",
+              "Error al guardar."
+          );
+
+      }
+
+  };
 
   return (
     <AdminLayout>
@@ -455,6 +502,7 @@ const handleGenerarConIA = async () => {
                 setImagenPreview={setImagenPreview}
                 handleGenerarConIA={handleGenerarConIA}
                 isGeneratingIA={isGeneratingIA}
+                setFormData={setFormData}
                 isGeneratingImagen={isGeneratingImagen}
                 busquedaCategoria={busquedaCategoria}
                 setBusquedaCategoria={setBusquedaCategoria}
