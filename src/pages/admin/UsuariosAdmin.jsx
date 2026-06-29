@@ -5,22 +5,22 @@ import AdminIconButton from "../../components/UI/admin/AdminIconButton";
 import AdminCreateButton from "../../components/UI/admin/AdminCreateButton";
 import { UserPlus, Edit, Eye, UserX, UserCheck, FileUp } from "lucide-react";
 import { getRelativeTime } from '../../utils/dateHelpers';
-import { getUsuarios } from "../../services/admin/UsuariosService"; 
+import {
+  getUsuarios,
+  getLoginLogsService,
+  actualizarUsuarioService,
+  crearNuevoUsuario,
+  cargarProfesoresCSV,
+} from "../../services/admin/UsuariosService";
 // Importamos el servicio de logs que ya existe
-import { getLoginLogsService } from "../../services/admin/UsuariosService";
-import { crearNuevoUsuario } from '../../services/admin/UsuariosService';
-import { actualizarUsuarioService } from '../../services/admin/UsuariosService';
 import ModalEditarAdmin from '../../components/modals/admin/ModalEditarAdmin';
 import ModalVerAdmin from '../../components/modals/admin/ModalVerAdmin';
 import ModalCargaCSVAdmin from '../../components/modals/admin/ModalCargaCSVAdmin';
 import GenericModal from "../../components/modals/GenericModal";
 import AddMemberForm from "../../components/UI/admin/gestion_admins/AddMemberForm"
 
-
 import { useModal } from '../../context/ModalContext'; // Importante para las alertas
 import style from "./UsuariosAdmin.module.css";
-import Papa from 'papaparse';
-
 import PaginationControls from '../../components/UI/paginacion/PaginationControls'
 
 
@@ -76,7 +76,10 @@ function UsuariosAdmin() {
         return {
           ...usuario,
           estado: Boolean(usuario.estado),
-          ultimo_ingreso_real: logsDeEsteUsuario.length > 0 ? logsDeEsteUsuario[0].fecha : null
+          ultimo_ingreso_real:
+            logsDeEsteUsuario.length > 0
+              ? logsDeEsteUsuario[0].fecha
+              : usuario.last_login,
         };
       });
 
@@ -235,96 +238,31 @@ function UsuariosAdmin() {
       setErroresBackend({});
   };
 
-  const handleSubirCSV = (event) => {
+
+  const handleSubirCSV = async (event) => {
     const archivo = event.target.files[0];
 
-    if (archivo) {
-      Papa.parse(archivo, {
-        header: true,
-        skipEmptyLines: true,
-        dynamicTyping: true,
-        complete: async (results) => {
-          const usuariosBrutos = results.data;
+    if (!archivo) return;
 
-          // 1. Filtrar solo filas con correo y omitir la fila de ejemplo del profesor
-          const usuariosCargados = usuariosBrutos.filter(fila => {
-            const correo = fila.correo?.toString().toLowerCase().trim();
-            return correo && correo !== "profesor@ejemplo.com";
-          });
+    try {
+      setGuardando(true);
 
-          if (usuariosCargados.length === 0) {
-            showModal('error', 'El archivo no contiene datos válidos de docentes para registrar.');
-            return;
-          }
+      const respuesta = await cargarProfesoresCSV(archivo);
 
-          // 2. Validación de duplicados en el archivo
-          const correosEnArchivo = new Set();
-          const idsEnArchivo = new Set();
-          
-          for (const fila of usuariosCargados) {
-            const correo = fila.correo?.toString().toLowerCase().trim();
-            const id = String(fila.identificacion || '').trim();
+      showModal(
+        "success",
+        `Se registraron ${respuesta.creados} profesores correctamente.`,
+      );
 
-            if (correosEnArchivo.has(correo)) {
-              showModal('error', `El correo está repetido en el archivo: ${correo}`);
-              return;
-            }
-            if (idsEnArchivo.has(id)) {
-              showModal('error', `La identificación está repetida en el archivo: ${id}`);
-              return;
-            }
-            correosEnArchivo.add(correo);
-            idsEnArchivo.add(id);
-          }
+      fetchDatos();
+    } catch (error) {
+      showModal("error", error.message);
+    } finally {
+      setGuardando(false);
 
-          setGuardando(true);
-          let erroresEncontrados = [];
-
-          try {
-            for (const fila of usuariosCargados) {
-              // Construimos el objeto forzando el rol 'profesor'
-              const datosUsuario = {
-                nombre: fila.nombre?.toString().trim(),
-                correo: fila.correo?.toString().trim(),
-                identificacion: String(fila.identificacion || '').trim(),
-                institucion: fila.institucion?.toString().trim() || 'Fisikapp',
-                rol: 'profesor' 
-              };
-
-              if (datosUsuario.nombre && datosUsuario.correo) {
-                try {
-                  await crearNuevoUsuario(datosUsuario);
-                } catch (err) {
-                  const mensajeError = err.detalles?.correo || err.detalles?.identificacion || err.message || "Error";
-                  erroresEncontrados.push(`${datosUsuario.correo}: ${mensajeError}`);
-                }
-              }
-            }
-
-            // 3. Respuesta final enfocada solo en docentes
-            if (erroresEncontrados.length > 0) {
-              const resumen = erroresEncontrados.length === 1 
-                ? `Error: ${erroresEncontrados[0]}`
-                : `${erroresEncontrados[0]} (y ${erroresEncontrados.length - 1} errores más).`;
-              
-              showModal('error', `Carga terminada con observaciones: ${resumen}`);
-            } else {
-              showModal('success', '¡Excelente! Todos los docentes han sido registrados exitosamente.');
-            }
-            
-            fetchDatos();
-          } catch (error) {
-            showModal('error', 'Hubo un fallo crítico al procesar el archivo de docentes.');
-          } finally {
-            setGuardando(false);
-            event.target.value = ''; 
-          }
-        }
-      });
+      event.target.value = "";
     }
   };
-
-  
 
   return (
     <AdminLayout onSearch={handleBusqueda}>

@@ -1,4 +1,28 @@
-import { API_CONFIG } from "../../services/apiConfig";
+import { API_CONFIG } from "../apiConfig";
+
+export const cargarProfesoresCSV = async (archivo) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", archivo);
+
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CARGAR_PROFESORES, {
+      method: "POST",
+      headers: API_CONFIG.getHeaders(),
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "No fue posible cargar el archivo.");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error en cargarProfesoresCSV:", error);
+    throw error;
+  }
+};
 
 /**
  * Obtiene la lista completa de usuarios (Estudiantes y Profesores)
@@ -6,142 +30,152 @@ import { API_CONFIG } from "../../services/apiConfig";
  */
 // Añadimos 'pagina' como argumento, con valor por defecto 1
 export const getUsuarios = async (pagina = 1, termino = "") => {
-    try {
-        // Construimos la URL base con la página y el filtro de rol
-        let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=profesor`;
-        
-        // Si hay un término de búsqueda, lo concatenamos usando &search=
-        if (termino) {
-            url += `&search=${encodeURIComponent(termino)}`;
-        }
-        
-        const response = await fetch(url, {
-            method: "GET",
-            headers: API_CONFIG.getHeaders(), 
-        });
+  try {
+    // Construimos la URL base con la página y el filtro de rol
+    let url = `${API_CONFIG.ENDPOINTS.ADMIN.USUARIOS_BASE}?page=${pagina}&rol=profesor`;
 
-        if (!response.ok) {
-            throw new Error("No se pudo obtener la lista de usuarios");
-        }
-
-        const data = await response.json();
-        return data; 
-    } catch (error) {
-        console.error("Error en usuariosService:", error);
-        throw error;
+    // Si hay un término de búsqueda, lo concatenamos usando &search=
+    if (termino) {
+      url += `&search=${encodeURIComponent(termino)}`;
     }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: API_CONFIG.getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener la lista de usuarios");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error en usuariosService:", error);
+    throw error;
+  }
 };
 
 // 2. Obtener Logs de ingreso
 export const getLoginLogsService = async () => {
-    try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LOGS, {
-            method: "GET",
-            headers: API_CONFIG.getHeaders(),
-        });
-        if (!response.ok) throw new Error("No se pudieron obtener los logs");
-        return await response.json();
-    } catch (error) {
-        console.error("Error en LogsService:", error);
-        throw error;
-    }
+  try {
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LOGS, {
+      method: "GET",
+      headers: API_CONFIG.getHeaders(),
+    });
+    if (!response.ok) throw new Error("No se pudieron obtener los logs");
+    return await response.json();
+  } catch (error) {
+    console.error("Error en LogsService:", error);
+    throw error;
+  }
 };
 
 // 3. Actualizar usuario (PATCH para cambios parciales como el Estado o Datos)
 export const actualizarUsuarioService = async (id, datosActualizados) => {
-    try {
-        // Usamos la función dinámica de ApiConfig pasando el ID
-        const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
-        
-        const response = await fetch(url, {
-            method: "PATCH", 
-            headers: {
-                ...API_CONFIG.getHeaders(),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(datosActualizados),
-        });
+  try {
+    // Usamos la función dinámica de ApiConfig pasando el ID
+    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw errorData;
-            // throw new Error(errorData.detail || "No se pudo actualizar el usuario");
-            // // En lugar de lanzar un Error genérico, lanzamos el JSON del backend 
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error en actualizarUsuarioService:", error);
-        throw error;
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...API_CONFIG.getHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datosActualizados),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw errorData;
+      // throw new Error(errorData.detail || "No se pudo actualizar el usuario");
+      // // En lugar de lanzar un Error genérico, lanzamos el JSON del backend
     }
+    return await response.json();
+  } catch (error) {
+    console.error("Error en actualizarUsuarioService:", error);
+    throw error;
+  }
 };
 
 //4. Nueva función para ver detalles de los usuarios
 export const getUsuarioDetalle = async (id) => {
-    const token = localStorage.getItem('token');
-    // Usamos el endpoint que recibe ID que ya tienes en tu config
-    const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
+  const token = localStorage.getItem("token");
+  // Usamos el endpoint que recibe ID que ya tienes en tu config
+  const url = API_CONFIG.ENDPOINTS.ADMIN.USUARIO_DETALLE(id);
 
-    const response = await fetch(url, { 
-        method: "GET",
-        headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        }
-    });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) throw new Error("No se pudo obtener el detalle del usuario.");
+  if (!response.ok)
+    throw new Error("No se pudo obtener el detalle del usuario.");
 
-    const data = await response.json();
+  const data = await response.json();
 
-    // Reutilizamos tu lógica de la foto para que no salga rota
-    if (data.foto && typeof data.foto === 'string' && !data.foto.startsWith('http')) {
-        const baseUrl = API_CONFIG.BASE_URL.replace('/api', ''); 
-        data.foto = `${baseUrl}${data.foto}`; 
-    }
+  // Reutilizamos tu lógica de la foto para que no salga rota
+  if (
+    data.foto &&
+    typeof data.foto === "string" &&
+    !data.foto.startsWith("http")
+  ) {
+    const baseUrl = API_CONFIG.BASE_URL.replace("/api", "");
+    data.foto = `${baseUrl}${data.foto}`;
+  }
 
-    return data;
+  return data;
 };
-
 
 // 5. Crear nuevo usuario profesor o estudiante
 export const crearNuevoUsuario = async (datosUsuario) => {
-    try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.CREAR_PROFESOR_ESTUDIANTE, {
-            method: "POST",
-            headers: {
-                ...API_CONFIG.getHeaders(),
-                "Content-Type": "application/json"
-            },
-            // PURIFICADO: Solo enviamos nombre y correo.
-            // Se asume que el backend asignará el rol 'profesor' por defecto 
-            // o lo gestionará internamente al usar este endpoint.
-            body: JSON.stringify({
-                nombre: datosUsuario.nombre,
-                correo: datosUsuario.correo
-            }),
-        });
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.ADMIN.CREAR_PROFESOR_ESTUDIANTE,
+      {
+        method: "POST",
+        headers: {
+          ...API_CONFIG.getHeaders(),
+          "Content-Type": "application/json",
+        },
+        // PURIFICADO: Solo enviamos nombre y correo.
+        // Se asume que el backend asignará el rol 'profesor' por defecto
+        // o lo gestionará internamente al usar este endpoint.
+        body: JSON.stringify({
+          nombre: datosUsuario.nombre,
+          correo: datosUsuario.correo,
+        }),
+      },
+    );
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            
-            const traducciones = {
-                "users with this correo already exists.": "Este correo electrónico ya está registrado en el sistema.",
-                "This field is required.": "Este campo es obligatorio.",
-                "Enter a valid email address.": "Ingresa un correo electrónico válido."
-            };
+    if (!response.ok) {
+      const errorData = await response.json();
 
-            if (errorData.correo) {
-                errorData.correo = errorData.correo.map(msg => traducciones[msg] || msg);
-            }
+      const traducciones = {
+        "users with this correo already exists.":
+          "Este correo electrónico ya está registrado en el sistema.",
+        "This field is required.": "Este campo es obligatorio.",
+        "Enter a valid email address.": "Ingresa un correo electrónico válido.",
+      };
 
-            const errorCustom = new Error("Error de validación");
-            errorCustom.detalles = errorData; 
-            throw errorCustom;
-        }
+      if (errorData.correo) {
+        errorData.correo = errorData.correo.map(
+          (msg) => traducciones[msg] || msg,
+        );
+      }
 
-        return await response.json();
-    } catch (error) {
-        console.error("Error en crearNuevoUsuario:", error);
-        throw error;
+      const errorCustom = new Error("Error de validación");
+      errorCustom.detalles = errorData;
+      throw errorCustom;
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error en crearNuevoUsuario:", error);
+    throw error;
+  }
 };
