@@ -82,7 +82,8 @@ function MisLaboratoriosDocente() {
               const labAdaptado = {
                 id: lab.id,
                 titulo_lab: lab.titulo_lab || lab.titulo || "Sin título",
-                categoria_nombre: categorias.find(c => c.id === lab.categoria)?.nombre || "General",
+                //categoria_nombre: categorias.find(c => c.id === lab.categoria)?.nombre || "General",
+                categoria_nombre: lab.categoria || "Sin categoría",
                 codigo_lab: lab.codigo_lab || "---",
                 estado: lab.estado === 'ACTIVO',
                 configurado_completo: lab.estado !== 'borrador',
