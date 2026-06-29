@@ -1,27 +1,47 @@
 import { API_CONFIG } from '../apiConfig';
 
 // Obtener todos los laboratorios
-export const getLaboratoriosAPI = async () => {
+export const getLaboratoriosAPI = async (page = 1) => {
     try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {
-            method: "GET",
-            headers: API_CONFIG.getHeaders()
-        });
+
+        const response = await fetch(
+            `${API_CONFIG.ENDPOINTS.ADMIN.LABS}?page=${page}`,
+            {
+                method: "GET",
+                headers: API_CONFIG.getHeaders()
+            }
+        );
 
         if (response.ok) {
-            const datos = await response.json();
-            return datos;
+            return await response.json();
+
         } else if (response.status === 401) {
+
             console.warn("No autorizado - token inválido o expirado");
             throw new Error("No autorizado");
+
         } else {
-            console.error("Error al obtener laboratorios:", response.status, response.statusText);
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+
+            console.error(
+                "Error al obtener laboratorios:",
+                response.status,
+                response.statusText
+            );
+
+            throw new Error(
+                `Error ${response.status}: ${response.statusText}`
+            );
         }
+
     } catch (error) {
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+
+        if (
+            error.name === "TypeError" &&
+            error.message.includes("fetch")
+        ) {
             throw new Error("Backend no disponible");
         }
+
         throw error;
     }
 };
@@ -47,44 +67,93 @@ export const getLaboratorioByIdAPI = async (id) => {
     }
 };
 
+export async function getLaboratorioById(id) {
+  try {
+    const apiData = await getLaboratorioByIdAPI(id);
+
+    if (!apiData) return null;
+
+    return {
+      id: apiData.id,
+
+      nombre_de_laboratorio: apiData.titulo,
+
+      categoria: apiData.categoria,
+      categoria_nombre: apiData.categoria_nombre,
+
+      estado: apiData.estado === "ACTIVO" ? "Activo" : "Inactivo",
+
+      fecha_creacion: apiData.fecha_creacion,
+
+      resumen: apiData.resumen || "",
+
+      introduccion: apiData.introduccion || "",
+
+      marco_teorico: apiData.marco_teorico || "",
+
+      creador: apiData.creador_nombre || "—",
+
+      imagen_portada: apiData.imagen_portada,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+}
+
 // Crear un nuevo laboratorio
 export const createLaboratorioAPI = async (laboratorioData) => {
-    try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {
-            method: "POST",
-            headers: {
-                ...API_CONFIG.getHeaders(),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                titulo_lab: laboratorioData.nombre_de_laboratorio,
-                resumen: laboratorioData.resumen,
-                introduccion: laboratorioData.introduccion,
-                marco_teorico: laboratorioData.marco_teorico,
-                categoria: laboratorioData.categoria,
-                estado: laboratorioData.estado === "Activo",
-                fechacreacion: laboratorioData.fechacreacion
-            })
-        });
+  try {
+    const response = await fetch(API_CONFIG.ENDPOINTS.ADMIN.LABS, {
+      method: "POST",
+      headers: {
+        ...API_CONFIG.getHeaders(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        titulo_lab: laboratorioData.nombre_de_laboratorio,
+        resumen: laboratorioData.resumen,
+        introduccion: laboratorioData.introduccion,
+        marco_teorico: laboratorioData.marco_teorico,
+        categoria: laboratorioData.categoria,
+        estado: laboratorioData.estado === "Activo",
+        fechacreacion: laboratorioData.fechacreacion,
+      }),
+    });
 
-        const datos = await response.json();
+    const datos = await response.json();
 
-        if (response.ok) {
-            return { success: true, data: datos };
-        } else if (response.status === 401) {
-            return { success: false, error: "No autorizado - token inválido" };
-        } else {
-            console.error("Error al crear laboratorio:", response.status, datos);
-            return { success: false, error: datos };
-        }
-    } catch (error) {
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            return { success: false, error: "Backend no disponible" };
-        }
-        return { success: false, error: "Error de conexión" };
+    if (response.ok) {
+      return {
+        success: true,
+        data: datos,
+      };
+    } else if (response.status === 401) {
+      return {
+        success: false,
+        error: "No autorizado - token inválido",
+      };
     }
-};
 
+    return {
+      success: false,
+      error: datos,
+    };
+  } catch (error) {
+    if (error.name === "TypeError" && error.message.includes("fetch")) {
+      return {
+        success: false,
+        error: "Backend no disponible",
+      };
+    }
+
+    return {
+      success: false,
+      error: "Error de conexión",
+    };
+  }
+};
 // Actualizar un laboratorio existente
 export const updateLaboratorioAPI = async (id, laboratorioData) => {
     try {
@@ -203,66 +272,57 @@ function getLaboratoriosFromStorage() {
     return initialLaboratorios;
 }
 
-// Obtener laboratorios con transformación y fallback
-export async function getLaboratorios() {
-    try {
-        const apiData = await getLaboratoriosAPI();
-        const items = Array.isArray(apiData) ? apiData : (apiData?.results || []);
-        
-        if (items && items.length > 0) {
-            const transformedData = items.map(item => ({
-                id: item.id,
-                nombre_de_laboratorio: item.titulo,
-                categoria: item.categoria?.nombre || item.categoria || "Sin categoría",
-                estado: item.estado === "PUBLICADO" ? "Activo" : "Inactivo",
-                fecha_creacion: item.fecha_creacion,
-                resumen: item.resumen || "",
-                introduccion: item.introduccion || "",
-                marco_teorico: item.marco_teorico || "",
-                codigo_lab: item.codigo_lab || "",
-                objetivo: item.objetivo || null,
-                palabras_clave: item.palabras_clave || [],
-                creador: item.creador_nombre || "—",
-                ra: item.ra || false
-            }));
-            console.log("Datos obtenidos del backend:", transformedData);
-            return transformedData;
-        }
-    } catch (error) {
-        console.warn("Backend no disponible o error de autenticación, usando localStorage:", error.message);
-    }
-
-    return getLaboratoriosFromStorage();
-}
-
 // Obtener laboratorio por ID con transformación
-export async function getLaboratorioById(id) {
-    try {
-        const apiData = await getLaboratorioByIdAPI(id);
-        if (apiData) {
-            return {
-                id: apiData.id,
-                nombre_de_laboratorio: apiData.titulo,
-                categoria: apiData.categoria?.nombre || apiData.categoria || "Sin categoría",
-                estado: apiData.estado ? "Activo" : "Inactivo",
-                fecha_creacion: apiData.fecha_creacion,
-                resumen: apiData.resumen || "",
-                introduccion: apiData.introduccion || "",
-                marco_teorico: apiData.marco_teorico || "",
-                codigo_lab: apiData.codigo_lab || "",
-                objetivo: apiData.objetivo || null,
-                palabras_clave: apiData.palabras_clave || [],
-                creador: apiData.creador_nombre || "—",
-                ra: apiData.ra || false,
-                rawData: apiData
-            };
-        }
-    } catch (error) {
-        console.warn("Error al obtener laboratorio del backend:", error);
-    }
+export async function getLaboratorios(page = 1) {
+  try {
+    const apiData = await getLaboratoriosAPI(page);
 
-    const labs = getLaboratoriosFromStorage();
-    return labs.find((item) => item.id === id) || null;
+    const items = apiData.results || [];
+
+    const transformedData = items.map((item) => ({
+      id: item.id,
+
+      nombre_de_laboratorio: item.titulo,
+
+      categoria: item.categoria_nombre,
+
+      estado: item.estado === "ACTIVO" ? "Activo" : "Inactivo",
+
+      fecha_creacion: item.fecha_creacion,
+
+      resumen: item.resumen || "",
+
+      introduccion: item.introduccion || "",
+
+      marco_teorico: item.marco_teorico || "",
+
+      codigo_lab: item.codigo_lab || "",
+
+      objetivo: item.objetivo || null,
+
+      creador: item.creador_nombre || "—",
+
+      ra: item.ra || false,
+
+      imagen_portada: item.imagen_portada,
+    }));
+
+    console.table(transformedData);
+
+    return {
+      laboratorios: transformedData,
+
+      total: apiData.count,
+    };
+  } catch (error) {
+    console.warn("Backend no disponible:", error.message);
+
+    return {
+      laboratorios: getLaboratoriosFromStorage(),
+
+      total: getLaboratoriosFromStorage().length,
+    };
+  }
 }
 
 // INTERCEPCIÓN INTELIGENTE DE GUARDADO PARA CASOS DE EDICIÓN

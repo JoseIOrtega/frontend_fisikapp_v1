@@ -6,25 +6,29 @@ function ModalCargaCSVAdmin({ isOpen, onClose, onArchivoSeleccionado, cargando }
   if (!isOpen) return null;
 
 const descargarPlantilla = () => {
-    const indicadorExcel = "sep=,\n"; 
-    
-    // Solo pedimos lo básico. El rol lo asignamos nosotros internamente.
-    const encabezados = "nombre,correo\n";
-    
-    // Ejemplos solo de docentes
-    const ejemplo1 = "Profesor ,profesor@ejemplo.com\n";
-    
-    
-    const contenidoCompleto = indicadorExcel + encabezados + ejemplo1;
-    
-    const blob = new Blob([contenidoCompleto], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "plantilla_docentes_fisikapp.csv");
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+  const indicadorExcel = "sep=,\n";
+
+  const encabezados = "nombre,correo,identificacion,institucion\n";
+
+  const contenidoCompleto = indicadorExcel + encabezados;
+
+  const blob = new Blob([contenidoCompleto], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "plantilla_profesores_fisikapp.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+};
 
   return (
     <div className={style.overlay}>
@@ -35,7 +39,11 @@ const descargarPlantilla = () => {
             <FileText size={20} className={style.iconTitle} />
             <h3>Carga Masiva de Usuarios</h3>
           </div>
-          <button className={style.btnClose} onClick={onClose} disabled={cargando}>
+          <button
+            className={style.btnClose}
+            onClick={onClose}
+            disabled={cargando}
+          >
             <X size={20} />
           </button>
         </div>
@@ -51,8 +59,14 @@ const descargarPlantilla = () => {
             <div className={style.stepCard}>
               <div className={style.stepBadge}>1</div>
               <h4>Descargar Formato</h4>
-              <p>Obtén el archivo .CSV con las columnas necesarias.</p>
-              <button className={style.btnSecondary} onClick={descargarPlantilla}>
+              <p>
+                Descarga la plantilla oficial con los datos requeridos para
+                registrar profesores.
+              </p>
+              <button
+                className={style.btnSecondary}
+                onClick={descargarPlantilla}
+              >
                 <Download size={16} /> Descargar Plantilla
               </button>
             </div>
@@ -62,18 +76,18 @@ const descargarPlantilla = () => {
               <div className={style.stepBadge}>2</div>
               <h4>Subir Archivo</h4>
               <p>Selecciona el archivo ya diligenciado para procesarlo.</p>
-              <button 
-                className={style.btnPrimary} 
-                onClick={() => document.getElementById('csvInputReal').click()}
+              <button
+                className={style.btnPrimary}
+                onClick={() => document.getElementById("csvInputReal").click()}
                 disabled={cargando}
               >
                 {cargando ? (
-                    'Procesando...' 
+                  "Procesando..."
                 ) : (
-                    <>
-                    <UploadCloud size={18} /> 
+                  <>
+                    <UploadCloud size={18} />
                     <span>Seleccionar CSV</span>
-                    </>
+                  </>
                 )}
               </button>
             </div>
@@ -81,15 +95,15 @@ const descargarPlantilla = () => {
         </div>
 
         {/* Input Oculto */}
-        <input 
-          type="file" 
-          id="csvInputReal" 
-          accept=".csv" 
-          style={{ display: 'none' }} 
+        <input
+          type="file"
+          id="csvInputReal"
+          accept=".csv,.xlsx,.xls"
+          style={{ display: "none" }}
           onChange={(e) => {
             onArchivoSeleccionado(e);
             onClose(); // Cerramos al seleccionar
-          }} 
+          }}
         />
       </div>
     </div>

@@ -10,6 +10,7 @@ import InformacionGeneral from "./configurarLaboratorio/InformacionGeneral";
 import Objetivos from "./configurarLaboratorio/Objetivos";
 import Contenido from "./configurarLaboratorio/Contenido";
 import VistaPrevia from "./configurarLaboratorio/VistaPrevia";
+import { useNavigate } from "react-router-dom";
 import logoFisikapp from "../../assets/images/logosinfondo.png";
 import {
   getCategorias,
@@ -17,19 +18,21 @@ import {
   getObjetivosGenerales,
   crearObjetivoGeneral,
   crearLaboratorio,
+  actualizarLaboratorio,
 } from "../../services/admin/ConfigLabServices";
 import { generarPortadaIA,
          generarImagenPortadaIA,
          generarContenidoLaboratorioIA }
  from "../../services/ia/iaService";
+ import { getLaboratorioById } from "../../services/admin/adminLab";
 
 function LabConfigurarLabs() {
   // --- ESTADOS DE DATOS ---
   const { showModal } = useModal();
+  const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const [objetivos, setObjetivos] = useState([]);
 
-  
   // --- ESTADOS DE SELECCIÓN ---
   const [selectedCategoria, setSelectedCategoria] = useState(null);
   const [selectedObjetivo, setSelectedObjetivo] = useState(null);
@@ -37,89 +40,116 @@ function LabConfigurarLabs() {
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
   const [indiceResaltado, setIndiceResaltado] = useState(-1);
 
-  const [step, setStep] = useState(1);/// cristian
+  const [step, setStep] = useState(1); /// cristian
+  // ==========================
+  // MODO EDICIÓN
+  // ==========================
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [idEdicion, setIdEdicion] = useState(null);
+
   const [imagenPreview, setImagenPreview] = useState(null);
   const [busquedaCategoria, setBusquedaCategoria] = useState("");
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
-  
+
   // --- ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState(""); 
-  const [newData, setNewData] = useState({ nombre: '', descripcion: '', categoriaId: '', tipo_objetivo: '' });
+  const [modalType, setModalType] = useState("");
+  const [newData, setNewData] = useState({
+    nombre: "",
+    descripcion: "",
+    categoriaId: "",
+    tipo_objetivo: "",
+  });
 
   // -- cristian--
-  const [objetivosEspecificos, setObjetivosEspecificos] = useState([ "" ]);
+  const [objetivosEspecificos, setObjetivosEspecificos] = useState([""]);
   const [isGeneratingImagen, setIsGeneratingImagen] = useState(false);
 
   // --- FORMULARIO PRINCIPAL ---
   const [formData, setFormData] = useState({
-    titulo_lab: '',
+    titulo_lab: "",
     descripcion_corta: "",
-    resumen: '',
-    introduccion: '',
-    marco_teorico: '',
-    categoria: '',
-    objetivo_general: '',
+    resumen: "",
+    introduccion: "",
+    marco_teorico: "",
+    categoria: "",
+    objetivo_general: "",
+    imagen_portada: null,
     estado: true,
-    ra: false
+    ra: false,
   });
 
   // Maneja la selección limpia de una categoría desde el dropdown
-    const handleSeleccionarCategoria = (categoria) => {
-      setBusquedaCategoria(categoria.nombre);
+  const handleSeleccionarCategoria = (categoria) => {
+    setBusquedaCategoria(categoria.nombre);
 
-      setFormData((prev) => ({
-        ...prev,
-        categoria: categoria.id,
-      }));
+    setFormData((prev) => ({
+      ...prev,
+      categoria: categoria.id,
+    }));
 
-      setSelectedCategoria(categoria);
+    setSelectedCategoria(categoria);
 
+    setMostrarDropdown(false);
+
+    setIndiceResaltado(-1);
+  };
+
+  // Maneja el movimiento de flechas y Enter dentro del buscador
+  const handleKeyDownCategorias = (e) => {
+    // Preparamos la misma lista filtrada basándonos en lo que hay escrito
+    const palabrasBuscadas = busquedaCategoria
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .split(/\s+/);
+    const listaFiltradasEnTiempoReal = categorias.filter((c) => {
+      const nombreBD = c.nombre
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+      return palabrasBuscadas.every((palabra) => nombreBD.includes(palabra));
+    });
+
+    // Si el dropdown está oculto o no hay coincidencias, no hacemos nada
+    if (!mostrarDropdown || listaFiltradasEnTiempoReal.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault(); // Evita que el cursor de texto salte al final
+      setIndiceResaltado((prev) =>
+        prev < listaFiltradasEnTiempoReal.length - 1 ? prev + 1 : 0,
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setIndiceResaltado((prev) =>
+        prev > 0 ? prev - 1 : listaFiltradasEnTiempoReal.length - 1,
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault(); // Evita que el formulario se envíe antes de tiempo
+      if (
+        indiceResaltado >= 0 &&
+        indiceResaltado < listaFiltradasEnTiempoReal.length
+      ) {
+        const catSeleccionada = listaFiltradasEnTiempoReal[indiceResaltado];
+
+        // Actualiza el formulario usando la función nativa que lee la descripción
+        handleSelectChange(
+          { target: { value: catSeleccionada.id } },
+          "categoria",
+        );
+        if (typeof setSelectedCategoria === "function")
+          setSelectedCategoria(catSeleccionada);
+
+        // Rellena el input y cierra la lista
+        setBusquedaCategoria(catSeleccionada.nombre);
+        setMostrarDropdown(false);
+        setIndiceResaltado(-1);
+      }
+    } else if (e.key === "Escape") {
       setMostrarDropdown(false);
-
-      setIndiceResaltado(-1);
-    };
-
-    // Maneja el movimiento de flechas y Enter dentro del buscador
-    const handleKeyDownCategorias = (e) => {
-        // Preparamos la misma lista filtrada basándonos en lo que hay escrito
-        const palabrasBuscadas = busquedaCategoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().split(/\s+/);
-        const listaFiltradasEnTiempoReal = categorias.filter(c => {
-            const nombreBD = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            return palabrasBuscadas.every(palabra => nombreBD.includes(palabra));
-        });
-
-        // Si el dropdown está oculto o no hay coincidencias, no hacemos nada
-        if (!mostrarDropdown || listaFiltradasEnTiempoReal.length === 0) return;
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault(); // Evita que el cursor de texto salte al final
-            setIndiceResaltado((prev) =>
-                prev < listaFiltradasEnTiempoReal.length - 1 ? prev + 1 : 0
-            );
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            setIndiceResaltado((prev) =>
-                prev > 0 ? prev - 1 : listaFiltradasEnTiempoReal.length - 1
-            );
-        } else if (e.key === "Enter") {
-            e.preventDefault(); // Evita que el formulario se envíe antes de tiempo
-            if (indiceResaltado >= 0 && indiceResaltado < listaFiltradasEnTiempoReal.length) {
-                const catSeleccionada = listaFiltradasEnTiempoReal[indiceResaltado];
-                
-                // Actualiza el formulario usando la función nativa que lee la descripción
-                handleSelectChange({ target: { value: catSeleccionada.id } }, 'categoria');
-                if (typeof setSelectedCategoria === 'function') setSelectedCategoria(catSeleccionada);
-                
-                // Rellena el input y cierra la lista
-                setBusquedaCategoria(catSeleccionada.nombre);
-                setMostrarDropdown(false);
-                setIndiceResaltado(-1);
-            }
-        } else if (e.key === "Escape") {
-            setMostrarDropdown(false);
-        }
-    };
+    }
+  };
 
   const cargarTodosLosDatos = async () => {
     try {
@@ -130,16 +160,94 @@ function LabConfigurarLabs() {
 
       setCategorias(cats);
       setObjetivos(objs);
-      
-      if (formData.categoria) setSelectedCategoria(cats.find(c => String(c.id) === String(formData.categoria)));
-      if (formData.objetivo) setSelectedObjetivo(objs.find(o => String(o.id) === String(formData.objetivo)));
+
+      if (formData.categoria)
+        setSelectedCategoria(
+          cats.find((c) => String(c.id) === String(formData.categoria)),
+        );
+      if (formData.objetivo)
+        setSelectedObjetivo(
+          objs.find((o) => String(o.id) === String(formData.objetivo)),
+        );
     } catch (error) {
       console.error("Error cargando datos");
     }
   };
 
+
   useEffect(() => {
     cargarTodosLosDatos();
+  }, []);
+
+  useEffect(() => {
+    const cargarEdicion = async () => {
+      const laboratorioStorage = JSON.parse(
+        localStorage.getItem("fisikapp_laboratorio_en_edicion"),
+      );
+
+      if (!laboratorioStorage) return;
+      setModoEdicion(true);
+      setIdEdicion(laboratorioStorage.id);
+
+      const laboratorio = await getLaboratorioById(laboratorioStorage.id);
+
+      console.log("LAB EDITAR", laboratorio);
+
+      // ===============================
+      // Llenar formulario
+      // ===============================
+
+      setFormData((prev) => ({
+        ...prev,
+
+        titulo_lab: laboratorio.nombre_de_laboratorio || "",
+
+        resumen: laboratorio.resumen || "",
+
+        introduccion: laboratorio.introduccion || "",
+
+        marco_teorico: laboratorio.marco_teorico || "",
+
+        categoria: laboratorio.categoria || "",
+
+        objetivo_general: laboratorio.objetivo_general?.descripcion || "",
+
+        imagen_portada: laboratorio.imagen_portada || null,
+      }));
+
+      // ===============================
+      // Categoría seleccionada
+      // ===============================
+
+      setSelectedCategoria({
+        id: laboratorio.categoria,
+        nombre: laboratorio.categoria_nombre,
+      });
+
+      setBusquedaCategoria(laboratorio.categoria_nombre || "");
+
+      // ===============================
+      // Imagen
+      // ===============================
+
+      if (laboratorio.imagen_portada) {
+        setImagenPreview(laboratorio.imagen_portada);
+      }
+
+      // ===============================
+      // Objetivos específicos
+      // ===============================
+
+      if (laboratorio.objetivo_general?.objetivos_especificos) {
+        setObjetivosEspecificos(
+          laboratorio.objetivo_general.objetivos_especificos.map(
+            (o) => o.descripcion,
+          ),
+        );
+      }
+    };
+
+    cargarEdicion();
   }, []);
 
   useEffect(() => {
@@ -150,166 +258,129 @@ function LabConfigurarLabs() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSelectChange = (e, tipo) => {
     const id = e.target.value;
 
-    setFormData(prev => ({
-        ...prev,
-        [tipo]: id
+    setFormData((prev) => ({
+      ...prev,
+      [tipo]: id,
     }));
 
     if (tipo === "categoria") {
-        setSelectedCategoria(
-            categorias.find(c => String(c.id) === String(id)) || null
-        );
+      setSelectedCategoria(
+        categorias.find((c) => String(c.id) === String(id)) || null,
+      );
     } else if (tipo === "objetivo") {
-        setSelectedObjetivo(
-            objetivos.find(o => String(o.id) === String(id)) || null
-        );
+      setSelectedObjetivo(
+        objetivos.find((o) => String(o.id) === String(id)) || null,
+      );
     }
-};
+  };
 
   // --- LÓGICA DE INTEGRACIÓN CON IA ---
-const handleGenerarConIA = async () => {
-
+  const handleGenerarConIA = async () => {
     if (!formData.titulo_lab || !formData.categoria) {
-        showModal(
-            "error",
-            "⚠️ Por favor rellene el Título y la Categoría antes de usar la IA."
-        );
-        return;
+      showModal(
+        "error",
+        "⚠️ Por favor rellene el Título y la Categoría antes de usar la IA.",
+      );
+      return;
     }
 
     try {
+      setIsGeneratingIA(true);
 
-        setIsGeneratingIA(true);
+      // ==========================
+      // PORTADA
+      // ==========================
+
+      const payloadPortada = {
+        titulo: formData.titulo_lab,
+        categoria: selectedCategoria ? selectedCategoria.nombre : "",
+      };
+
+      const portada = await generarPortadaIA(payloadPortada);
+
+      console.log("PORTADA:", portada);
+
+      if (portada) {
+        // Llenar descripción y objetivo
+        setFormData((prev) => ({
+          ...prev,
+          descripcion_corta: portada.descripcion_corta || "",
+          objetivo_general: portada.objetivo_general || "",
+        }));
+
+        // Llenar objetivos específicos
+        setObjetivosEspecificos(portada.objetivos_especificos || []);
 
         // ==========================
-        // PORTADA
+        // IMAGEN (NO BLOQUEA)
+        // ==========================
+        setIsGeneratingImagen(true);
+
+        generarImagenPortadaIA(payloadPortada)
+          .then((resultado) => {
+            console.log("IMAGEN:", resultado);
+
+            if (resultado.imagen) {
+              setImagenPreview(`data:image/png;base64,${resultado.imagen}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error generando imagen:", error);
+          })
+
+          .finally(() => {
+            setIsGeneratingImagen(false);
+          });
+
+        // ==========================
+        // CONTENIDO
         // ==========================
 
-        const payloadPortada = {
-            titulo: formData.titulo_lab,
-            categoria: selectedCategoria
-                ? selectedCategoria.nombre
-                : ""
+        const payloadContenido = {
+          titulo: formData.titulo_lab,
+          categoria: selectedCategoria ? selectedCategoria.nombre : "",
+          objetivo: portada.objetivo_general,
+          palabras_clave: "",
         };
 
-        const portada = await generarPortadaIA(payloadPortada);
+        const contenido = await generarContenidoLaboratorioIA(payloadContenido);
 
-        console.log("PORTADA:", portada);
+        console.log("CONTENIDO:", contenido);
 
-        if (portada) {
+        setFormData((prev) => ({
+          ...prev,
+          resumen: contenido.resumen || "",
+          introduccion: contenido.introduccion || "",
+          marco_teorico: contenido.marco_teorico || "",
+        }));
 
-            // Llenar descripción y objetivo
-            setFormData(prev => ({
-                ...prev,
-                descripcion_corta: portada.descripcion_corta || "",
-                objetivo_general: portada.objetivo_general || ""
-            }));
-
-            // Llenar objetivos específicos
-            setObjetivosEspecificos(
-                portada.objetivos_especificos || []
-            );
-
-            // ==========================
-            // IMAGEN (NO BLOQUEA)
-            // ==========================
-            setIsGeneratingImagen(true);
-
-            generarImagenPortadaIA(payloadPortada)
-                .then((resultado) => {
-
-                    console.log("IMAGEN:", resultado);
-
-                    if (resultado.imagen) {
-
-                        setImagenPreview(
-                            `data:image/png;base64,${resultado.imagen}`
-                        );
-
-                    }
-
-                })
-                .catch((error) => {
-
-                    console.error(
-                        "Error generando imagen:",
-                        error
-                    );
-
-                })
-
-                .finally(() => {
-
-              setIsGeneratingImagen(false);
-
-                });
-
-            // ==========================
-            // CONTENIDO
-            // ==========================
-
-            const payloadContenido = {
-                titulo: formData.titulo_lab,
-                categoria: selectedCategoria
-                    ? selectedCategoria.nombre
-                    : "",
-                objetivo: portada.objetivo_general,
-                palabras_clave: ""
-            };
-
-            const contenido = await generarContenidoLaboratorioIA(
-                payloadContenido
-            );
-
-            console.log("CONTENIDO:", contenido);
-
-            setFormData(prev => ({
-                ...prev,
-                resumen: contenido.resumen || "",
-                introduccion: contenido.introduccion || "",
-                marco_teorico: contenido.marco_teorico || ""
-            }));
-
-            showModal(
-                "success",
-                "✨ ¡Laboratorio generado correctamente!"
-            );
-        }
-
+        showModal("success", "✨ ¡Laboratorio generado correctamente!");
+      }
     } catch (error) {
+      console.error(error);
 
-        console.error(error);
-
-        
-
-        showModal(
-            "error",
-            "❌ Ocurrió un error al generar el laboratorio."
-        );
-
-    } 
-    finally {
-
-        setIsGeneratingIA(false);
-
+      showModal("error", "❌ Ocurrió un error al generar el laboratorio.");
+    } finally {
+      setIsGeneratingIA(false);
     }
-};
-
-
+  };
 
   const openModal = (type) => {
     setModalType(type);
-    setNewData({ 
+    setNewData({
       ...newData,
-      nombre: type === "OBJ" ? tipoSeleccionado : '', 
-      descripcion: '', 
-      categoriaId: formData.categoria || '' 
+      nombre: type === "OBJ" ? tipoSeleccionado : "",
+      descripcion: "",
+      categoriaId: formData.categoria || "",
     });
     setIsModalOpen(true);
   };
@@ -319,21 +390,23 @@ const handleGenerarConIA = async () => {
     try {
       let res;
       if (modalType === "CAT") {
-        res = await crearCategoria({ nombre: newData.nombre, descripcion: newData.descripcion });
+        res = await crearCategoria({
+          nombre: newData.nombre,
+          descripcion: newData.descripcion,
+        });
       } else if (modalType === "OBJ") {
-          res = await crearObjetivoGeneral({ 
-        plantilla: parseInt(formData.categoriaId || formData.categoria),
-        descripcion: newData.descripcion 
-    });
+        res = await crearObjetivoGeneral({
+          plantilla: parseInt(formData.categoriaId || formData.categoria),
+          descripcion: newData.descripcion,
+        });
+      }
 
-      } 
-
-      if (typeof cargarTodosLosDatos === 'function') {
-            await cargarTodosLosDatos();
-        }
-        if (typeof closeModal === 'function') {
-            closeModal();
-        }
+      if (typeof cargarTodosLosDatos === "function") {
+        await cargarTodosLosDatos();
+      }
+      if (typeof closeModal === "function") {
+        closeModal();
+      }
 
       if (res && res.id) {
         const nuevoId = String(res.id);
@@ -358,7 +431,7 @@ const handleGenerarConIA = async () => {
           );
         }
       }
-      
+
       setIsModalOpen(false);
     } catch (error) {
       alert("Error al guardar en el servidor principal.");
@@ -367,28 +440,52 @@ const handleGenerarConIA = async () => {
 
   const handleSavePlantilla = async () => {
     try {
-        const userId = localStorage.getItem("user_id");
+      const userId = localStorage.getItem("user_id");
 
-        const payload = {
-          titulo: formData.titulo_lab,
-          resumen: formData.resumen,
-          introduccion: formData.introduccion,
-          marco_teorico: formData.marco_teorico,
-          categoria: parseInt(formData.categoriaId || formData.categoria),
-          creado_por: parseInt(userId),
-          estado: "ACTIVO",
-          simulacion: false,
-        };
+      const form = new FormData();
 
-        console.log("PAYLOAD:", payload);
+      form.append("titulo", formData.titulo_lab);
+      form.append("resumen", formData.resumen);
+      form.append("introduccion", formData.introduccion);
+      form.append("marco_teorico", formData.marco_teorico);
+      form.append(
+        "categoria",
+        parseInt(formData.categoriaId || formData.categoria),
+      );
 
-        await crearLaboratorio(payload);
-        showModal('success', '✅ Plantilla agregada correctamente');
+      form.append("creado_por", userId);
+      form.append("estado", "ACTIVO");
+      form.append("simulacion", false);
+
+      // SOLO ENVÍA LA IMAGEN SI ES UN ARCHIVO NUEVO
+      if (formData.imagen_portada instanceof File) {
+        form.append("imagen_portada", formData.imagen_portada);
+      }
+
+      if (modoEdicion) {
+        await actualizarLaboratorio(idEdicion, form);
+      } else {
+        await crearLaboratorio(form);
+      }
+
+      localStorage.removeItem("fisikapp_laboratorio_en_edicion");
+
+      showModal(
+        "success",
+        modoEdicion
+          ? "✅ Plantilla actualizada correctamente"
+          : "✅ Plantilla creada correctamente",
+      );
+
+      setTimeout(() => {
+        navigate("/admin/laboratorio/repositorio_labs");
+      }, 1200);
     } catch (err) {
-    console.error("ERROR:", err);
-    console.error("RESPUESTA:", err.response?.data);
+      console.error(err);
+
+      showModal("error", "Error al guardar.");
     }
-};
+  };
 
   return (
     <AdminLayout>
@@ -455,6 +552,7 @@ const handleGenerarConIA = async () => {
                 setImagenPreview={setImagenPreview}
                 handleGenerarConIA={handleGenerarConIA}
                 isGeneratingIA={isGeneratingIA}
+                setFormData={setFormData}
                 isGeneratingImagen={isGeneratingImagen}
                 busquedaCategoria={busquedaCategoria}
                 setBusquedaCategoria={setBusquedaCategoria}
