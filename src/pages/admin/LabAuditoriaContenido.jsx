@@ -17,7 +17,8 @@ function LabAuditoriaContenido() {
     const cargar = async () => {
       try {
         const data = await getLaboratorios();
-        setLaboratorios(data);
+
+        setLaboratorios(data.laboratorios || []);
       } catch (error) {
         console.error("Error cargando laboratorios:", error);
       } finally {

@@ -327,7 +327,7 @@ export async function getLaboratorios(page = 1) {
 
 // INTERCEPCIÓN INTELIGENTE DE GUARDADO PARA CASOS DE EDICIÓN
 export async function saveLaboratorio(laboratorio) {
-    const STORAGE_KEY = "fisikapp_laboratorios";1
+    const STORAGE_KEY = "fisikapp_laboratorios";
     const EDIT_TEMP_KEY = "fisikapp_laboratorio_en_edicion";
     let backendSuccess = false;
 
