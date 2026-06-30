@@ -1,28 +1,56 @@
-.tableContainer {
-    background: white;
-    border-radius: 20px;
-    padding: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.03);
-    overflow-x: auto;
+.tableContainer{
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.04);
+    overflow:auto;
+}
+.customTable{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+}
+.customTable thead tr{
+    background:#1B2559;
 }
 
-.customTable {
-    width: 100%;
-    border-collapse: collapse;
+.customTable thead th{
+    color:white;
+    font-size:13px;
+    font-weight:600;
+    padding:18px 20px;
+    text-transform:uppercase;
+    border:none;
 }
 
-.customTable th {
-    text-align: left;
-    color: #A3AED0;
-    font-size: 13px;
-    text-transform: uppercase;
-    padding: 15px;
-    border-bottom: 1px solid #F4F7FE;
+.customTable td{
+    padding:22px 20px;
+    color:#2B3674;
+    font-size:15px;
+    border-bottom:1px solid #F4F7FE;
+    vertical-align:middle;
 }
 
-.customTable td {
-    padding: 15px;
-    color: #2B3674;
-    font-size: 15px;
-    border-bottom: 1px solid #F4F7FE;
+.customTable thead th:first-child{
+    border-top-left-radius:10px;
+    border-bottom-left-radius:10px;
 }
+
+.customTable thead th:last-child{
+    border-top-right-radius:10px;
+    border-bottom-right-radius:10px;
+}
+
+.customTable tbody tr{
+    transition:.2s;
+}
+
+.customTable tbody tr:hover{
+    background:#F8FAFC;
+}
+
+.customTable th:last-child{
+    text-align: center;
+    padding-left: 35px;
+}
+

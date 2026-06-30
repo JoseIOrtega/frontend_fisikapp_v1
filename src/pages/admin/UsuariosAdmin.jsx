@@ -303,62 +303,90 @@ function UsuariosAdmin() {
 
           {/* La tabla ahora tiene su propio scroll independiente */}
           <div className={style.tableContainer} ref={scrollRef}>
-            <AdminDataTable 
-              columns={columnas} 
-              data={usuarios}
-              renderRow={(usuario) => (
-                <tr key={usuario.id}>
-                  <td className={style.userCell}>
-                    <div className={style.userInfoContainer}>
-                      <span className={style.nameText}>{usuario.nombre}</span>
-                      <span className={style.emailText}>{usuario.correo}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={usuario.rol.toLowerCase() === "profesor" ? style.roleDocente : style.roleEstudiante}>
-                      {usuario.rol.toLowerCase() === "profesor" ? "Profesor" : "Estudiante"}
-                    </span>
-                  </td>
+            <AdminDataTable
+  columns={columnas}
+  data={usuarios}
+  renderRow={(usuario) => {
+    console.log(usuario);
 
-                  {/* LÓGICA DE ESTADO: Idéntica a GestionAdmin */}
-                  <td>
-                    <span className={usuario.estado ? style.statusActive : style.statusInactive}>
-                      {usuario.estado ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
+    return (
+      <tr key={usuario.id}>
+        <td className={style.userCell}>
+          <div className={style.userInfoContainer}>
+            <span className={style.nameText}>{usuario.nombre}</span>
+            <span className={style.emailText}>{usuario.correo}</span>
+          </div>
+        </td>
 
-                  {/* En el renderRow de tu AdminDataTable */}
-                  <td title={usuario.ultimo_ingreso_real ? new Date(usuario.ultimo_ingreso_real).toLocaleString() : "Sin ingresos"}>
-                    {usuario.ultimo_ingreso_real ? getRelativeTime(usuario.ultimo_ingreso_real) : "Nunca"}
-                  </td>
+        <td>
+          <span
+            className={
+              usuario.rol.toLowerCase() === "profesor"
+                ? style.roleDocente
+                : style.roleEstudiante
+            }
+          >
+            {usuario.rol.toLowerCase() === "profesor"
+              ? "Profesor"
+              : "Estudiante"}
+          </span>
+        </td>
 
-                  <td className={style.actionsCell}>
-                    <AdminIconButton 
-                      icon={Edit} 
-                      type="edit" 
-                      title={!usuario.estado ? "Debe activar al usuario para editar" : "Editar"} 
-                      onClick={() => handleAbrirEditar(usuario)}
-                      // ¡Ahora esta prop sí funcionará!
-                      disabled={!usuario.estado} 
-                    />
-                    
-                    <AdminIconButton 
-                        icon={Eye} 
-                        type="detail" 
-                        title="Ver detalles" 
-                        onClick={() => handleAbrirVer(usuario.id)} // <--- Conectado aquí
-                    />
+        <td>
+          <span
+            className={
+              usuario.estado
+                ? style.statusActive
+                : style.statusInactive
+            }
+          >
+            {usuario.estado ? "Activo" : "Inactivo"}
+          </span>
+        </td>
 
-                    <AdminIconButton 
-                      icon={usuario.estado ? UserX : UserCheck} 
-                      type={usuario.estado ? "delete" : "success"} 
-                      title={usuario.estado ? "Desactivar" : "Activar"} 
-                      onClick={() => handleToggleEstado(usuario)} // <--- Conexión aquí
-                    />
-                  </td>
-                </tr>
-              )}
-            />
+        <td
+          title={
+            usuario.ultimo_ingreso_real
+              ? new Date(usuario.ultimo_ingreso_real).toLocaleString()
+              : "Sin ingresos"
+          }
+        >
+          {usuario.ultimo_ingreso_real
+            ? getRelativeTime(usuario.ultimo_ingreso_real)
+            : "Nunca"}
+        </td>
+
+        <td className={style.actionsCell}>
+          <AdminIconButton
+            icon={Edit}
+            type="edit"
+            title={
+              !usuario.estado
+                ? "Debe activar al usuario para editar"
+                : "Editar"
+            }
+            onClick={() => handleAbrirEditar(usuario)}
+            disabled={!usuario.estado}
+          />
+
+          <AdminIconButton
+            icon={Eye}
+            type="detail"
+            title="Ver detalles"
+            onClick={() => handleAbrirVer(usuario.id)}
+          />
+
+          <AdminIconButton
+            icon={usuario.estado ? UserX : UserCheck}
+            type={usuario.estado ? "delete" : "success"}
+            title={usuario.estado ? "Desactivar" : "Activar"}
+            onClick={() => handleToggleEstado(usuario)}
+          />
+        </td>
+      </tr>
+    );
+  }}
+/>
           </div>
           
           {/* La paginación siempre estará visible al final del contenedor layout */}
