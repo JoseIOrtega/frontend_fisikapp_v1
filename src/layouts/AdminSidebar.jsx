@@ -4,7 +4,7 @@ import imgLogo from "../assets/images/Logo.png";
 import style from './AdminSidebar.module.css';
 import { 
   Home, FlaskConical, Users, UserPen, 
-  Lock, Unlock, Settings, ChevronDown 
+  Lock, Unlock, LogOut, ChevronDown 
 } from 'lucide-react'; 
 
 function Sidebar({ esSuperAdmin }) {
@@ -12,6 +12,10 @@ function Sidebar({ esSuperAdmin }) {
     
     // El submenú se abre automáticamente si estamos en una ruta de laboratorio
     const [labMenuOpen, setLabMenuOpen] = useState(location.pathname.includes('/admin/laboratorio'));
+    const handleCerrarSesionClick = () => {
+    localStorage.clear();
+    window.location.href = "/";
+};
 
     return (
         <aside className={style.sidebar}>
@@ -90,10 +94,21 @@ function Sidebar({ esSuperAdmin }) {
             </nav>
 
             <div className={style.footer}>
-                <NavLink to="/admin/configuracion" end className={style.link}>
-                    <Settings size={20} /> <span>Configuración</span>
-                </NavLink>
-            </div>
+    <button
+        className={style.link}
+        onClick={handleCerrarSesionClick}
+        style={{
+            width: "100%",
+            background: "transparent",
+            border: "none",
+            textAlign: "left",
+            cursor: "pointer"
+        }}
+    >
+        <LogOut size={20} />
+        <span>Cerrar sesión</span>
+    </button>
+</div>
         </aside>
     );
 }

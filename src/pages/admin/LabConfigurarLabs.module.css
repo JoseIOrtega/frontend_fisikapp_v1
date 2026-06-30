@@ -520,12 +520,11 @@ textarea:disabled {
   color: white;
 }
 
-.gridInfoGeneral {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
+.gridInfoGeneral{
+    display:grid;
+    grid-template-columns:1.7fr 1.3fr;
+    gap:20px;
 }
-
 .completedStep .stepCircle {
   background: #01024d;
   color: white;
@@ -819,5 +818,20 @@ textarea:disabled {
     margin:0 auto;
 }
 
+.autocompleteContainer{
+    flex: 1;
+    width: 100%;
+    position: relative;
+}
+
+.input_group_row{
+    display:flex;
+    width:100%;
+    gap:10px;
+}
+
+.input_group_row .input_diseno{
+    width:100%;
+}
 
 
