@@ -204,14 +204,33 @@ useEffect(() => {
           
           {/* Tarjeta Perfil */}
           <div className={style.profileCard}>
-            <div className={style.avatarWrapper}>
-              <img 
-                  src={perfil?.foto_url || "/avatar-default.png"}
-                  alt={perfil?.nombre}
-                  className={style.avatarImg}
-              />
-              <CheckCircle2 className={style.statusBadgeIcon} size={20} />
-            </div>
+           
+              <div className={style.avatarWrapper}>
+  {perfil?.foto_url &&
+ perfil.foto_url.trim() !== "" &&
+ !perfil.foto_url.includes("default") ? (
+    <img
+      src={perfil.foto_url}
+      alt={perfil?.nombre}
+      className={style.avatarImg}
+    />
+  ) : (
+    <div className={style.avatarDefault}>
+      {perfil?.nombre
+        ?.split(" ")
+        .map((p) => p[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()}
+    </div>
+  )}
+
+  <CheckCircle2
+    className={style.statusBadgeIcon}
+    size={20}
+  />
+</div>
+              
             <div className={style.profileInfo}>
               <h4>{perfil?.nombre || "Cargando..."}</h4>
               <p>{perfil?.rol === "admin" ? "Administrador" : perfil?.rol}</p>
