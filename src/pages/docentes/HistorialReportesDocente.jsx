@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import DocenteLayout from '../../layouts/DocenteLayout'
 import style from './HistorialReportesDocente.module.css';
-import { getHistorialReportes } from '../../services/docente/reporteService';
+import { getHistorialReportes, getHistorialFiltrado } from '../../services/docente/reporteService';
 
 const HistorialReportesDocente = () => {
     // --- ESTADOS ---
     const [reportes, setReportes] = useState([]);
     const [fechaFiltro, setFechaFiltro] = useState('');
     const [loading, setLoading] = useState(true);
+
+    // Estados para los filtros de búsqueda
+    const [busquedaEstudiante, setBusquedaEstudiante] = useState('');
+    const [busquedaLaboratorio, setBusquedaLaboratorio] = useState('');
 
     // Estados para el Modal de Estudiantes
     const [modalEstudiantesAbierto, setModalEstudiantesAbierto] = useState(false);
@@ -20,7 +24,9 @@ const HistorialReportesDocente = () => {
     // --- PASO 2: EFECTO PARA TRAER DATOS REALES DEL BACKEND ---
     useEffect(() => {
         setLoading(true);
-        getHistorialReportes(fechaFiltro)
+        
+        // Ahora llamamos a nuestra función nueva sin pasarle parámetros al inicio
+        getHistorialFiltrado(busquedaEstudiante, busquedaLaboratorio)
             .then((data) => {
                 setReportes(data);
                 setLoading(false);
@@ -29,6 +35,7 @@ const HistorialReportesDocente = () => {
                 console.error("Error al cargar el historial de reportes:", error);
                 setLoading(false);
             });
+    
     }, [fechaFiltro]); // Se vuelve a ejecutar automáticamente si cambias la fecha
 
     // --- MANEJADORES DE MODALES (PASO 4) ---
@@ -46,6 +53,18 @@ const HistorialReportesDocente = () => {
     const handleAbrirObservaciones = (texto) => {
         setObservacionTexto(texto);
         setModalObservacionesAbierto(true);
+    };
+
+    const manejarFiltradoAvanzado = async () => {
+        try {
+            // Llamamos a la nueva función que pusiste en reporteService
+            const datosFiltrados = await getHistorialFiltrado(busquedaEstudiante, busquedaLaboratorio);
+            
+            // Reemplaza 'setReportes' por el nombre exacto de la función que actualiza tu tabla
+            setReportes(datosFiltrados); 
+        } catch (error) {
+            console.error("Error al aplicar filtros por estudiante o laboratorio:", error);
+        }
     };
 
     return (
@@ -73,6 +92,34 @@ const HistorialReportesDocente = () => {
                 </div>
             </div>
 
+            <div className={style.contenedorFiltrosAvanzados}>
+                {/* Input para buscar Estudiante */}
+                <input 
+                    type="text" 
+                    placeholder="🔍 Buscar por estudiante..." 
+                    value={busquedaEstudiante}
+                    onChange={(e) => setBusquedaEstudiante(e.target.value)}
+                    className={style.inputFiltro}
+                />
+
+                {/* Input para buscar Laboratorio */}
+                <input 
+                    type="text" 
+                    placeholder="🧪 Buscar por laboratorio..." 
+                    value={busquedaLaboratorio}
+                    onChange={(e) => setBusquedaLaboratorio(e.target.value)}
+                    className={style.inputFiltro}
+                />
+
+                {/* Botón que dispara la búsqueda */}
+                <button 
+                    onClick={manejarFiltradoAvanzado} 
+                    className={style.botonFiltrar}
+                >
+                    Filtrar
+                </button>
+            </div>
+
             {/* CONTENEDOR DE LA TABLA */}
             <div className={style.tabla_container}>
                 <table className={style.tabla}>
@@ -92,7 +139,7 @@ const HistorialReportesDocente = () => {
                         ) : reportes.length === 0 ? (
                             <tr><td colSpan="5" className={style.text_center}>No se encontraron reportes.</td></tr>
                         ) : (
-                            reportes.map((reporte) => (
+                            (Array.isArray(reportes) ? reportes : reportes?.results || []).map((reporte) => (
                                 <tr key={reporte.id}>
                                     <td>{reporte.laboratorio_nombre}</td>
                                     <td>{reporte.estudiantes_info?.lista_detallada?.length > 0? reporte.estudiantes_info.lista_detallada

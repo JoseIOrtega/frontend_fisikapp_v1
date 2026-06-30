@@ -40,3 +40,41 @@ export const getHistorialReportes = async (fecha = null) => {
 export default {
   getHistorialReportes
 };
+
+export const getHistorialFiltrado = async (estudiante = '', laboratorio = '') => {
+    try {
+        const API_URL_BASE = API_CONFIG.ENDPOINTS.DOCENTE.HISTORIAL_REPORTES;
+
+        const params = new URLSearchParams();
+        
+        // SOLO agregamos el parámetro si el usuario realmente escribió algo
+        if (estudiante && estudiante.trim() !== '') {
+            params.append('estudiante', estudiante.trim());
+        }
+        if (laboratorio && laboratorio.trim() !== '') {
+            params.append('laboratorio', laboratorio.trim());
+        }
+
+        // Si no se escribió nada en ningún input, usamos la URL limpia sin el "?"
+        const cadenaParams = params.toString();
+        const urlCompleta = cadenaParams ? `${API_URL_BASE}?${cadenaParams}` : API_URL_BASE;
+
+        console.log("🚀 URL ENVIADA AL BACKEND:", urlCompleta);
+        const respuesta = await fetch(urlCompleta, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...API_CONFIG.getHeaders()
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error(`Error en el servidor al filtrar: Status ${respuesta.status}`);
+        }
+
+        return await respuesta.json();
+    } catch (error) {
+        console.error("Error en getHistorialFiltrado:", error);
+        throw error;
+    }
+};
