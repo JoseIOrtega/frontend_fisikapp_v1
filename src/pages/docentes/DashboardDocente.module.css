@@ -1,0 +1,654 @@
+/* --- COMPLEMENTOS PARA EL DASHBOARD DE PROFESOR --- */
+
+.welcomeBannerContainer {
+    background-color: #142050; 
+    color: #FFFFFF; 
+    border-radius: 24px; 
+    padding: 36px 40px; 
+    box-shadow: 0px 4px 20px rgba(13, 39, 79, 0.05); 
+}
+
+.welcomeTitle {
+    font-size: 32px; 
+    font-weight: 700; 
+    margin: 0 0 12px 0; 
+    letter-spacing: -0.02em; 
+}
+
+.welcomeSubtitle {
+    color: #A3B1CC; 
+    font-size: 15px; 
+    margin: 0 0 28px 0; 
+    max-width: 800px; 
+    line-height: 1.5; 
+    font-weight: 500; 
+}
+
+.welcomeButtonGroup {
+    display: flex; 
+    gap: 16px; 
+}
+
+.btnMint {
+    background-color: #32EEB5; 
+    color: #0D274F; 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 12px; 
+    font-weight: 700; 
+    font-size: 14px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    transition: background-color 0.2s ease, transform 0.1s ease; 
+}
+
+.btnMint:hover {
+    background-color: #29cfa0; 
+}
+
+.btnMint:active {
+    transform: scale(0.98); 
+}
+
+.btnDarkBorder {
+    background-color: rgba(255, 255, 255, 0.06); 
+    color: #FFFFFF; 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    padding: 12px 24px; 
+    border-radius: 12px; 
+    font-weight: 600; 
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: background-color 0.2s ease, border-color 0.2s ease; 
+}
+
+.btnDarkBorder:hover {
+    background-color: rgba(255, 255, 255, 0.12); 
+    border-color: rgba(255, 255, 255, 0.25); 
+}
+
+.breadcrumbText {
+    font-size: 12px; 
+    color: #94a3b8; 
+    font-weight: 700; 
+    text-transform: none; 
+    letter-spacing: 0.02em; 
+}
+
+.breadcrumbDivider {
+    margin: 0 4px; 
+    color: #cbd5e1; 
+}
+
+.breadcrumbCurrent {
+    color: #475569; 
+    font-weight: 500; 
+}
+
+.iconSvg {
+    display: inline-block; 
+    vertical-align: middle; 
+}
+
+/* ========================================================== */
+/* ENTORNO CLARO - CONFIGURACIÓN DE TARJETAS DE MÉTRICAS      */
+/* ========================================================== */
+
+.imgMetricsRow {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.imgMiniCard {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.imgCardTopFlex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.imgIconWrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bgIconLightBlue { background-color: #eff6ff; }
+.bgIconLightMint { background-color: #ecfdf5; }
+.bgIconLightPurple { background-color: #f5f3ff; }
+.bgIconLightPink { background-color: #fdf2f8; }
+.bgIconLightOrange { background-color: #fff7ed; }
+
+.imgBadgeGreen {
+    background-color: #e6fbf4;
+    color: #059669;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.imgBadgeCyan {
+    background-color: #ecfeff;
+    color: #0891b2;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.imgTextRightLabel {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.imgCardMetaLabel {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.imgCardValue {
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+/* ESTRUCTURA INFERIOR DE GRÁFICOS Y CONTENEDOR NUEVO */
+.imgBottomGrid {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.imgBigCard {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.imgGraphHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.imgCardTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.imgHeaderControlGroup {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.imgLegendsGroup {
+    display: flex;
+    gap: 16px;
+}
+
+.imgLegendItem {
+    font-size: 13px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.legendDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* COLORES ASIGNADOS POR HEXADECIMAL EXACTO */
+.dotPink { background-color: #ee3280; }
+.dotBlue { background-color: #0083fe; }
+
+/* CONTENEDOR SELECT-OPTION */
+.selectTimeContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.selectTimeInput {
+    appearance: none;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 32px 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.selectTimeInput:hover {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.selectCustomArrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    color: #64748b;
+    pointer-events: none;
+}
+
+/* CAJA GRISÁCEA GENERAL DEL GRÁFICO */
+.imgGraphContainerBox {
+    background-color: #f8fafc;
+    border-radius: 14px;
+    padding: 24px 16px;
+}
+
+.imgGraphLayoutFlex {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+/* EJE VERTICAL (Y) */
+.imgAxisY {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 32px; 
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    min-width: 28px;
+}
+
+.axisYLabel {
+    line-height: 1;
+}
+
+/* LAYOUT CON BOTONES DE PAGINACIÓN LATERALES */
+.paginationLayoutWrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arrowPageBtn {
+    background-color: #ffffff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    font-size: 20px;
+    font-weight: 400;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+    line-height: 1;
+    user-select: none;
+}
+
+.arrowPageBtn:hover:not(:disabled) {
+    background-color: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+
+/* CONTENEDOR INTERNO DEL GRÁFICO Y EJE X */
+.imgCanvasWrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.imgLineGraphArea {
+    width: 100%;
+    height: 170px;
+}
+
+.imgMonthsXAxis {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ANILLO CIRCULAR DEL ESTATUS (DONUT CHART) */
+.imgCircleWrapperCenter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px auto;
+    width: 150px;
+    height: 150px;
+}
+
+.imgCircularSvg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.donutBgBase {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 3.8;
+}
+
+.donutSegmentCompleted {
+    fill: none;
+    stroke: #ee3280; 
+    stroke-width: 3.8;
+    stroke-linecap: round;
+}
+
+.donutSegmentActive {
+    fill: none;
+    stroke: #0083fe; 
+    stroke-width: 3.8;
+    stroke-linecap: round;
+}
+
+.imgCircleTextInside {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.imgPercentNumber {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1b2559;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.imgPercentSub {
+    font-size: 12px;
+    color: #a3aed0;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* FILAS DE ESTADO INFERIORES */
+.imgStatusList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    width: 100%;
+}
+
+.imgStatusRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.legendItemLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legendName {
+    font-size: 14px;
+    color: #a3aed0;
+    font-weight: 600;
+}
+
+.legendVal {
+    font-size: 14px;
+    color: #1b2559;
+    font-weight: 700;
+}
+
+/* --- CONTROLADOR DE PAGINACIÓN DE FASES (TABS) --- */
+.paginationTabsContainer {
+    display: flex;
+    background-color: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.tabNavButton {
+    background-color: transparent;
+    color: #475569;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.tabActive {
+    background-color: #FFFFFF;
+    color: #0f172a;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tabBadgeNotification {
+    background-color: #ef4444;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 8px;
+    line-height: 1;
+}
+
+/* --- ESTILOS FASE 2 --- */
+.phase2CardTitle {
+    font-size: 19px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.btnLinkText {
+    background: none;
+    border: none;
+    color: #0d9488;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.phase2TableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.phase2Table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.phase2Table th {
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    background-color: #f8fafc;
+}
+
+.phase2Table td {
+    padding: 18px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.tableTdId {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.studentUserFlex {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.studentAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.avatarMA { background-color: #e0f2fe; color: #0369a1; }
+.avatarSR { background-color: #e0e7ff; color: #4338ca; }
+.avatarJV { background-color: #fce7f3; color: #be185d; }
+
+.studentNameText {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.tableTdDate { color: #64748b; font-weight: 500; }
+.tableTdLab { color: #475569; font-weight: 500; }
+
+.pillStatusBase {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.badgePending { background-color: #fff1f2; color: #e11d48; }
+.badgeReviewed { background-color: #ecfeff; color: #0891b2; }
+.badgeFeedback { background-color: #f1f5f9; color: #475569; }
+
+.activityFeedContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activityFeedItem {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.activityIconBox {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activityMintIcon { background-color: #e6fbf4; }
+.activityBlueIcon { background-color: #eff6ff; }
+.activityRedIcon { background-color: #fef2f2; }
+
+.activityTextContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activityRowPara {
+    margin: 0;
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.4;
+}
+
+.activityRowPara strong {
+    color: #0f172a;
+}
+
+.activityTimeSpan {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.btnDottedHistory {
+    width: 100%;
+    background-color: #FFFFFF;
+    color: #1e293b;
+    border: 1px dashed #cbd5e1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background-color 0.2s ease;
+}
+
+.btnDottedHistory:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+}
